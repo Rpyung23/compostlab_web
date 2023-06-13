@@ -16,12 +16,7 @@
             class="cardSelectRubrosEstadosPagosVehiculoProduccionContainerPanelDespachoBusqueda"
           >
             <div class="buttonCenterEndDerecha">
-              <base-button
-                icon
-                type="primary"
-                size="sm"
-                @click="readLoteAll()"
-              >
+              <base-button icon type="primary" size="sm" @click="readLoteAll()">
                 <span class="btn-inner--icon"
                   ><i class="el-icon-search"></i
                 ></span>
@@ -72,16 +67,10 @@
           >
             <el-table-column label="Actions" width="150">
               <template slot-scope="scope">
-                <base-button
-                  size="sm"
-                  title="EDITAR"
-                  type="primary"
+                <base-button size="sm" title="EDITAR" type="primary"
                   ><i class="ni ni-ruler-pencil"></i
                 ></base-button>
-                <base-button
-                  size="sm"
-                  title="DESACTIVAR"
-                  type="danger"
+                <base-button size="sm" title="DESACTIVAR" type="danger"
                   ><i class="ni ni-fat-remove"></i
                 ></base-button>
               </template>
@@ -100,7 +89,6 @@
             >
             </el-table-column>
 
-
             <div slot="empty"></div>
           </el-table>
         </card>
@@ -114,17 +102,17 @@
           @submit.prevent="handleSubmit(firstFormSubmit)"
         >
           <div class="form-row" style="margin-bottom: 0.5rem">
-            <div class="col-md-6">
+            <div class="col-md-12">
               <base-input
-                name="Unidad"
-                placeholder="Unidad"
-                prepend-icon="ni ni-bus-front-12"
+                name="Nombre Lote"
+                placeholder="Nombre Lote"
+                prepend-icon="ni ni-app"
                 rules="required"
-                v-model="unidadVehiculo"
+                v-model="NombreLote"
               >
               </base-input>
             </div>
-            <div class="col-md-6">
+            <!--<div class="col-md-6">
               <base-input
                 prepend-icon="ni ni-single-copy-04"
                 name="Serie"
@@ -133,15 +121,16 @@
                 v-model="serieVehiculo"
               >
               </base-input>
-            </div>
+            </div>-->
           </div>
           <div class="form-row" style="margin-bottom: 0.5rem">
             <div class="col-md-6">
               <base-input
                 prepend-icon="ni ni-single-copy-04"
-                name="Imei"
-                placeholder="Imei"
-                v-model="imeiVehiculo"
+                name="Ingrese Peso"
+                placeholder="Ingrese Peso"
+                v-model="PesoLote"
+                rules="required"
               >
               </base-input>
             </div>
@@ -151,7 +140,6 @@
                 v-model="mSelectTipoPeso"
                 style="width: 100%"
               >
-                
                 <el-option
                   v-for="item in mListTipoPesos"
                   :key="item.id_tipo_peso"
@@ -182,35 +170,25 @@
           <div class="form-row" style="margin-bottom: 1rem">
             <div class="col-md-12">
               <base-input
-                name="Placa"
-                placeholder="Placa"
+                name="Detalle Lote"
+                placeholder="Detalle Lote"
                 prepend-icon="ni ni-paper-diploma"
                 rules="required"
-                v-model="placaVehiculo"
+                v-model="ObsLote"
               >
               </base-input>
             </div>
           </div>
 
           <div class="text-right">
-            <base-button
-              type="danger"
-              @click="showModalAgregarUnidadFlotavehicular()"
+            <base-button type="danger" @click="clearModalAddLote()"
               >Cancelar</base-button
             >
             <base-button
               type="primary"
-              v-if="editedIndexUnidad == -1"
-              @click="sendRegisterUnidad()"
+              @click="insertNuevoLote()"
               native-type="submit"
-              >Agregar</base-button
-            >
-            <base-button
-              type="primary"
-              v-else
-              @click="sendUpdateUnidad()"
-              native-type="submit"
-              >Actualizar</base-button
+              >Guardar</base-button
             >
           </div>
         </form>
@@ -279,7 +257,7 @@ export default {
   data() {
     return {
       modalAddLote: false,
-      mSelectMercado:null,
+      mSelectMercado: null,
       tableColumnsLote: [
         {
           prop: "nombre_lote",
@@ -307,11 +285,6 @@ export default {
           minWidth: 140,
         },
         {
-          prop: "decrip_insumo",
-          label: "DETALLE",
-          minWidth: 220,
-        },
-        {
           prop: "nombre_mercado",
           label: "MERCADO",
           minWidth: 220,
@@ -322,12 +295,15 @@ export default {
           minWidth: 280,
         },
       ],
-      mSelectTipoPeso:null,
+      mSelectTipoPeso: null,
       mListaInsumos: [],
-      token:this.$cookies.get("token"),
-      mListTipoPesos:[],
-      mListTipoMercados:[],
-      loadingLote:false
+      token: this.$cookies.get("token"),
+      mListTipoPesos: [],
+      mListTipoMercados: [],
+      loadingLote: false,
+      NombreLote: null,
+      ObsLote: null,
+      PesoLote: null,
     };
   },
   methods: {
@@ -335,12 +311,12 @@ export default {
       this.modalAddLote = true;
     },
     async readLoteAll() {
-      this.loadingLote =true
+      this.loadingLote = true;
       this.mListaInsumos = [];
       try {
         var datos = await this.$axios.post(
           process.env.baseUrl + "/lote_usuer",
-          {token:this.token}
+          { token: this.token }
         );
 
         if (datos.data.status_code == 200) {
@@ -367,36 +343,79 @@ export default {
           message: error.toString(),
         });
       }
-      this.loadingLote = false
+      this.loadingLote = false;
     },
     async readTipoPesosActivo() {
       this.mListTipoPesos = [];
       try {
         var datos = await this.$axios.get(
-          process.env.baseUrl + "/tipo_peso_active",
+          process.env.baseUrl + "/tipo_peso_active"
         );
-        console.log(datos.data.datos)
-        this.mListTipoPesos.push(...datos.data.datos)
+        console.log(datos.data.datos);
+        this.mListTipoPesos.push(...datos.data.datos);
       } catch (error) {
-        console.log(error)
+        console.log(error);
       }
     },
     async readTipoMercadoActivo() {
       this.mListTipoMercados = [];
       try {
         var datos = await this.$axios.get(
-          process.env.baseUrl + "/all_mercados_active",
+          process.env.baseUrl + "/all_mercados_active"
         );
-        console.log(datos.data.datos)
-        this.mListTipoMercados.push(...datos.data.datos)
+        console.log(datos.data.datos);
+        this.mListTipoMercados.push(...datos.data.datos);
       } catch (error) {
-        console.log(error)
+        console.log(error);
       }
+    },
+    async insertNuevoLote() {
+      try {
+        if (
+          this.NombreLote != null &&
+          this.ObsLote != null &&
+          this.PesoLote != null &&
+          this.mSelectMercado != null &&
+          this.mSelectTipoPeso != null
+        ) {
+          var datos = await this.$axios.post(
+            process.env.baseUrlPanel + "/add_lote_usuer",
+            {
+              token: this.token,
+              nombre_lote: this.NombreLote,
+              observacion_lote: this.ObsLote,
+              peso: this.PesoLote,
+              tipo_peso: this.mSelectTipoPeso,
+              id_mercado: this.mSelectMercado,
+            }
+          );
+
+          if (datos.data.status_code == 200) {
+            this.clearModalAddLote();
+            this.readLoteAll();
+          } else {
+            Notification.info({
+              title: "AGREGAR LOTE",
+              message: datos.data.msm,
+            });
+          }
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    clearModalAddLote() {
+      this.modalAddLote = false;
+      this.NombreLote = null;
+      this.ObsLote = null;
+      this.PesoLote = null;
+      this.mSelectMercado = null;
+      this.mSelectTipoPeso = null;
     },
   },
   mounted() {
-    this.readTipoMercadoActivo()
-    this.readTipoPesosActivo()
+    this.readTipoMercadoActivo();
+    this.readTipoPesosActivo();
     this.readLoteAll();
   },
 };
