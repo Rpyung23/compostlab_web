@@ -70,27 +70,13 @@
             height="calc(100vh - 8.90rem)"
             style="width: 100%"
           >
-            <el-table-column label="Actions" width="210">
+            <el-table-column label="Actions" width="130">
               <template slot-scope="scope">
                 <base-button
                   size="sm"
                   title="EDITAR"
                   type="primary"
                   ><i class="ni ni-ruler-pencil"></i
-                ></base-button>
-                <base-button
-                  size="sm"
-                  title="DESACTIVAR"
-                  v-if="scope.row.activo == 1"
-                  type="danger"
-                  ><i class="ni ni-fat-remove"></i
-                ></base-button>
-                <base-button
-                  size="sm"
-                  title="ACTIVAR NUEVAMENTE"
-                  v-if="scope.row.activo == 0"
-                  type="success"
-                  ><i class="ni ni-check-bold"></i
                 ></base-button>
               </template>
             </el-table-column>
@@ -323,7 +309,7 @@ export default {
         {
           prop: "decrip_insumo",
           label: "DETALLE",
-          minWidth: 220,
+          minWidth: 400,
         },
       ],
       mListaSalidasPanelBusqueda: [],
@@ -452,9 +438,7 @@ export default {
   height: calc(80vh);
 }
 
-.form-group {
-  margin-bottom: 0rem;
-}
+
 
 .form-controlPersonal {
   display: block;

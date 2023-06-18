@@ -38,7 +38,7 @@
               <base-button
                 type="default"
                 size="sm"
-                @click="showAddInsumo()"
+                @click="showAddLote()"
                 title="NUEVO MERCARDO"
               >
                 <span class="btn-inner--icon"
@@ -65,13 +65,10 @@
             height="calc(100vh - 8.90rem)"
             style="width: 100%"
           >
-            <el-table-column label="Actions" width="150">
+            <el-table-column label="Actions" width="120">
               <template slot-scope="scope">
                 <base-button size="sm" title="EDITAR" type="primary"
                   ><i class="ni ni-ruler-pencil"></i
-                ></base-button>
-                <base-button size="sm" title="DESACTIVAR" type="danger"
-                  ><i class="ni ni-fat-remove"></i
                 ></base-button>
               </template>
             </el-table-column>
@@ -292,7 +289,7 @@ export default {
         {
           prop: "UsuarioNombres",
           label: "USUARIO",
-          minWidth: 280,
+          minWidth: 330,
         },
       ],
       mSelectTipoPeso: null,
@@ -307,7 +304,7 @@ export default {
     };
   },
   methods: {
-    showAddInsumo() {
+    showAddLote() {
       this.modalAddLote = true;
     },
     async readLoteAll() {
@@ -441,9 +438,7 @@ export default {
   height: calc(80vh);
 }
 
-.form-group {
-  margin-bottom: 0rem;
-}
+
 
 .form-controlPersonal {
   display: block;

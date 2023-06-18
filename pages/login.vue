@@ -147,7 +147,7 @@ export default {
             if (result.isConfirmed) 
             {
               this.$cookies.set("token",obj.token)
-              this.$router.push("./mercado");
+              this.$router.push("./dashboard");
             }
           });
         } else {

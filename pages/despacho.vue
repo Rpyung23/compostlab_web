@@ -231,33 +231,15 @@ export default {
     },
     showNotificationDespacho(item){
       
-      MessageBox.confirm("Desea enviar el "+item.nombre_lote+" a despacho ?", 'DESPACHO', {
-          confirmButtonText: 'DESPACHAR',
+      MessageBox.confirm("Desea enviar el "+item.nombre_lote+" a salida ?", 'SALIDA', {
+          confirmButtonText: 'CONFIRMAR',
           cancelButtonText: 'Cancel',
           type: 'warning'
         }).then(() => {
-          this.sendDespacho(item.id_lote)
+          
         }).catch((e) => {
           this.showNotificationError(item.nombre_lote,e.toString())         
         })
-    },
-    async sendDespacho(lote) {
-      try {
-          var datos = await this.$axios.put(
-            process.env.baseUrl + "/sendLoteDespacho",
-            {
-              token: this.token,
-              lote: lote
-            }
-          );
-          if (datos.data.status_code == 200) {
-            this.readHistorialLoteAll();
-          } else {
-            this.showNotificationError("DESPACHO", datos.data.msm);
-          }
-        } catch (error) {
-          this.showNotificationError("TRY CATCH DESPACHO", error.toString());
-        }
     },
   },
   mounted() {
@@ -286,9 +268,7 @@ export default {
   height: calc(80vh);
 }
 
-.form-group {
-  margin-bottom: 0rem;
-}
+
 
 .form-controlPersonal {
   display: block;

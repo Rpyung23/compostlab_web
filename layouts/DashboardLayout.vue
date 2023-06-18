@@ -3,64 +3,88 @@
     <notifications></notifications>
     <side-bar>
       <template slot-scope="props" slot="links">
-
-        <sidebar-item translate="no"  :link="{
-          name: 'Usuarios',
-          icon: 'ni ni-single-02 text-info',
-          path: './usuario',
-              }">
+        <sidebar-item
+          translate="no"
+          v-if="activeUsuarios"
+          :link="{
+            name: 'Usuarios',
+            icon: 'ni ni-single-02 text-info',
+            path: './usuario',
+          }"
+        >
         </sidebar-item>
 
-        <sidebar-item translate="no" :link="{
-          name: 'Mercados',
-          icon: 'ni ni-building text-success',
-          path: './mercado',
-        }">
+        <sidebar-item
+          translate="no"
+          v-if="activeMercado"
+          :link="{
+            name: 'Mercados',
+            icon: 'ni ni-building text-success',
+            path: './mercado',
+          }"
+        >
         </sidebar-item>
 
-        <sidebar-item translate="no" :link="{
-          name: 'Insumos',
-          icon: 'ni ni-box-2 text-default',
-          path: './insumo',
-        }">
+        <sidebar-item
+          translate="no"
+          v-if="activeInsumo"
+          :link="{
+            name: 'Insumos',
+            icon: 'ni ni-box-2 text-default',
+            path: './insumo',
+          }"
+        >
         </sidebar-item>
 
-        <sidebar-item translate="no" :link="{
-          name: 'Lotes',
-          icon: 'ni ni-ungroup text-primary',
-          path: './lote',
-        }">
+        <sidebar-item
+          translate="no"
+          v-if="activeLote"
+          :link="{
+            name: 'Lotes',
+            icon: 'ni ni-ungroup text-primary',
+            path: './lote',
+          }"
+        >
         </sidebar-item>
 
-
-        <sidebar-item translate="no" :link="{
-          name: 'Historial - Lotes',
-          icon: 'ni ni-book-bookmark text-danger',
-          path: './historial_lote',
-        }">
+        <sidebar-item
+          translate="no"
+          v-if="activeHistorial"
+          :link="{
+            name: 'Historial - Lotes',
+            icon: 'ni ni-book-bookmark text-danger',
+            path: './historial_lote',
+          }"
+        >
         </sidebar-item>
 
-        
-        <sidebar-item translate="no"  :link="{
-          name: 'Despacho',
-          icon: 'ni ni-delivery-fast text-primary',
-          path: './despacho',
-              }">
+        <sidebar-item
+          translate="no"
+          v-if="activeDespacho"
+          :link="{
+            name: 'Despacho',
+            icon: 'ni ni-delivery-fast text-primary',
+            path: './despacho',
+          }"
+        >
         </sidebar-item>
 
-
-        <sidebar-item translate="no"  :link="{
-          name: 'Reportes',
-          icon: 'ni ni-single-copy-04 text-warning',
-          path: './',
-              }">
+        <sidebar-item
+          translate="no"
+          v-if="activeReporte"
+          :link="{
+            name: 'Reportes',
+            icon: 'ni ni-single-copy-04 text-warning',
+            path: './dashboard',
+          }"
+        >
         </sidebar-item>
-        
       </template>
-
     </side-bar>
     <div class="main-content">
-      <dashboard-navbar :type="$route.name == 'alternative' ? 'light' : 'default'"></dashboard-navbar>
+      <dashboard-navbar
+        :type="$route.name == 'alternative' ? 'light' : 'default'"
+      ></dashboard-navbar>
 
       <div @click="$sidebar.displaySidebar(false)">
         <nuxt></nuxt>
@@ -99,7 +123,16 @@ export default {
   },
   data() {
     return {
-    }
+      activeMercado: 0,
+      activeLote: 0,
+      activeHistorial: 0,
+      activeDespacho: 0,
+      activeReporte: 0,
+      activeNotificacion: 0,
+      activeRecordatorio: 0,
+      activeUsuarios: 0,
+      activeInsumo:0
+    };
   },
   methods: {
     initScrollbar() {
@@ -110,12 +143,27 @@ export default {
         initScrollbar("sidenav");
       }
     },
+    decodesJWT(){
+      var token = this.$cookies.get("token")
+      var data = jwt_decode(token).datosJWT
+    
+      console.log(data)
+      
+      this.activeMercado = data.activeMercado
+      this.activeLote = data.activeLote
+      this.activeHistorial = data.activeHistorial
+      this.activeDespacho = data.activeDespacho
+      this.activeReporte = data.activeReporte
+      this.activeNotificacion = data.activeNotificacion
+      this.activeRecordatorio = data.activeRecordatorio
+      this.activeUsuarios = data.activeUsuarios
+      this.activeInsumo = data.activeInsumo
+    }
   },
-  mounted() 
-  {
+  mounted() {
     this.initScrollbar()
+    this.decodesJWT()
   },
 };
 </script>
-<style lang="scss">
-</style>
+<style lang="scss"></style>
