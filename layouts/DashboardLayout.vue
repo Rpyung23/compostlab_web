@@ -4,6 +4,13 @@
     <side-bar>
       <template slot-scope="props" slot="links">
 
+        <sidebar-item translate="no"  :link="{
+          name: 'Usuarios',
+          icon: 'ni ni-single-02 text-info',
+          path: './usuario',
+              }">
+        </sidebar-item>
+
         <sidebar-item translate="no" :link="{
           name: 'Mercados',
           icon: 'ni ni-building text-success',
@@ -37,23 +44,16 @@
         <sidebar-item translate="no"  :link="{
           name: 'Despacho',
           icon: 'ni ni-delivery-fast text-primary',
-          path: './mantenimiento/tablero',
-              }">
-        </sidebar-item>
-
-        <sidebar-item translate="no" :link="{
-          name: 'Notificaciones',
-          icon: 'ni ni-lock-circle-open text-green',
-          path: './produccion/tablero',
+          path: './despacho',
               }">
         </sidebar-item>
 
 
-        <sidebar-item translate="no" :link="{
+        <sidebar-item translate="no"  :link="{
           name: 'Reportes',
-          icon: 'ni ni-money-coins text-green',
-          path: pathProduccionTablero,
-        }">
+          icon: 'ni ni-single-copy-04 text-warning',
+          path: './',
+              }">
         </sidebar-item>
         
       </template>

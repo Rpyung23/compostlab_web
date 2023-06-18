@@ -48,16 +48,14 @@
           >
             <el-table-column label="Actions" width="180">
               <template slot-scope="scope">
-                <base-button
-                  size="sm"
-                  title="HISTORIAL"
-                  type="primary"
-                  ><i class="ni ni-single-copy-04"></i
+                <base-button size="sm" title="DESPACHO" type="danger" @click="showNotificationDespacho(scope.row)"
+                  ><i class="ni ni-check-bold"></i
                 ></base-button>
                 <base-button
                   size="sm"
                   title="AGREGAR OBSERVACION"
                   type="success"
+                  @click="showAddHistorial(scope.row)"
                   ><i class="ni ni-fat-add"></i
                 ></base-button>
                 <base-button
@@ -90,23 +88,26 @@
     </base-header>
 
     <modal :show.sync="modalAddInsumo" size="lg">
-
-      <h6 slot="header" class="modal-title" >{{itemRowHistorialLote == null ? "" : itemRowHistorialLote.nombre_lote}}</h6>
+      <h6 slot="header" class="modal-title">
+        {{
+          itemRowHistorialLote == null ? "" : itemRowHistorialLote.nombre_lote
+        }}
+      </h6>
 
       <div class="form-row" style="margin-bottom: 0.5rem">
         <div class="col-md-6">
           <el-select
-                placeholder="Tipo Insumo"
-                v-model="mSelectInsumo"
-                style="width: 100%"
-              >
-                <el-option
-                  v-for="item in mListInsumoALLActivo"
-                  :key="item.id_insumo"
-                  :label="item.nombre_insumo"
-                  :value="item.id_insumo"
-                >
-                </el-option>
+            placeholder="Tipo Insumo"
+            v-model="mSelectInsumo"
+            style="width: 100%"
+          >
+            <el-option
+              v-for="item in mListInsumoALLActivo"
+              :key="item.id_insumo"
+              :label="item.nombre_insumo"
+              :value="item.id_insumo"
+            >
+            </el-option>
           </el-select>
         </div>
         <div class="col-md-3">
@@ -120,41 +121,129 @@
         </div>
         <div class="col-md-3">
           <base-button
-                  size="lg"
-                  title="HISTORIAL"
-                  @click="addInsumoLote()"
-                  type="primary"
-                  >INGRESO INSUMO</base-button>
+            size="lg"
+            title="HISTORIAL"
+            @click="addInsumoLote()"
+            type="primary"
+            >INGRESO INSUMO</base-button
+          >
         </div>
       </div>
 
       <el-table
-            element-loading-text="Cargando Datos..."
-            :data="mListInsumoXLote"
-            row-key="id"
-            class="tablePanelControlProduccion"
-            v-loading="loadingHLoteInsumo"
-            header-row-class-name="thead-dark"
-            height="calc(100vh - 20rem)"
-            style="width: 100%"
-          >
+        element-loading-text="Cargando Datos..."
+        :data="mListInsumoXLote"
+        row-key="id"
+        class="tablePanelControlProduccion"
+        v-loading="loadingHLoteInsumo"
+        header-row-class-name="thead-dark"
+        height="calc(100vh - 20rem)"
+        style="width: 100%"
+      >
+        <el-table-column prop="fk_id_lote" label="CODIGO" width="120">
+        </el-table-column>
 
-            <el-table-column prop="fk_id_lote" label="CODIGO" width="120">
-            </el-table-column>
+        <el-table-column
+          v-for="column in tableInsumoLotes"
+          :key="column.label"
+          v-bind="column"
+        >
+        </el-table-column>
 
-
-            <el-table-column
-              v-for="column in tableInsumoLotes"
-              :key="column.label"
-              v-bind="column"
-            >
-            </el-table-column>
-
-
-            <div slot="empty"></div>
+        <div slot="empty"></div>
       </el-table>
+    </modal>
 
+    <modal :show.sync="modalAddHistorial" size="xl">
+      <h6 slot="header" class="modal-title">
+        {{
+          itemRowHistorialLote == null ? "" : itemRowHistorialLote.nombre_lote
+        }}
+      </h6>
 
+      <div class="form-row" style="margin-bottom: 0.5rem">
+        <div class="col-md-2">
+          <base-input
+            name="TEMPERATURA"
+            placeholder="TEMPERATURA"
+            type="number"
+            rules="required"
+            v-model="vTemperatura"
+          >
+          </base-input>
+        </div>
+        <div class="col-md-2">
+          <base-input
+            v-model="vHumedad"
+            name="HUMEDAD"
+            rules="required"
+            placeholder="HUMEDAD"
+            type="number"
+          >
+          </base-input>
+        </div>
+        <div class="col-md-2">
+          <base-input
+            v-model="vPh"
+            name="PH"
+            placeholder="PH"
+            rules="required"
+            type="number"
+          >
+          </base-input>
+        </div>
+        <div class="col-md-2">
+          <base-input
+            v-model="vOxigeno"
+            name="OXIGENO"
+            placeholder="OXIGENO"
+            rules="required"
+            type="number"
+          >
+          </base-input>
+        </div>
+        <div class="col-md-2">
+          <base-input
+            v-model="detalleHistorial"
+            name="DETALLE"
+            placeholder="DETALLE"
+          >
+          </base-input>
+        </div>
+
+        <div class="col-md-2" style="margin: auto">
+          <base-button
+            icon
+            type="primary"
+            size="sm"
+            @click="insertDetalleHsitorialLote()"
+          >
+            <span class="btn-inner--icon"
+              ><i class="ni ni-fat-add"></i>AGREGAR</span
+            >
+          </base-button>
+        </div>
+      </div>
+
+      <el-table
+        element-loading-text="Cargando Datos..."
+        :data="tableDetalleHistorialLote"
+        row-key="id"
+        class="tablePanelControlProduccion"
+        v-loading="loadingtableDetalleHistorialLote"
+        header-row-class-name="thead-dark"
+        height="calc(100vh - 20rem)"
+        style="width: 100%"
+      >
+        <el-table-column
+          v-for="column in tableHistorialDetalleLote"
+          :key="column.label"
+          v-bind="column"
+        >
+        </el-table-column>
+
+        <div slot="empty"></div>
+      </el-table>
     </modal>
   </div>
 </template>
@@ -182,6 +271,7 @@ import {
   Button,
   Loading,
   Switch,
+  MessageBox
 } from "element-ui";
 
 import RouteBreadCrumb from "@/components/argon-core/Breadcrumb/RouteBreadcrumb";
@@ -200,6 +290,7 @@ export default {
     BasePagination,
     flatPicker,
     RouteBreadCrumb,
+    [MessageBox.name]:MessageBox,
     [Switch.name]: Switch,
     [DatePicker.name]: DatePicker,
     [Select.name]: Select,
@@ -248,11 +339,11 @@ export default {
       modalAddInsumo: false,
       mListaHistorialLote: [],
       mListaInsumoLote: [],
-      itemRowHistorialLote:null,
+      itemRowHistorialLote: null,
       token: this.$cookies.get("token"),
-      cantInsumo:0,
-      mListInsumoALLActivo:[],
-      mSelectInsumo:null,
+      cantInsumo: 0,
+      mListInsumoALLActivo: [],
+      mSelectInsumo: null,
       tableInsumoLotes: [
         {
           prop: "nombre_lote",
@@ -273,18 +364,70 @@ export default {
           prop: "cantidad",
           label: "CANT",
           minWidth: 100,
-        }
+        },
       ],
-      mListInsumoXLote:[],
+      tableHistorialDetalleLote: [
+        {
+          prop: "fechaHistorial",
+          label: "FECHA",
+          minWidth: 170,
+        },
+        {
+          prop: "vTemperatura",
+          label: "TEMPERATURA",
+          minWidth: 180,
+        },
+        {
+          prop: "vHumedad",
+          label: "HUMEDAD",
+          minWidth: 170,
+        },
+        {
+          prop: "vPh",
+          label: "PH",
+          minWidth: 100,
+        },
+        {
+          prop: "vOxigeno",
+          label: "OXIGENO",
+          minWidth: 100,
+        },
+        {
+          prop: "detalleHistorial",
+          label: "DETALLE",
+          minWidth: 180,
+        },
+      ],
+      mListInsumoXLote: [],
       loadingHLote: false,
-      loadingHLoteInsumo:false
-    }
+      loadingHLoteInsumo: false,
+      modalAddHistorial: false,
+      loadingtableDetalleHistorialLote: false,
+      tableDetalleHistorialLote: [],
+      vTemperatura: null,
+      vHumedad: null,
+      vPh: null,
+      vOxigeno: null,
+      detalleHistorial: "",
+    };
   },
   methods: {
+    showAddHistorial(item) {
+      this.itemRowHistorialLote = item;
+      this.modalAddHistorial = true;
+      this.readDetalleHistorialLote();
+    },
     showAddInsumoLote(item) {
-      this.itemRowHistorialLote = item
-      this.readInsumoLote(item.id_lote)
-      this.modalAddInsumo = true
+      this.itemRowHistorialLote = item;
+      this.readInsumoLote(item.id_lote);
+      this.modalAddInsumo = true;
+    },
+    clearModalDetalleHistorial() {
+      this.vTemperatura = null;
+      this.vHumedad = null;
+      this.vPh = null;
+      this.vOxigeno = null;
+      this.detalleHistorial = "";
     },
     async readInsumoAll() {
       this.mListInsumoALLActivo = [];
@@ -293,13 +436,13 @@ export default {
           process.env.baseUrl + "/all_insumos",
           {}
         );
-        this.mListInsumoALLActivo.push(...datos.data.datos)
+        this.mListInsumoALLActivo.push(...datos.data.datos);
       } catch (error) {
         console.log(error);
       }
     },
     async readHistorialLoteAll() {
-      this.loadingHLote = true
+      this.loadingHLote = true;
       this.mListaHistorialLote = [];
       try {
         var datos = await this.$axios.post(
@@ -331,48 +474,138 @@ export default {
           message: error.toString(),
         });
       }
-      this.loadingHLote = false
+      this.loadingHLote = false;
     },
     async readInsumoLote(lote) {
       this.mListInsumoXLote = [];
-      this.loadingHLoteInsumo = true
+      this.loadingHLoteInsumo = true;
       try {
         var datos = await this.$axios.get(
-          process.env.baseUrl + "/all_insumo_lote/"+lote,
+          process.env.baseUrl + "/all_insumo_lote/" + lote
         );
-        this.mListInsumoXLote.push(...datos.data.datos)
+        this.mListInsumoXLote.push(...datos.data.datos);
       } catch (error) {
         console.log(error);
       }
-      this.loadingHLoteInsumo = false
+      this.loadingHLoteInsumo = false;
     },
     async addInsumoLote() {
       this.mListInsumoXLote = [];
       try {
         var datos = await this.$axios.post(
-          process.env.baseUrl + "/add_insumo_lote",{
+          process.env.baseUrl + "/add_insumo_lote",
+          {
             id_lote: this.itemRowHistorialLote.id_lote,
             id_insumo: this.mSelectInsumo,
-            cantidad: this.cantInsumo
+            cantidad: this.cantInsumo,
           }
         );
-        if(datos.data.status_code == 200)
-        {
-          this.readInsumoLote(this.itemRowHistorialLote.id_lote)
-        }else{
+        if (datos.data.status_code == 200) {
+          this.readInsumoLote(this.itemRowHistorialLote.id_lote);
+        } else {
           Notification.info({
             title: "ADD INSUMO",
-            message: datos.data.msm
+            message: datos.data.msm,
           });
         }
       } catch (error) {
         console.log(error);
       }
     },
+    showNotificationError(title, msm) {
+      Notification.error({
+        title: title,
+        message: msm,
+      });
+    },
+    async readDetalleHistorialLote() {
+      this.loadingtableDetalleHistorialLote = true;
+      this.tableDetalleHistorialLote = [];
+
+      try {
+        var datos = await this.$axios.get(
+          process.env.baseUrl +
+            "/readDetalleLote/" +
+            this.itemRowHistorialLote.id_lote
+        );
+        if (datos.data.status_code == 200 || datos.data.status_code == 300) {
+          this.tableDetalleHistorialLote.push(...datos.data.datos);
+        } else {
+          this.showNotificationError("HISTORIAL LOTE", datos.data.msm);
+        }
+      } catch (error) {
+        this.showNotificationError("TRY CATCH", error.toString());
+      }
+
+      this.loadingtableDetalleHistorialLote = false;
+    },
+    async insertDetalleHsitorialLote() {
+      if (
+        this.vTemperatura != null &&
+        this.vHumedad != null &&
+        this.vPh != null &&
+        this.vOxigeno != null
+      ) {
+        try {
+          var datos = await this.$axios.post(
+            process.env.baseUrl + "/add_historial_lote",
+            {
+              token: this.token,
+              vTemperatura: this.vTemperatura,
+              vHumedad: this.vHumedad,
+              vPh: this.vPh,
+              vOxigeno: this.vOxigeno,
+              detalleHistorial: this.detalleHistorial,
+              lote: this.itemRowHistorialLote.id_lote,
+            }
+          );
+          if (datos.data.status_code == 200) {
+            this.clearModalDetalleHistorial();
+            this.readDetalleHistorialLote();
+          } else {
+            this.showNotificationError("HISTORIAL LOTE", datos.data.msm);
+          }
+        } catch (error) {
+          this.showNotificationError("TRY CATCH", error.toString());
+        }
+      } else {
+        this.showNotificationError("HISTORIAL LOTE", "DATOS VACIOS");
+      }
+    },
+    showNotificationDespacho(item){
+      
+      MessageBox.confirm("Desea enviar el "+item.nombre_lote+" a despacho ?", 'DESPACHO', {
+          confirmButtonText: 'DESPACHAR',
+          cancelButtonText: 'Cancel',
+          type: 'warning'
+        }).then(() => {
+          this.sendDespacho(item.id_lote)
+        }).catch((e) => {
+          this.showNotificationError(item.nombre_lote,e.toString())         
+        })
+    },
+    async sendDespacho(lote) {
+      try {
+          var datos = await this.$axios.put(
+            process.env.baseUrl + "/sendLoteDespacho",
+            {
+              token: this.token,
+              lote: lote
+            }
+          );
+          if (datos.data.status_code == 200) {
+            this.readHistorialLoteAll();
+          } else {
+            this.showNotificationError("DESPACHO", datos.data.msm);
+          }
+        } catch (error) {
+          this.showNotificationError("TRY CATCH DESPACHO", error.toString());
+        }
+    },
   },
   mounted() {
-    this.readInsumoAll()
-    this.readHistorialLoteAll()
+    this.readInsumoAll();
+    this.readHistorialLoteAll();
   },
 };
 </script>
