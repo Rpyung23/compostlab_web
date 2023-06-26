@@ -70,7 +70,7 @@
             height="calc(100vh - 8.90rem)"
             style="width: 100%"
           >
-            <el-table-column label="Actions" width="130">
+            <el-table-column label="" width="100">
               <template slot-scope="scope">
                 <base-button
                   size="sm"
@@ -294,7 +294,7 @@ export default {
         {
           prop: "nombreTipoInsumo",
           label: "TIPO INSUMO",
-          minWidth: 230,
+          minWidth: 250,
         },
         {
           prop: "cantidad_insumo",

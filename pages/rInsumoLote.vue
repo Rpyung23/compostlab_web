@@ -8,9 +8,23 @@
           body-classes="px-0 pb-1 card-bodyTopOpcionesRPagosVehiculoPRoduccionPanelDespachoBusqueda cardSelectRubrosEstadosPagosVehiculoProduccionContainerPanelDespachoBusqueda"
           footer-classes="pb-2"
         >
-          <div
-            class="cardTextoRPagosVehiculoProduccionPanelDespachoBusqueda"
-          ></div>
+          <div class="cardTextoRPagosVehiculoProduccionPanelDespachoBusqueda">
+            <el-select
+              placeholder="LOTE"
+              v-model="mSelectLote"
+              multiple
+              collapse-tags
+              style="width: 100%"
+            >
+              <el-option
+                v-for="item in mListLotes"
+                :key="item.id_lote"
+                :label="item.nombre_lote"
+                :value="item.id_lote"
+              >
+              </el-option>
+            </el-select>
+          </div>
 
           <div
             class="cardSelectRubrosEstadosPagosVehiculoProduccionContainerPanelDespachoBusqueda"
@@ -20,7 +34,7 @@
                 icon
                 type="primary"
                 size="sm"
-                @click="readHistorialLoteAll()"
+                @click="readInsumoLote()"
               >
                 <span class="btn-inner--icon"
                   ><i class="el-icon-search"></i
@@ -38,42 +52,37 @@
         >
           <el-table
             element-loading-text="Cargando Datos..."
-            :data="mListaHistorialLote"
-            v-loading="loadingHLote"
+            :data="mListInsumoLotes"
             row-key="id"
+            v-loading="loadingInsumoLotes"
             class="tablePanelControlProduccion"
             header-row-class-name="thead-dark"
-            height="calc(100vh - 8.90rem)"
+            height="calc(100vh - 11rem)"
             style="width: 100%"
           >
-            <el-table-column label="" width="180">
-              <template slot-scope="scope">
-                <base-button
-                  size="sm"
-                  title="ENVIAR A SALIDA"
-                  type="danger"
-                  @click="showNotificationDespacho(scope.row)"
-                  ><i class="ni ni-check-bold"></i>AUT. SALIDA</base-button
-                >
-              </template>
+            <el-table-column prop="nombre_lote" label="LOTE" width="250">
             </el-table-column>
 
-            <el-table-column prop="id_lote" label="CODIGO" width="130">
+            <el-table-column prop="nombre_mercado" label="MERCADO" width="280">
             </el-table-column>
-
-            <!--<el-table-column prop="idSali_m" label="Salida" width="140">
-              </el-table-column>-->
 
             <el-table-column
-              v-for="column in tableColumnsLote"
-              :key="column.label"
-              v-bind="column"
+              prop="fecha_ingresoInsumo"
+              label="F. INGRESO"
+              width="230"
             >
+            </el-table-column>
+
+            <el-table-column prop="nombre_insumo" label="INSUMO" width="270">
+            </el-table-column>
+
+            <el-table-column prop="cantidad" label="CANTIDAD" width="190">
             </el-table-column>
 
             <div slot="empty"></div>
           </el-table>
         </card>
+        .
       </div>
     </base-header>
   </div>
@@ -102,7 +111,6 @@ import {
   Button,
   Loading,
   Switch,
-  MessageBox,
 } from "element-ui";
 
 import RouteBreadCrumb from "@/components/argon-core/Breadcrumb/RouteBreadcrumb";
@@ -121,7 +129,6 @@ export default {
     BasePagination,
     flatPicker,
     RouteBreadCrumb,
-    [MessageBox.name]: MessageBox,
     [Switch.name]: Switch,
     [DatePicker.name]: DatePicker,
     [Select.name]: Select,
@@ -140,148 +147,49 @@ export default {
   },
   data() {
     return {
-      tableColumnsLote: [
-        {
-          prop: "nombre_lote",
-          label: "LOTE",
-          minWidth: 190,
-        },
-        {
-          prop: "vOxigeno",
-          label: "OXIGENO",
-          minWidth: 150,
-        },
-        {
-          prop: "vPh",
-          label: "PH",
-          minWidth: 120,
-        },
-        {
-          prop: "vHumedad",
-          label: "HUMEDAD",
-          minWidth: 150,
-        },
-        {
-          prop: "vTemperatura",
-          label: "TEMPERATURA",
-          minWidth: 150,
-        },
-        {
-          prop: "fechaIngreso",
-          label: "F. INGRESO",
-          minWidth: 230,
-        },
-        {
-          prop: "fechaDespacho",
-          label: "F. DESPACHO",
-          minWidth: 230,
-        },
-        {
-          prop: "peso",
-          label: "PESO",
-          minWidth: 120,
-        },
-        {
-          prop: "detalle_tipo_peso",
-          label: "TIPO PESO",
-          minWidth: 180,
-        },
-        {
-          prop: "nombre_mercado",
-          label: "MERCADO",
-          minWidth: 220,
-        },
-      ],
-      mListaHistorialLote: [],
-      itemRowHistorialLote: null,
       token: this.$cookies.get("token"),
+      mListLotes: [],
+      loadingInsumoLotes: false,
+      mSelectLote: [],
+      mListInsumoLotes: [],
     };
   },
   methods: {
-    async readHistorialLoteAll() {
-      this.loadingHLote = true;
-      this.mListaHistorialLote = [];
+    async readLoteAll() {
+      this.mListLotes = [];
       try {
         var datos = await this.$axios.post(
-          process.env.baseUrl + "/despacho_lote_usuer",
+          process.env.baseUrl + "/lote_all_user",
           { token: this.token }
         );
 
-        if (datos.data.status_code == 200 || datos.data.status_code == 300) {
-          /*Notification.success({
-              title: "Panel Salidas",
-              message: "Datos consultados con éxito",
-            });*/
-          this.mListaHistorialLote.push(...datos.data.datos);
-        } else {
-          Notification.error({
-            title: "LOTES DESPACHO",
-            message: datos.data.msm,
-          });
-        }
+        this.mListLotes.push(...datos.data.datos);
       } catch (error) {
         console.log(error);
-        Notification.info({
-          title: "TryCatch LOTES DESPACHO",
-          message: error.toString(),
-        });
       }
-      this.loadingHLote = false;
     },
-    showNotificationError(title, msm) {
-      Notification.error({
-        title: title,
-        message: msm,
-      });
-    },
-    showNotificationDespacho(item) {
-      MessageBox.confirm(
-        "Desea enviar el " + item.nombre_lote + " a salida ?",
-        "SALIDA",
-        {
-          confirmButtonText: "CONFIRMAR",
-          cancelButtonText: "Cancel",
-          type: "warning",
-        }
-      )
-        .then(() => {
-          this.sendAuthLoteSalida(item);
-        })
-        .catch((e) => {
-          this.showNotificationError(item.nombre_lote, e.toString());
-        });
-    },
-    async sendAuthLoteSalida(item) {
+    async readInsumoLote() {
+      this.mListInsumoLotes = [];
+      this.loadingInsumoLotes = true;
       try {
         var datos = await this.$axios.post(
-          process.env.baseUrl + "/authLoteSalida",
-          { token: this.token, lote: item.id_lote }
+          process.env.baseUrl + "/insumos_lotes_all",
+          {
+            token: this.token,
+            lotes: this.mSelectLote.length == 0 ? "*" : this.mSelectLote,
+          }
         );
 
-        if (datos.data.status_code == 200) {
-          /*Notification.success({
-              title: "Panel Salidas",
-              message: "Datos consultados con éxito",
-            });*/
-          this.readHistorialLoteAll()
-        } else {
-          Notification.error({
-            title: "LOTES DESPACHO",
-            message: datos.data.msm,
-          });
-        }
+        this.mListInsumoLotes.push(...datos.data.datos);
       } catch (error) {
         console.log(error);
-        Notification.info({
-          title: "TryCatch LOTES DESPACHO",
-          message: error.toString(),
-        });
       }
-      
+      this.loadingInsumoLotes = false;
     },
   },
   mounted() {
-    this.readHistorialLoteAll();
+    this.readLoteAll();
+    this.readInsumoLote();
   },
 };
 </script>
@@ -371,7 +279,7 @@ export default {
 
 .card-bodyRPagosVehiculoProduccion {
   padding: 0rem !important;
-  height: calc(100vh - 8.59rem);
+  height: calc(100vh - 10.5rem);
   overflow: none;
 }
 

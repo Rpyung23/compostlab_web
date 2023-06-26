@@ -30,12 +30,6 @@
         </div>
       </li>
 
-      <!--<li class="nav-item d-sm-none">
-        <a class="nav-link" href="#" data-action="search-show" data-target="#navbar-search-main">
-          <i class="ni ni-zoom-split-in"></i>
-        </a>
-      </li>-->
-
       <iframe
         id="reloj"
         src="https://free.timeanddate.com/clock/i8cxjbwb/n4622/fn8/fs18/fcfff/tc2a8d62/pa6/th1/ta1"
@@ -47,82 +41,6 @@
       <!--<span class="reloj">{{ hora }}</span>-->
       <div class="espacio" style="margin-right: 0.8rem"></div>
 
-      <base-dropdown
-        class="nav-item"
-        tag="li"
-        title-classes="nav-link"
-        title-tag="a"
-        icon="ni ni-bell-55"
-        :visibleBadge="visibleBadgeNotification"
-        :hasToggle="false"
-        menu-classes="dropdown-menu-xl dropdown-menu-right py-0 overflow-hidden"
-        v-if="
-          permisos != null &&
-          permisos.notification != null &&
-          permisos.notification.active != null &&
-          permisos.notification.active
-        "
-      >
-        <template>
-          <!-- Dropdown header -->
-          <div class="px-3 py-3">
-            <h6 class="text-sm text-muted m-0">
-              Tu tienes
-              <strong class="text-primary">{{
-                mListaAlertasDispositivosNotificaciones.length
-              }}</strong>
-              notificaciones de dispositivos.
-            </h6>
-          </div>
-          <!-- List group -->
-          <div
-            class="list-group list-group-flush container-list-Notificaiones-Alerta"
-          >
-            <a
-              href="#!"
-              class="list-group-item list-group-item-action"
-              v-for="alerta in mListaAlertasDispositivosNotificaciones"
-              :key="alerta.idDispEven"
-            >
-              <div class="row align-items-center">
-                <div class="col-auto">
-                  <img
-                    alt="Image placeholder"
-                    src="img/monitoreo/alerta_lista_big.png"
-                    class="avatar rounded-circle"
-                  />
-                </div>
-                <div class="col ml--2">
-                  <div
-                    class="d-flex justify-content-between align-items-center"
-                  >
-                    <div>
-                      <h4 class="mb-0 text-sm">
-                        Unidad N°{{ alerta.CodiVehiDispEven }} Dispositivo N°
-                        {{ alerta.CodiDispDispEven }}
-                      </h4>
-                    </div>
-                    <div class="text-right text-muted">
-                      <small>{{ alerta.HoraDispEven }}</small>
-                    </div>
-                  </div>
-                  <p class="text-sm mb-0">
-                    {{ alerta.DescDispEvenList }}
-                    {{ alerta.DescCtrl != null ? alerta.DescCtrl : "" }}
-                  </p>
-                </div>
-              </div>
-            </a>
-          </div>
-          <!-- View all -->
-          <a
-            href="#!"
-            class="dropdown-item text-center text-primary font-weight-bold py-3"
-            >Ver todo</a
-          >
-        </template>
-      </base-dropdown>
-
       <base-button
         size="sm"
         type="secondary"
@@ -130,72 +48,11 @@
         style="margin-right: 0rem; color: #172b4d"
       >
         <span class="btn-inner--icon"
-          ><i class="ni ni-settings-gear-65" style="font-size: 1rem"></i
+          ><i class="ni ni-notification-70" style="font-size: 1rem"></i
         ></span>
       </base-button>
-
-      <base-dropdown
-        menu-classes="dropdown-menu-lg dropdown-menu-dark bg-default dropdown-menu-right"
-        class="nav-item"
-        tag="li"
-        title-tag="a"
-        title-classes="nav-link"
-        icon="ni ni-ungroup"
-      >
-        <template>
-          <div class="row shortcuts px-4">
-            <a href="./despacho/panelDespacho" class="col-4 shortcut-item">
-              <span
-                class="shortcut-media avatar rounded-circle bg-gradient-red"
-              >
-                <i class="ni ni-calendar-grid-58"></i>
-              </span>
-              <small>Despacho</small>
-            </a>
-            <a href="./monitoreo" class="col-4 shortcut-item">
-              <span
-                class="shortcut-media avatar rounded-circle bg-gradient-orange"
-              >
-                <i class="ni ni-bus-front-12"></i>
-              </span>
-              <small>Monitoreo</small>
-            </a>
-            <a href="./produccion/tablero" class="col-4 shortcut-item">
-              <span
-                class="shortcut-media avatar rounded-circle bg-gradient-info"
-              >
-                <i class="ni ni-credit-card"></i>
-              </span>
-              <small>Producción</small>
-            </a>
-            <a href="#!" class="col-4 shortcut-item">
-              <span
-                class="shortcut-media avatar rounded-circle bg-gradient-green"
-              >
-                <i class="ni ni-money-coins"></i>
-              </span>
-              <small>Liquidación</small>
-            </a>
-            <a href="./historial/recorrido" class="col-4 shortcut-item">
-              <span
-                class="shortcut-media avatar rounded-circle bg-gradient-purple"
-              >
-                <i class="ni ni-pin-3"></i>
-              </span>
-              <small>Historial</small>
-            </a>
-            <a href="./recaudo/rcontador" class="col-4 shortcut-item">
-              <span
-                class="shortcut-media avatar rounded-circle bg-gradient-yellow"
-              >
-                <i class="ni ni-single-02"></i>
-              </span>
-              <small>Recaudo</small>
-            </a>
-          </div>
-        </template>
-      </base-dropdown>
     </ul>
+
     <ul class="navbar-nav align-items-center ml-auto ml-md-0">
       <base-dropdown
         menu-on-right
@@ -233,34 +90,60 @@
     </ul>
 
     <!--Classic modal-->
-    <modal :show.sync="ModalClasicAjustes">
-      <h6 slot="header" class="modal-title">Type your modal title</h6>
+    <modal :show.sync="ModalClasicAjustes" size="lg">
+      <h6 slot="header" class="modal-title">NOTIFICACIONES</h6>
 
-      <p>
-        Far far away, behind the word mountains, far from the countries Vokalia
-        and Consonantia, there live the blind texts. Separated they live in
-        Bookmarksgrove right at the coast of the Semantics, a large language
-        ocean.
-      </p>
-      <p>
-        A small river named Duden flows by their place and supplies it with the
-        necessary regelialia. It is a paradisematic country, in which roasted
-        parts of sentences fly into your mouth.
-      </p>
+      <el-table
+        class="table table-striped table-flush align-items-center mb-0"
+        :data="mListNotifications"
+        height="calc(50vh)"
+        style="width: 100%"
+      >
+        <!--<el-table-column label="" width="100">
+          <template>
+            <base-button
+              size="sm"
+              icon="ni ni-circle-08 pt-1"
+              type="info"
+            ></base-button>
+          </template>
+        </el-table-column>-->
+        <el-table-column label="LOTE" width="270" prop="nombre_lote">
+        </el-table-column>
+        <el-table-column label="FASE" width="250" prop="detalleFase">
+          <template slot-scope="scope">
+                <badge type="primary" class="mr-2">{{scope.row.detalleFase}}</badge>
+              </template>
+        </el-table-column>
+        <el-table-column label="MERCADO" width="230" prop="nombre_mercado">
+        </el-table-column>
+      </el-table>
 
-      <template slot="footer">
-        <base-button type="primary">Save changes</base-button>
-        <base-button
-          type="link"
-          class="ml-auto"
-          @click="ModalClasicAjustes = false"
-          >Close</base-button
-        >
-      </template>
+      <template slot="footer"> </template>
     </modal>
   </base-nav>
 </template>
 <script>
+import {
+  Table,
+  TableColumn,
+  Select,
+  Option,
+  Autocomplete,
+  DatePicker,
+  RadioButton,
+  Radio,
+  Notification,
+  Checkbox,
+  CheckboxButton,
+  CheckboxGroup,
+  Popover,
+  Button,
+  Loading,
+  Switch,
+  MessageBox,
+} from "element-ui";
+
 import { CollapseTransition } from "vue2-transitions";
 import { Modal, BaseAlert } from "@/components/argon-core";
 import BaseNav from "@/components/argon-core/Navbar/BaseNav.vue";
@@ -272,8 +155,24 @@ export default {
     CollapseTransition,
     BaseNav,
     Modal,
+    [MessageBox.name]: MessageBox,
     BaseAlert,
     [Badge.name]: Badge,
+    [Switch.name]: Switch,
+    [DatePicker.name]: DatePicker,
+    [Select.name]: Select,
+    [Option.name]: Option,
+    [Table.name]: Table,
+    [Notification.name]: Notification,
+    [Autocomplete.name]: Autocomplete,
+    [TableColumn.name]: TableColumn,
+    [RadioButton.name]: RadioButton,
+    [Radio.name]: Radio,
+    [Checkbox.name]: Checkbox,
+    [CheckboxButton.name]: CheckboxButton,
+    [CheckboxGroup.name]: CheckboxGroup,
+    [Popover.name]: Popover,
+    [Button.name]: Button,
   },
   props: {
     type: {
@@ -306,10 +205,13 @@ export default {
       permisos: null,
       oEspacio: false,
       nameEmpresa: "COMPOSTLAB GAD RIOBAMBA",
+      mListNotifications: [],
+      token: this.$cookies.get("token"),
     };
   },
   methods: {
     showAjustes() {
+      this.readNotificationAll()
       this.ModalClasicAjustes = true;
     },
     capitalizeFirstLetter(string) {
@@ -330,9 +232,22 @@ export default {
     hideSidebar() {
       this.$sidebar.displaySidebar(false);
     },
+    async readNotificationAll() {
+      
+      this.mListNotifications = []
+      try {
+        var datos = await this.$axios.post(
+          process.env.baseUrl + "/notification",
+          { token: this.token }
+        )
+        this.mListNotifications.push(...datos.data.datos)
+      } catch (error) {
+        console.log(error);
+    }}
   },
   mounted() {
     /*this.mueveReloj();*/
+    
     try {
       var token = this.$cookies.get("token");
       var data = jwt_decode(token).datosJWT;

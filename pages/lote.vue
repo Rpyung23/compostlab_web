@@ -65,7 +65,7 @@
             height="calc(100vh - 8.90rem)"
             style="width: 100%"
           >
-            <el-table-column label="Actions" width="120">
+            <el-table-column  width="90">
               <template slot-scope="scope">
                 <base-button size="sm" title="EDITAR" type="primary"
                   ><i class="ni ni-ruler-pencil"></i
@@ -74,6 +74,16 @@
             </el-table-column>
 
             <el-table-column prop="id_lote" label="CODIGO" width="130">
+            </el-table-column>
+
+            <el-table-column prop="nombre_lote" label="LOTE" width="190">
+            </el-table-column>
+
+            <el-table-column prop="detalleFase" label="FASE ACT." width="190">
+              <template slot-scope="scope">
+                <badge v-if="scope.row.FkIDFase != 5" type="primary" class="mr-2">{{scope.row.detalleFase}}</badge>
+                <badge v-if="scope.row.FkIDFase == 5" type="danger" class="mr-2">{{scope.row.detalleFase}}</badge>
+              </template>
             </el-table-column>
 
             <!--<el-table-column prop="idSali_m" label="Salida" width="140">
@@ -148,7 +158,7 @@
             </div>
           </div>
           <div class="form-row" style="margin-bottom: 0.5rem">
-            <div class="col-md-12">
+            <div class="col-md-6">
               <el-select
                 placeholder="Mercado"
                 v-model="mSelectMercado"
@@ -163,8 +173,18 @@
                 </el-option>
               </el-select>
             </div>
+            <div class="col-md-6">
+              <base-input
+                name="Dias Notificación"
+                placeholder="Dias Notificación"
+                prepend-icon="ni ni-notification-70"
+                type="number"
+                v-model="DiaNotificationLote"
+              >
+              </base-input>
+            </div>
           </div>
-          <div class="form-row" style="margin-bottom: 1rem">
+          <div class="form-row" style="margin-bottom: 0.5rem">
             <div class="col-md-12">
               <base-input
                 name="Detalle Lote"
@@ -257,11 +277,6 @@ export default {
       mSelectMercado: null,
       tableColumnsLote: [
         {
-          prop: "nombre_lote",
-          label: "LOTE",
-          minWidth: 150,
-        },
-        {
           prop: "fechaIngreso",
           label: "F. INGRESO",
           minWidth: 230,
@@ -269,7 +284,7 @@ export default {
         {
           prop: "observacion_lote",
           label: "DETALLE",
-          minWidth: 230,
+          minWidth: 250,
         },
         {
           prop: "peso",
@@ -284,7 +299,7 @@ export default {
         {
           prop: "nombre_mercado",
           label: "MERCADO",
-          minWidth: 220,
+          minWidth: 250,
         },
         {
           prop: "UsuarioNombres",
@@ -298,6 +313,7 @@ export default {
       mListTipoPesos: [],
       mListTipoMercados: [],
       loadingLote: false,
+      DiaNotificationLote:null,
       NombreLote: null,
       ObsLote: null,
       PesoLote: null,
@@ -384,6 +400,7 @@ export default {
               peso: this.PesoLote,
               tipo_peso: this.mSelectTipoPeso,
               id_mercado: this.mSelectMercado,
+              dia_notification: this.DiaNotificationLote == null ? 0 : this.DiaNotificationLote
             }
           );
 

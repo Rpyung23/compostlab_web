@@ -46,13 +46,14 @@
             height="calc(100vh - 8.90rem)"
             style="width: 100%"
           >
-            <el-table-column label="Actions" width="180">
+            <el-table-column  width="180">
               <template slot-scope="scope">
                 <base-button size="sm" title="DESPACHO" type="danger" @click="showNotificationDespacho(scope.row)"
                   ><i class="ni ni-check-bold"></i
                 ></base-button>
                 <base-button
                   size="sm"
+                  v-if="scope.row != null && scope.row.FkIDFase != 5"
                   title="AGREGAR OBSERVACION"
                   type="success"
                   @click="showAddHistorial(scope.row)"
@@ -60,6 +61,7 @@
                 ></base-button>
                 <base-button
                   size="sm"
+                  v-if="scope.row != null && scope.row.FkIDFase != 5"
                   title="AGREGAR INSUMO"
                   type="default"
                   @click="showAddInsumoLote(scope.row)"
@@ -71,8 +73,17 @@
             <el-table-column prop="id_lote" label="CODIGO" width="130">
             </el-table-column>
 
+            <el-table-column prop="nombre_lote" label="LOTE" width="180">
+            </el-table-column>
+
             <!--<el-table-column prop="idSali_m" label="Salida" width="140">
               </el-table-column>-->
+              <el-table-column prop="detalleFase" label="FASE ACT." width="190">
+              <template slot-scope="scope">
+                <badge v-if="scope.row.FkIDFase != 5" type="primary" class="mr-2">{{scope.row.detalleFase}}</badge>
+                <badge v-if="scope.row.FkIDFase == 5" type="danger" class="mr-2">{{scope.row.detalleFase}}</badge>
+              </template>
+            </el-table-column>  
 
             <el-table-column
               v-for="column in tableColumnsLote"
@@ -310,11 +321,6 @@ export default {
   data() {
     return {
       tableColumnsLote: [
-        {
-          prop: "nombre_lote",
-          label: "LOTE",
-          minWidth: 150,
-        },
         {
           prop: "fechaIngreso",
           label: "F. INGRESO",
@@ -562,6 +568,7 @@ export default {
           if (datos.data.status_code == 200) {
             this.clearModalDetalleHistorial();
             this.readDetalleHistorialLote();
+            this.readHistorialLoteAll()
           } else {
             this.showNotificationError("HISTORIAL LOTE", datos.data.msm);
           }

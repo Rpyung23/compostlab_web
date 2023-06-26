@@ -69,16 +69,19 @@
         >
         </sidebar-item>
 
-        <sidebar-item
-          translate="no"
-          v-if="activeReporte"
-          :link="{
-            name: 'Reportes',
-            icon: 'ni ni-single-copy-04 text-warning',
-            path: './dashboard',
-          }"
-        >
+        <sidebar-item translate="no"  :link="{
+          name: 'Reportes',
+          icon: 'ni ni-single-copy-04 text-warning',
+        }">
+
+          <!--<sidebar-item :link="{ name: 'Cant. Composta', path: '/' }" translate="no"/>
+          <sidebar-item :link="{ name: 'Composta Mercado', path: '/' }" translate="no"/>-->
+          <sidebar-item :link="{ name: 'Insumos Lote', path: '/rInsumoLote' }" translate="no"/>
+          <sidebar-item :link="{ name: 'H. Volteos', path: '/rHLote' }" translate="no"/>
+          
+          
         </sidebar-item>
+
       </template>
     </side-bar>
     <div class="main-content">
