@@ -67,7 +67,7 @@
           >
             <el-table-column  width="90">
               <template slot-scope="scope">
-                <base-button size="sm" title="EDITAR" type="primary"
+                <base-button size="sm" @click="showEditLote(scope.row)" title="EDITAR" type="primary"
                   ><i class="ni ni-ruler-pencil"></i
                 ></base-button>
               </template>
@@ -211,6 +211,140 @@
         </form>
       </validation-observer>
     </modal>
+
+
+    <modal :show.sync="modalEditLote">
+      <validation-observer v-slot="{ handleSubmit }" ref="formValidator">
+        <form
+          class="needs-validation"
+          @submit.prevent="handleSubmit(firstFormSubmit)"
+        >
+          <div class="form-row" style="margin-bottom: 0.5rem">
+            <div class="col-md-12">
+              <base-input
+                name="Nombre Lote"
+                placeholder="Nombre Lote"
+                prepend-icon="ni ni-app"
+                rules="required"
+                v-model="NombreLote"
+              >
+              </base-input>
+            </div>
+            <!--<div class="col-md-6">
+              <base-input
+                prepend-icon="ni ni-single-copy-04"
+                name="Serie"
+                placeholder="Serie"
+                rules="required"
+                v-model="serieVehiculo"
+              >
+              </base-input>
+            </div>-->
+          </div>
+          <div class="form-row" style="margin-bottom: 0.5rem">
+            <div class="col-md-6">
+              <base-input
+                prepend-icon="ni ni-single-copy-04"
+                name="Ingrese Peso"
+                placeholder="Ingrese Peso"
+                v-model="PesoLote"
+                rules="required"
+              >
+              </base-input>
+            </div>
+            <div class="col-md-6">
+              <el-select
+                placeholder="Tipo Peso"
+                v-model="mSelectTipoPeso"
+                style="width: 100%"
+              >
+                <el-option
+                  v-for="item in mListTipoPesos"
+                  :key="item.id_tipo_peso"
+                  :label="item.detalle_tipo_peso"
+                  :value="item.id_tipo_peso"
+                >
+                </el-option>
+              </el-select>
+            </div>
+          </div>
+          <div class="form-row" style="margin-bottom: 0.5rem">
+            <div class="col-md-6">
+              <el-select
+                placeholder="Mercado"
+                v-model="mSelectMercado"
+                style="width: 100%"
+              >
+                <el-option
+                  v-for="item in mListTipoMercados"
+                  :key="item.id_mercado"
+                  :label="item.nombre_mercado"
+                  :value="item.id_mercado"
+                >
+                </el-option>
+              </el-select>
+            </div>
+            <div class="col-md-6">
+              <base-input
+                name="Dias Notificación"
+                placeholder="Dias Notificación"
+                prepend-icon="ni ni-notification-70"
+                type="number"
+                v-model="DiaNotificationLote"
+              >
+              </base-input>
+            </div>
+          </div>
+          <div class="form-row" style="margin-bottom: 0.5rem">
+            <div class="col-md-12">
+              <base-input
+                name="Detalle Lote"
+                placeholder="Detalle Lote"
+                prepend-icon="ni ni-paper-diploma"
+                rules="required"
+                v-model="ObsLote"
+              >
+              </base-input>
+            </div>
+          </div>
+
+          <div class="form-row" style="margin-bottom: 0.5rem">
+            <div class="col-md-12">
+              <el-select
+                placeholder="Estado"
+                v-model="mSelectEstadoLote"
+                style="width: 100%"
+              >
+                <el-option
+                  label="ACTIVO"
+                  :value="1"
+                >
+                </el-option>
+                <el-option
+                  label="INACTIVO"
+                  :value="0"
+                >
+                </el-option>
+              </el-select>
+            </div>
+          </div>
+
+          <div class="text-right">
+            <base-button type="danger" @click="closeEditLote()"
+              >Cancelar</base-button
+            >
+            <base-button
+              type="primary"
+              @click="updateNuevoLote()"
+              native-type="submit"
+              >Actualizar</base-button
+            >
+          </div>
+        </form>
+      </validation-observer>
+    </modal>
+
+
   </div>
 </template>
 <script>
@@ -274,6 +408,7 @@ export default {
   data() {
     return {
       modalAddLote: false,
+      modalEditLote:false,
       mSelectMercado: null,
       tableColumnsLote: [
         {
@@ -317,9 +452,25 @@ export default {
       NombreLote: null,
       ObsLote: null,
       PesoLote: null,
+      mSelectEstadoLote:0,
+      itemSelectLote:null
     };
   },
   methods: {
+    showEditLote(item){
+      this.itemSelectLote = item
+      this.mSelectEstadoLote = item.activo
+      this.mSelectTipoPeso = item.id_tipo_peso
+      this.mSelectMercado = item.id_mercado
+      this.DiaNotificationLote = item.dia_notificacion
+      this.NombreLote = item.nombre_lote
+      this.ObsLote = item.observacion_lote
+      this.PesoLote = item.peso
+      this.modalEditLote = true
+    },
+    closeEditLote(){
+      this.modalEditLote =false
+    },
     showAddLote() {
       this.modalAddLote = true;
     },
@@ -425,6 +576,44 @@ export default {
       this.PesoLote = null;
       this.mSelectMercado = null;
       this.mSelectTipoPeso = null;
+    },
+    async updateNuevoLote() {
+      try {
+        if (
+          this.NombreLote != null &&
+          this.ObsLote != null &&
+          this.PesoLote != null &&
+          this.mSelectMercado != null &&
+          this.mSelectTipoPeso != null
+        ) {
+          var datos = await this.$axios.put(
+            process.env.baseUrlPanel + "/update_lote",
+            {
+              token: this.token,
+              id_lote: this.itemSelectLote.id_lote,
+              estado:this.mSelectEstadoLote,
+              nombre_lote: this.NombreLote,
+              observacion_lote: this.ObsLote,
+              peso: this.PesoLote,
+              tipo_peso: this.mSelectTipoPeso,
+              id_mercado: this.mSelectMercado,
+              dia_notification: this.DiaNotificationLote == null ? 0 : this.DiaNotificationLote
+            }
+          );
+
+          if (datos.data.status_code == 200) {
+            this.closeEditLote();
+            this.readLoteAll();
+          } else {
+            Notification.info({
+              title: "ACTUALIZACION LOTE",
+              message: datos.data.msm,
+            });
+          }
+        }
+      } catch (error) {
+        console.log(error);
+      }
     },
   },
   mounted() {

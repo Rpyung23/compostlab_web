@@ -76,6 +76,7 @@
                   size="sm"
                   title="EDITAR"
                   type="primary"
+                  @click="showEditMercado(scope.row)"
                   ><i class="ni ni-ruler-pencil"></i
                 ></base-button>
               </template>
@@ -187,9 +188,7 @@
           </div>
 
           <div class="text-right" style="margin-top: 1rem">
-            <base-button
-              type="danger"
-              @click="clearModalMercado()"
+            <base-button type="danger" @click="clearModalMercado()"
               >Cancelar</base-button
             >
             <base-button
@@ -197,6 +196,103 @@
               @click="registerMercado()"
               native-type="submit"
               >Guardar</base-button
+            >
+          </div>
+        </form>
+      </validation-observer>
+    </modal>
+
+    <modal :show.sync="modalEditMercado">
+      <validation-observer v-slot="{ handleSubmit }" ref="formValidator">
+        <form
+          class="needs-validation"
+          @submit.prevent="handleSubmit(firstFormSubmit)"
+        >
+          <div class="form-row">
+            <div class="col-md-6">
+              <base-input
+                name="Nombre Mercado"
+                placeholder="Nombre Mercado"
+                prepend-icon="ni ni-shop"
+                rules="required"
+                v-model="mercadoNombre"
+              >
+              </base-input>
+            </div>
+            <div class="col-md-6">
+              <base-input
+                prepend-icon="ni ni-single-02"
+                name="Encargado Mercado"
+                placeholder="Encargado Mercado"
+                rules="required"
+                v-model="encargadoMercado"
+              >
+              </base-input>
+            </div>
+          </div>
+
+          <div class="form-row" style="margin-top: 0.5rem">
+            <div class="col-md-6">
+              <base-input
+                name="Email"
+                placeholder="Email"
+                prepend-icon="ni ni-email-83"
+                rules="required"
+                v-model="emailMercado"
+              >
+              </base-input>
+            </div>
+            <div class="col-md-6">
+              <base-input
+                prepend-icon="ni ni-mobile-button"
+                name="Telefono"
+                rules="required"
+                placeholder="Telefono"
+                v-model="telMercado"
+              >
+              </base-input>
+            </div>
+          </div>
+
+          <div class="form-row" style="margin-top: 0.5rem">
+            <div class="col-md-12">
+              <base-input
+                name="Dirección"
+                placeholder="Dirección"
+                prepend-icon="ni ni-square-pin"
+                rules="required"
+                v-model="dirMercado"
+              >
+              </base-input>
+            </div>
+          </div>
+
+          <div class="form-row" style="margin-top: 0.5rem">
+            <div class="col-md-12">
+              <el-select style="width: 100%;" v-model="mSelectEstadoMercado" placeholder="ESTADO">
+                <el-option
+                  label="INACTIVO"
+                  :value=0
+                >
+                </el-option>
+                <el-option
+                  label="ACTIVO"
+                  :value=1
+                >
+                </el-option>
+              </el-select>
+            </div>
+          </div>
+
+          <div class="text-right" style="margin-top: 1rem">
+            <base-button type="danger" @click="closeEditMercado()"
+              >Cancelar</base-button
+            >
+            <base-button
+              type="primary"
+              @click="updateMercado()"
+              native-type="submit"
+              >ACTUALIZAR</base-button
             >
           </div>
         </form>
@@ -265,11 +361,12 @@ export default {
   data() {
     return {
       modalAddMercado: false,
+      modalEditMercado: false,
       tableColumnsUnidadesFlotaVehicular: [
         {
           prop: "nombre_mercado",
           label: "MERCADO",
-          minWidth: 230,
+          minWidth: 250,
         },
         {
           prop: "encargado_mercado",
@@ -300,11 +397,28 @@ export default {
       emailMercado: "",
       telMercado: "",
       dirMercado: "",
+      mSelectEstadoMercado:1,
+      itemSelectMercado:null
     };
   },
   methods: {
+    showEditMercado(item) {
+      this.itemSelectMercado = item
+      this.mercadoNombre = item.nombre_mercado;
+      this.encargadoMercado = item.encargado_mercado;
+      this.emailMercado = item.email_mercado;
+      this.telMercado = item.telefono_mercado;
+      this.dirMercado = item.dire_mercado;
+      this.mSelectEstadoMercado = item.estado
+      this.modalEditMercado = true;
+      
+    },
+    closeEditMercado() {
+      this.modalEditMercado = false;
+      this.itemSelectMercado = null
+    },
     showAddMercado() {
-      this.clearModalMercado()
+      this.clearModalMercado();
       this.modalAddMercado = true;
     },
     async readMercadosAll() {
@@ -375,6 +489,36 @@ export default {
         }
       }
     },
+    async updateMercado() {
+      if (
+        this.mercadoNombre != "" &&
+        this.encargadoMercado != "" &&
+        this.emailMercado != "" &&
+        this.telMercado != "" &&
+        this.dirMercado != "" &&
+        this.itemSelectMercado != null
+      ) {
+        try {
+          var datos = await this.$axios.put(
+            process.env.baseUrlPanel + "/update_mercado",
+            {
+              id_mercado: this.itemSelectMercado.id_mercado,
+              estado:this.mSelectEstadoMercado,
+              nombre_mercado: this.mercadoNombre,
+              encargado_mercado: this.encargadoMercado,
+              email_mercado: this.emailMercado,
+              telefono_mercado: this.telMercado,
+              dire_mercado: this.dirMercado,
+            }
+          );
+          this.closeEditMercado()
+          this.readMercadosAll();
+        } catch (error) {
+          console.log(error);
+          alert(error.toString())
+        }
+      }
+    },
   },
   mounted() {
     this.readMercadosAll();
@@ -401,7 +545,6 @@ export default {
   width: 100%;
   height: calc(80vh);
 }
-
 
 .form-controlPersonal {
   display: block;

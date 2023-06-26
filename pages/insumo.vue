@@ -76,6 +76,7 @@
                   size="sm"
                   title="EDITAR"
                   type="primary"
+                  @click="showEditInsumo(scope.row)"
                   ><i class="ni ni-ruler-pencil"></i
                 ></base-button>
               </template>
@@ -202,9 +203,7 @@
             </div>
           </div>
           <div class="text-right">
-            <base-button
-              type="danger"
-              @click="clearModalInsumo()"
+            <base-button type="danger" @click="clearModalInsumo()"
               >Cancelar</base-button
             >
             <base-button
@@ -212,6 +211,97 @@
               @click="insertInsumo()"
               native-type="submit"
               >Guardar</base-button
+            >
+          </div>
+        </form>
+      </validation-observer>
+    </modal>
+
+    <modal :show.sync="modalEditMercado">
+      <validation-observer v-slot="{ handleSubmit }" ref="formValidator">
+        <form
+          class="needs-validation"
+          @submit.prevent="handleSubmit(firstFormSubmit)"
+        >
+          <div class="form-row" style="margin-bottom: 0.5rem">
+            <div class="col-md-6">
+              <base-input
+                name="Nombre Insumo"
+                placeholder="Nombre Insumo"
+                prepend-icon="ni ni-cart"
+                rules="required"
+                v-model="nombre_insumo"
+              >
+              </base-input>
+            </div>
+            <div class="col-md-6">
+              <base-input
+                prepend-icon="ni ni-tag"
+                name="Origin Insumo"
+                placeholder="Origin Insumo"
+                rules="required"
+                v-model="origin_insumo"
+              >
+              </base-input>
+            </div>
+          </div>
+          <div class="form-row" style="margin-bottom: 0.5rem">
+            <div class="col-md-6">
+              <base-input
+                prepend-icon="ni ni-single-copy-04"
+                name="Cantidad"
+                placeholder="Cantidad"
+                v-model="cantidad_insumo"
+                rules="required"
+                type="number"
+              >
+              </base-input>
+            </div>
+            <div class="col-md-6">
+              <el-select
+                placeholder="Tipo Insumo"
+                v-model="mSelectInsumo"
+                style="width: 100%"
+              >
+                <el-option
+                  v-for="item in mListaInsumos"
+                  :key="item.id_tipo_insumo"
+                  :label="item.nombreTipoInsumo"
+                  :value="item.id_tipo_insumo"
+                >
+                </el-option>
+              </el-select>
+            </div>
+          </div>
+          <div class="form-row" style="margin-bottom: 1rem">
+            <div class="col-md-6">
+              <base-input
+                name="Precio Insumo"
+                placeholder="Precio Insumo"
+                prepend-icon="ni ni-money-coins"
+                rules="required"
+                v-model="precio_insumo"
+                type="number"
+              >
+              </base-input>
+            </div>
+            <div class="col-md-6">
+              <base-input
+                prepend-icon="ni ni-book-bookmark"
+                name="Detalle Insumo"
+                placeholder="Detalle Insumo"
+                v-model="decrip_insumo"
+                rules="required"
+              >
+              </base-input>
+            </div>
+          </div>
+          <div class="text-right">
+            <base-button type="danger" @click="closeEditInsumo()"
+              >Cancelar</base-button
+            >
+            <base-button type="primary" @click="updateInsumo()" native-type="submit"
+              >Actualizar</base-button
             >
           </div>
         </form>
@@ -280,6 +370,7 @@ export default {
   data() {
     return {
       modalAddMercado: false,
+      modalEditMercado: false,
       tableColumnsUnidadesFlotaVehicular: [
         {
           prop: "nombre_insumo",
@@ -315,21 +406,38 @@ export default {
       mListaSalidasPanelBusqueda: [],
       mListaInsumos: [],
       mSelectInsumo: null,
-      nombre_mercado: "",
-      encargado_mercado: "",
-      email_mercado: "",
-      telefono_mercado: "",
-      dire_mercado: "",
-      loadingInsumo:false
+
+      nombre_insumo: "",
+      origin_insumo: "",
+      cantidad_insumo: "",
+      precio_insumo: "",
+      decrip_insumo: "",
+
+      loadingInsumo: false,
+      mSelectInsumoList: null,
     };
   },
   methods: {
+    showEditInsumo(item) {
+      this.mSelectInsumoList = item
+      this.mSelectInsumo = item.fk_id_tipo_insumo;
+      this.nombre_insumo = item.nombre_insumo;
+      this.origin_insumo = item.origin_insumo;
+      this.cantidad_insumo = item.cantidad_insumo;
+      this.precio_insumo = item.precio_insumo;
+      this.decrip_insumo = item.decrip_insumo;
+      this.modalEditMercado = true;
+    },
+    closeEditInsumo() {
+      this.modalEditMercado = false;
+      this.mSelectInsumoList = null;
+    },
     showAddInsumo() {
-      this.clearModalInsumo()
+      this.clearModalInsumo();
       this.modalAddMercado = true;
     },
     async readInsumoAll() {
-      this.loadingInsumo =true
+      this.loadingInsumo = true;
       this.mListaSalidasPanelBusqueda = [];
       try {
         var datos = await this.$axios.get(
@@ -362,7 +470,7 @@ export default {
         });
       }
 
-      this.loadingInsumo = false
+      this.loadingInsumo = false;
     },
     async readTipoInsumoActive() {
       this.mListaInsumos = [];
@@ -376,12 +484,14 @@ export default {
       }
     },
     clearModalInsumo() {
-      this.nombre_mercado = "";
-      this.encargado_mercado = "";
-      this.email_mercado = "";
-      this.telefono_mercado = "";
-      this.dire_mercado = "";
-      this.mSelectInsumo = null
+      this.modalAddMercado = false
+      this.nombre_insumo = ""
+      this.origin_insumo = ""
+      this.cantidad_insumo = ""
+      this.precio_insumo = ""
+      this.decrip_insumo = ""
+
+      this.mSelectInsumo = null;
     },
     async insertInsumo() {
       if (
@@ -404,9 +514,43 @@ export default {
               decrip_insumo: this.decrip_insumo,
             }
           );
+          if(datos.data.status_code == 200){
+            this.clearModalInsumo()
+          }
           this.readInsumoAll();
         } catch (error) {
           console.log(error);
+        }
+      }
+    },
+    async updateInsumo() {
+      if (
+        this.nombre_insumo != "" &&
+        this.origin_insumo != "" &&
+        this.cantidad_insumo != "" &&
+        this.precio_insumo != "" &&
+        this.decrip_insumo != "" &&
+        this.mSelectInsumo != null &&
+        this.mSelectInsumoList != null
+      ) {
+        try {
+          var datos = await this.$axios.put(
+            process.env.baseUrlPanel + "/update_insumo",
+            {
+              id_insumo:this.mSelectInsumoList.id_insumo,
+              nombre_insumo: this.nombre_insumo,
+              origin_insumo: this.origin_insumo,
+              id_tipo_insumo: this.mSelectInsumo,
+              cantidad_insumo: this.cantidad_insumo,
+              precio_insumo: this.precio_insumo,
+              decrip_insumo: this.decrip_insumo,
+            }
+          );
+          this.closeEditInsumo()
+          this.readInsumoAll();
+        } catch (error) {
+          console.log(error);
+          alert(error.toString())
         }
       }
     },
@@ -437,8 +581,6 @@ export default {
   width: 100%;
   height: calc(80vh);
 }
-
-
 
 .form-controlPersonal {
   display: block;

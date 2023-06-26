@@ -78,6 +78,7 @@
           <sidebar-item :link="{ name: 'Composta Mercado', path: '/' }" translate="no"/>-->
           <sidebar-item :link="{ name: 'Insumos Lote', path: '/rInsumoLote' }" translate="no"/>
           <sidebar-item :link="{ name: 'H. Volteos', path: '/rHLote' }" translate="no"/>
+          <sidebar-item :link="{ name: 'Composta Mercado', path: '/rCompostMercado' }" translate="no"/>
           
           
         </sidebar-item>
