@@ -46,7 +46,7 @@
             height="calc(100vh - 8.90rem)"
             style="width: 100%"
           >
-            <el-table-column  width="180">
+            <el-table-column  v-if="isPermisosActions" width="180">
               <template slot-scope="scope">
                 <base-button size="sm" title="DESPACHO" type="danger" @click="showNotificationDespacho(scope.row)"
                   ><i class="ni ni-check-bold"></i
@@ -284,7 +284,7 @@ import {
   Switch,
   MessageBox
 } from "element-ui";
-
+import jwt_decode from "jwt-decode";
 import RouteBreadCrumb from "@/components/argon-core/Breadcrumb/RouteBreadcrumb";
 import { BasePagination } from "@/components/argon-core";
 import clientPaginationMixin from "~/components/tables/PaginatedTables/clientPaginationMixin";
@@ -415,6 +415,7 @@ export default {
       vPh: null,
       vOxigeno: null,
       detalleHistorial: "",
+      isPermisosActions:false
     };
   },
   methods: {
@@ -613,6 +614,12 @@ export default {
   mounted() {
     this.readInsumoAll();
     this.readHistorialLoteAll();
+
+    var data = jwt_decode(this.$cookies.get("token")).datosJWT;
+    if(data.active_options_historial_lote == 1){
+      this.isPermisosActions = true
+    }
+
   },
 };
 </script>

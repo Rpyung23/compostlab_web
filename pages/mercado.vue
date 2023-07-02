@@ -43,6 +43,7 @@
               <base-button
                 type="default"
                 size="sm"
+                v-if="isPermisosActions"
                 @click="showAddMercado()"
                 title="NUEVO MERCARDO"
               >
@@ -70,7 +71,7 @@
             height="calc(100vh - 8.90rem)"
             style="width: 100%"
           >
-            <el-table-column label="Actions" width="140">
+            <el-table-column v-if="isPermisosActions" label="Actions" width="140">
               <template slot-scope="scope">
                 <base-button
                   size="sm"
@@ -301,6 +302,8 @@
   </div>
 </template>
 <script>
+import jwt_decode from "jwt-decode";
+
 import flatPicker from "vue-flatpickr-component";
 import { getBase64LogoReportes } from "../util/logoReport";
 import { convertSecondtoTimeString } from "../util/fechas";
@@ -398,7 +401,8 @@ export default {
       telMercado: "",
       dirMercado: "",
       mSelectEstadoMercado:1,
-      itemSelectMercado:null
+      itemSelectMercado:null,
+      isPermisosActions:false
     };
   },
   methods: {
@@ -522,6 +526,10 @@ export default {
   },
   mounted() {
     this.readMercadosAll();
+    var data = jwt_decode(this.$cookies.get("token")).datosJWT;
+    if(data.active_options_mercado == 1){
+      this.isPermisosActions = true
+    }
   },
 };
 </script>

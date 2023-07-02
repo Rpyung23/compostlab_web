@@ -44,6 +44,7 @@
       <base-button
         size="sm"
         type="secondary"
+        v-if="notificationPermiso"
         @click="showAjustes()"
         style="margin-right: 0rem; color: #172b4d"
       >
@@ -207,6 +208,7 @@ export default {
       nameEmpresa: "COMPOSTLAB GAD RIOBAMBA",
       mListNotifications: [],
       token: this.$cookies.get("token"),
+      notificationPermiso:false
     };
   },
   methods: {
@@ -252,6 +254,9 @@ export default {
       var token = this.$cookies.get("token");
       var data = jwt_decode(token).datosJWT;
       this.nameUsuario = data.NombresApellidos;
+      if(data.activeRecordatorio == 1){
+        this.notificationPermiso = true
+      }
     } catch (error) {
       this.nameEmpresa = error.toString();
     }

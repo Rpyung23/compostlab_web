@@ -46,7 +46,7 @@
             height="calc(100vh - 8.90rem)"
             style="width: 100%"
           >
-            <el-table-column label="" width="180">
+            <el-table-column v-if="isPermisosActions" label="" width="180">
               <template slot-scope="scope">
                 <base-button
                   size="sm"
@@ -104,7 +104,7 @@ import {
   Switch,
   MessageBox,
 } from "element-ui";
-
+import jwt_decode from "jwt-decode";
 import RouteBreadCrumb from "@/components/argon-core/Breadcrumb/RouteBreadcrumb";
 import { BasePagination } from "@/components/argon-core";
 import clientPaginationMixin from "~/components/tables/PaginatedTables/clientPaginationMixin";
@@ -195,6 +195,7 @@ export default {
       mListaHistorialLote: [],
       itemRowHistorialLote: null,
       token: this.$cookies.get("token"),
+      isPermisosActions:false
     };
   },
   methods: {
@@ -281,6 +282,11 @@ export default {
     },
   },
   mounted() {
+    var data = jwt_decode(this.$cookies.get("token")).datosJWT;
+    if(data.active_options_despacho == 1){
+      this.isPermisosActions = true
+    }
+    
     this.readHistorialLoteAll();
   },
 };

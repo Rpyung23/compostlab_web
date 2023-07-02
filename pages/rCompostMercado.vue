@@ -40,6 +40,19 @@
                   ><i class="el-icon-search"></i
                 ></span>
               </base-button>
+
+              <base-button
+                icon
+                type="danger"
+                size="sm"
+                v-if="mListInsumoLotes.length > 0"
+                @click="exportPdfRSalidas()"
+              >
+                <span class="btn-inner--icon"
+                  ><i class="ni ni-single-copy-04"></i
+                ></span>
+              </base-button>
+
             </div>
           </div>
         </card>
@@ -83,6 +96,11 @@
   </div>
 </template>
 <script>
+
+import pdfMake from "pdfmake/build/pdfmake.js";
+import pdfFonts from "pdfmake/build/vfs_fonts.js";
+pdfMake.vfs = pdfFonts.pdfMake.vfs;
+
 import flatPicker from "vue-flatpickr-component";
 import { getBase64LogoReportes } from "../util/logoReport";
 import { convertSecondtoTimeString } from "../util/fechas";
@@ -179,6 +197,141 @@ export default {
         console.log(error);
       }
       this.loadingInsumoLotes = false;
+    },
+    async exportPdfRSalidas() {
+      var resultadoString = [
+        [
+          // CodiVehiDispEven,HoraDispEven,DescRutaSali_m,NumeVuelSali_m,DescFrec,DescDispEvenList,LatiDispEven,LongDispEven
+          {
+            text: "MERCADO",
+            fontSize: 8.5,
+            bold: true,
+            fillColor: "#039BC4",
+            color: "white",
+            alignment: "center",
+          },
+          {
+            text: "TOT. LOTES",
+            fontSize: 8.5,
+            bold: true,
+            fillColor: "#039BC4",
+            color: "white",
+            alignment: "center",
+          },
+          {
+            text: "TOTAL PESO KG",
+            fontSize: 8.5,
+            bold: true,
+            fillColor: "#039BC4",
+            color: "white",
+            alignment: "center",
+          }
+        ],
+      ];
+
+      //CodiVehiDispEven,HoraDispEven,DescRutaSali_m,NumeVuelSali_m,DescFrec,DescDispEvenList,LatiDispEven,LongDispEven
+
+      for (var i = 0; i < this.mListInsumoLotes.length; i++) {
+        var arrys = [
+          {
+            text: this.mListInsumoLotes[i].nombre_mercado,
+            fontSize: 8.5,
+            alignment: "center",
+          },
+          {
+            text: this.mListInsumoLotes[i].totLotes,
+            fontSize: 8.5,
+            alignment: "center",
+          },
+          {
+            text: this.mListInsumoLotes[i].totalPeso,
+            fontSize: 8.5,
+            alignment: "center",
+          }
+        ];
+        resultadoString.push(arrys);
+      }
+
+      /**
+ * function (currentPage, pageCount, pageSize) {
+    //"REPORTE INDICADORES DE CALIDAD \n Dir : Av Chasquis y Rio Guayllabamba (Ambato) Email : vigitracklatam@gmail.com \n Tel : 0995737084 - 032421698 Sitio Web : www.vigitrackecuador.com"
+    return [
+      {
+        text: "REPORTE SALIDAS DETALLADAS",
+        alignment: "center",
+        fontSize: 16,bold:true
+      },
+      {
+        text: "Dir : Av Chasquis y Rio Guayllabamba (Ambato) Email : vigitracklatam@gmail.com",
+        alignment: "center",
+        fontSize: 8
+      },{
+        text: "Tel : 0995737084 - 032421698 Sitio Web : www.vigitrackecuador.com",
+        alignment: "center",
+        fontSize: 8
+      }
+    ];
+  }
+ * ***/
+      var docDefinition = {
+        pageSize: "A4",
+        pageMargins: [40, 80, 40, 60],
+        header: {
+          margin: 15,
+          columns: [
+            {
+              image: getBase64LogoReportes(""),
+              width: 100,
+              height: 50,
+              margin: [30, 0, 0, 0],
+            },
+            {
+              layout: "noBorders",
+              table: {
+                widths: ["*"],
+                body: [
+                  [
+                    {
+                      text: "REPORTE COMPOSTA MERCADO",
+                      alignment: "center",
+                      fontSize: 16,
+                      bold: true,
+                    },
+                  ],
+                  [
+                    {
+                      text: "Dir :  89G2+QXC, 5 de Junio, Riobamba Email : dircomunicacion@gadmriobamba.gob.ec",
+                      alignment: "center",
+                      fontSize: 8,
+                    },
+                  ],
+                  [
+                    {
+                      text: "Tel : 096 973 8255 Sitio Web : http://www.gadmriobamba.gob.ec/",
+                      alignment: "center",
+                      fontSize: 8,
+                    },
+                  ],
+                ],
+              },
+            },
+          ],
+        },
+        content: [
+          {
+            table: {
+              // headers are automatically repeated if the table spans over multiple pages
+              // you can declare how many rows should be treated as headers
+              headerRows: 0,
+              widths: [280, 90, 90],
+              body: resultadoString,
+            },
+          },
+        ],
+      };
+      /*var win = window.open("", "_blank");
+pdfMake.createPdf(docDefinition).open({}, win);*/
+      pdfMake.createPdf(docDefinition).download("RCM_" + Date.now());
     },
   },
   mounted() {

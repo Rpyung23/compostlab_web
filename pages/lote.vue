@@ -38,8 +38,9 @@
               <base-button
                 type="default"
                 size="sm"
+                v-if="isPermisosActions"
                 @click="showAddLote()"
-                title="NUEVO MERCARDO"
+                title="NUEVO LOTE"
               >
                 <span class="btn-inner--icon"
                   ><i class="ni ni-fat-add"></i
@@ -65,7 +66,7 @@
             height="calc(100vh - 8.90rem)"
             style="width: 100%"
           >
-            <el-table-column  width="90">
+            <el-table-column v-if="isPermisosActions"  width="90">
               <template slot-scope="scope">
                 <base-button size="sm" @click="showEditLote(scope.row)" title="EDITAR" type="primary"
                   ><i class="ni ni-ruler-pencil"></i
@@ -379,6 +380,7 @@ import clientPaginationMixin from "~/components/tables/PaginatedTables/clientPag
 import swal from "sweetalert2";
 import Tabs from "@/components/argon-core/Tabs/Tabs";
 import TabPane from "@/components/argon-core/Tabs/Tab";
+import jwt_decode from "jwt-decode";
 
 export default {
   mixins: [clientPaginationMixin],
@@ -453,7 +455,8 @@ export default {
       ObsLote: null,
       PesoLote: null,
       mSelectEstadoLote:0,
-      itemSelectLote:null
+      itemSelectLote:null,
+      isPermisosActions:false
     };
   },
   methods: {
@@ -620,6 +623,12 @@ export default {
     this.readTipoMercadoActivo();
     this.readTipoPesosActivo();
     this.readLoteAll();
+
+    var data = jwt_decode(this.$cookies.get("token")).datosJWT;
+    if(data.active_options_lote == 1){
+      this.isPermisosActions = true
+    }
+
   },
 };
 </script>

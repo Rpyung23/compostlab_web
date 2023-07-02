@@ -135,6 +135,7 @@
                   name="Cedula / DNI"
                   placeholder="Cedula / DNI"
                   prepend-icon="ni ni-badge"
+                  type="number"
                   rules="required"
                   v-model="cedula"
                 >
@@ -144,6 +145,7 @@
                 <base-input
                   prepend-icon="ni ni-mobile-button"
                   name="Telefono Usuario"
+                  type="number"
                   rules="required"
                   placeholder="Telefono Usuario"
                   v-model="telefono"
@@ -348,9 +350,7 @@
           }}
         </h5>
 
-        <form
-          class="needs-validation"
-        >
+        <form class="needs-validation">
           <div class="form-row" style="margin-top: 0.5rem">
             <div class="col-md-6">
               <el-checkbox border v-model="activeMercado"
@@ -390,8 +390,8 @@
 
           <div class="form-row" style="margin-top: 0.5rem">
             <div class="col-md-6">
-              <el-checkbox border v-model="activeNotificacion"
-                >OPC NOTIFICACION</el-checkbox
+              <el-checkbox border v-model="activeInsumo"
+                >OPC INSUMOS</el-checkbox
               >
             </div>
             <div class="col-md-6">
@@ -401,23 +401,50 @@
             </div>
           </div>
 
+
           <div class="form-row" style="margin-top: 0.5rem">
             <div class="col-md-6">
-              <el-checkbox border v-model="activeInsumo"
-                >OPC INSUMOS</el-checkbox
+              <el-checkbox border v-model="btn_tabla_mercados"
+                >BTN TABLA MERCADOS</el-checkbox
+              >
+            </div>
+            <div class="col-md-6">
+              <el-checkbox border v-model="btn_tabla_lotes"
+                >BTN TABLA LOTES</el-checkbox
               >
             </div>
           </div>
 
-          
+
+          <div class="form-row" style="margin-top: 0.5rem">
+            <div class="col-md-6">
+              <el-checkbox border v-model="btn_tabla_insumos"
+                >BTN TABLA INSUMOS</el-checkbox
+              >
+            </div>
+            <div class="col-md-6">
+              <el-checkbox border v-model="btn_tabla_despacho"
+                >BTN TABLA DESPACHO</el-checkbox
+              >
+            </div>
+          </div>
+
+
+
+          <div class="form-row" style="margin-top: 0.5rem">
+            <div class="col-md-12">
+              <el-checkbox border v-model="btn_tabla_h_lotes"
+                >BTN TABLA H - LOTES</el-checkbox
+              >
+            </div>
+          </div>
+
 
           <div class="text-right" style="margin-top: 1rem">
             <base-button type="danger" @click="closeModalPermisosUsuario()"
               >Cancelar</base-button
             >
-            <base-button
-              type="primary"
-              @click="updatePermisosUsuario()"
+            <base-button type="primary" @click="updatePermisosUsuario()"
               >Guardar</base-button
             >
           </div>
@@ -538,7 +565,13 @@ export default {
       activeNotificacion: false,
       activeRecordatorio: false,
       activeUsuarios: false,
-      activeInsumo: false
+      activeInsumo: false,
+
+      btn_tabla_mercados:false,
+      btn_tabla_lotes:false,
+      btn_tabla_insumos:false,
+      btn_tabla_h_lotes:false,
+      btn_tabla_despacho:false,
     };
   },
   methods: {
@@ -552,21 +585,28 @@ export default {
       this.activeNotificacion = item.activeNotificacion == 1 ? true : false;
       this.activeRecordatorio = item.activeRecordatorio == 1 ? true : false;
       this.activeUsuarios = item.activeUsuarios == 1 ? true : false;
-      this.activeInsumo = item.activeInsumo == 1 ? true : false
+      this.activeInsumo = item.activeInsumo == 1 ? true : false;
       this.modalPermisosUsuario = true;
+
+      this.btn_tabla_mercados = item.active_options_mercado  == 1 ? true : false
+      this.btn_tabla_lotes = item.active_options_lote  == 1 ? true : false
+      this.btn_tabla_insumos = item.active_options_insumo  == 1 ? true : false
+      this.btn_tabla_h_lotes = item.active_options_historial_lote  == 1 ? true : false
+      this.btn_tabla_despacho = item.active_options_despacho  == 1 ? true : false
+
     },
     closeModalPermisosUsuario() {
       this.objRowSelectUser = null;
       this.modalPermisosUsuario = false;
-      this.activeMercado = false
-      this.activeLote = false
-      this.activeHistorial = false
-      this.activeDespacho = false
-      this.activeReporte = false
-      this.activeNotificacion = false
-      this.activeRecordatorio = false
-      this.activeUsuarios = false
-      this.activeInsumo = false
+      this.activeMercado = false;
+      this.activeLote = false;
+      this.activeHistorial = false;
+      this.activeDespacho = false;
+      this.activeReporte = false;
+      this.activeNotificacion = false;
+      this.activeRecordatorio = false;
+      this.activeUsuarios = false;
+      this.activeInsumo = false;
     },
     showModalUpdateInfoUsuario(item) {
       this.objRowSelectUser = item;
@@ -666,24 +706,35 @@ export default {
         this.contrasenia != null
       ) {
         try {
-          var datos = await this.$axios.post(
-            process.env.baseUrl + "/create_user",
-            {
-              email_usuario: this.email_usuario,
-              nombres: this.nombres,
-              apellido: this.apellido,
-              cedula: this.cedula,
-              telefono: this.telefono,
-              contrasenia: this.contrasenia,
-            }
-          );
+          if (this.validarCedula(this.cedula)) {
+            if (this.validarCorreoElectronico(this.email_usuario)) {
+              var datos = await this.$axios.post(
+                process.env.baseUrl + "/create_user",
+                {
+                  email_usuario: this.email_usuario,
+                  nombres: this.nombres,
+                  apellido: this.apellido,
+                  cedula: this.cedula,
+                  telefono: this.telefono,
+                  contrasenia: this.contrasenia,
+                }
+              );
 
-          if (datos.data.status_code == 200) {
-            this.closeModalAddUsuario();
-            this.clearModalAddUsuario();
-            this.readUsuarioALL();
+              if (datos.data.status_code == 200) {
+                this.closeModalAddUsuario();
+                this.clearModalAddUsuario();
+                this.readUsuarioALL();
+              } else {
+                this.showNotificationError("Nuevo Usuario", datos.data.msm);
+              }
+            } else {
+              this.showNotificationError("Email Usuario", "Email no es válido");
+            }
           } else {
-            this.showNotificationError("Nuevo Usuario", datos.data.msm);
+            this.showNotificationError(
+              "Cedula Usuario",
+              "Cedula o DNI no válido"
+            );
           }
         } catch (error) {
           this.showNotificationError("Nuevo Usuario", error.toString());
@@ -772,6 +823,11 @@ export default {
             activeUsuarios: this.activeUsuarios == true ? 1 : 0,
             activeInsumo: this.activeInsumo == true ? 1 : 0,
             email: this.objRowSelectUser.email_usuario,
+            btn_tabla_mercados : this.btn_tabla_mercados  == true ? 1 : 0,
+            btn_tabla_lotes : this.btn_tabla_lotes  == true ? 1 : 0,
+            btn_tabla_insumos : this.btn_tabla_insumos  == true ? 1 : 0,
+            btn_tabla_h_lotes : this.btn_tabla_h_lotes  == true ? 1 : 0,
+            btn_tabla_despacho : this.btn_tabla_despacho  == true ? 1 : 0
           }
         );
 
@@ -786,6 +842,49 @@ export default {
       } catch (error) {
         this.showNotificationError("PERMISOS Usuario", error.toString());
       }
+    },
+    validarCedula(cedula) {
+      // Verificar si la longitud de la cédula es correcta
+      if (cedula.length !== 10) {
+        return false;
+      }
+
+      // Verificar que todos los caracteres sean dígitos numéricos
+      if (!/^\d+$/.test(cedula)) {
+        return false;
+      }
+
+      // Verificar el último dígito (dígito verificador)
+      var digitoVerificador = parseInt(cedula.charAt(9));
+      var suma = 0;
+      var multi = 0;
+
+      for (var i = 0; i < 9; i++) {
+        var digito = parseInt(cedula.charAt(i));
+
+        if (i % 2 === 0) {
+          multi = digito * 2;
+          if (multi > 9) {
+            multi = multi - 9;
+          }
+        } else {
+          multi = digito;
+        }
+
+        suma += multi;
+      }
+
+      var residuo = suma % 10;
+      var resultado = residuo === 0 ? 0 : 10 - residuo;
+
+      return resultado === digitoVerificador;
+    },
+    validarCorreoElectronico(correo) {
+      // Expresión regular para validar el correo electrónico
+      var patron = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+      // Verificar si el correo coincide con el patrón
+      return patron.test(correo);
     },
   },
   mounted() {

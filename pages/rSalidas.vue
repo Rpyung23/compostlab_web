@@ -10,20 +10,34 @@
         >
           <div class="cardTextoRPagosVehiculoProduccionPanelDespachoBusqueda">
             <el-select
-              placeholder="LOTE"
-              v-model="mSelectLote"
+              placeholder="Mercados"
+              v-model="mSelectMercado"
               multiple
               collapse-tags
-              style="width: 100%"
+              style="margin-right: 0.5rem"
             >
               <el-option
-                v-for="item in mListLotes"
-                :key="item.id_lote"
-                :label="item.nombre_lote"
-                :value="item.id_lote"
+                v-for="item in mListMercados"
+                :key="item.id_mercado"
+                :label="item.nombre_mercado"
+                :value="item.id_mercado"
               >
               </el-option>
             </el-select>
+            <el-date-picker
+              type="date"
+              placeholder="Fecha Inicial"
+              style="margin-right: 0.5rem"
+              v-model="fechaInicial"
+            >
+            </el-date-picker>
+            <el-date-picker
+              type="date"
+              placeholder="Fecha Final"
+              style="margin-right: 0.5rem"
+              v-model="fechaFinal"
+            >
+            </el-date-picker>
           </div>
 
           <div
@@ -34,7 +48,7 @@
                 icon
                 type="primary"
                 size="sm"
-                @click="readInsumoLote()"
+                @click="readSalidasLote()"
               >
                 <span class="btn-inner--icon"
                   ><i class="el-icon-search"></i
@@ -45,7 +59,7 @@
                 icon
                 type="danger"
                 size="sm"
-                v-if="mListInsumoLotes.length>0"
+                v-if="mListSalidasLotes.length>0"
                 @click="exportPdfRSalidas()"
               >
                 <span class="btn-inner--icon"
@@ -65,7 +79,7 @@
         >
           <el-table
             element-loading-text="Cargando Datos..."
-            :data="mListInsumoLotes"
+            :data="mListSalidasLotes"
             row-key="id"
             v-loading="loadingInsumoLotes"
             class="tablePanelControlProduccion"
@@ -73,24 +87,26 @@
             height="calc(100vh - 11rem)"
             style="width: 100%"
           >
-            <el-table-column prop="nombre_lote" label="LOTE" width="250">
+            <el-table-column prop="nombre_lote" label="LOTE" width="240">
             </el-table-column>
 
-            <el-table-column prop="nombre_mercado" label="MERCADO" width="280">
+            <el-table-column prop="nombre_mercado" label="MERCADO" width="190">
+            </el-table-column>
+            <el-table-column prop="peso" label="PESO" width="150">
+            </el-table-column>
+            <el-table-column prop="detalle_tipo_peso" label="" width="180">
+            </el-table-column>
+            <el-table-column prop="fechaIngreso" label="F. INGRESO" width="210">
+            </el-table-column>
+            <el-table-column prop="fechaDespacho" label="F. DESPACHO" width="210">
             </el-table-column>
 
-            <el-table-column
-              prop="fecha_ingresoInsumo"
-              label="F. INGRESO"
-              width="230"
-            >
+            <el-table-column prop="fechaSalida" label="F. SALIDA" width="210">
             </el-table-column>
 
-            <el-table-column prop="nombre_insumo" label="INSUMO" width="270">
+            <el-table-column prop="UserSalida" label="U. SALIDA" width="300">
             </el-table-column>
 
-            <el-table-column prop="cantidad" label="CANTIDAD" width="190">
-            </el-table-column>
 
             <div slot="empty"></div>
           </el-table>
@@ -101,6 +117,7 @@
   </div>
 </template>
 <script>
+
 import pdfMake from "pdfmake/build/pdfmake.js";
 import pdfFonts from "pdfmake/build/vfs_fonts.js";
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
@@ -165,51 +182,64 @@ export default {
   data() {
     return {
       token: this.$cookies.get("token"),
-      mListLotes: [],
+      mListMercados: [],
       loadingInsumoLotes: false,
-      mSelectLote: [],
-      mListInsumoLotes: [],
+      mSelectMercado: [],
+      mListSalidasLotes: [],
+      fechaInicial:null,
+      fechaFinal:null
     };
   },
   methods: {
-    async readLoteAll() {
-      this.mListLotes = [];
+    async readMercadoAll() {
+      this.mListMercados = [];
       try {
-        var datos = await this.$axios.post(
-          process.env.baseUrl + "/lote_all_user",
-          { token: this.token }
+        var datos = await this.$axios.get(
+          process.env.baseUrl + "/all_mercados_active",
         );
 
-        this.mListLotes.push(...datos.data.datos);
+        this.mListMercados.push(...datos.data.datos);
       } catch (error) {
         console.log(error);
       }
     },
-    async readInsumoLote() {
-      this.mListInsumoLotes = [];
+    async readSalidasLote() {
+      this.mListSalidasLotes = [];
       this.loadingInsumoLotes = true;
       try {
         var datos = await this.$axios.post(
-          process.env.baseUrl + "/insumos_lotes_all",
+          process.env.baseUrl + "/RSalidasLote",
           {
             token: this.token,
-            lotes: this.mSelectLote.length == 0 ? "*" : this.mSelectLote,
+            mercados: this.mSelectMercado.length == 0 ? "*" : this.mSelectMercado,
+            fechaI: this.fechaInicial,
+            fechaF: this.fechaFinal
           }
         );
 
-        this.mListInsumoLotes.push(...datos.data.datos);
+        this.mListSalidasLotes.push(...datos.data.datos);
       } catch (error) {
         console.log(error);
       }
       this.loadingInsumoLotes = false;
     },
     async exportPdfRSalidas() {
+
+
       var resultadoString = [
         [
           // CodiVehiDispEven,HoraDispEven,DescRutaSali_m,NumeVuelSali_m,DescFrec,DescDispEvenList,LatiDispEven,LongDispEven
 
           {
             text: "LOTE",
+            fontSize: 8.5,
+            bold: true,
+            fillColor: "#039BC4",
+            color: "white",
+            alignment: "center",
+          },
+          {
+            text: "PESO",
             fontSize: 8.5,
             bold: true,
             fillColor: "#039BC4",
@@ -233,7 +263,7 @@ export default {
             alignment: "center",
           },
           {
-            text: "INSUMO",
+            text: "F. DESPACHO",
             fontSize: 8.5,
             bold: true,
             fillColor: "#039BC4",
@@ -241,78 +271,95 @@ export default {
             alignment: "center",
           },
           {
-            text: "CANTIDAD",
+            text: "F. SALIDA",
             fontSize: 8.5,
             bold: true,
             fillColor: "#039BC4",
             color: "white",
             alignment: "center",
-          }
+          },
+          {
+            text: "USUARIO SALIDA",
+            fontSize: 8.5,
+            bold: true,
+            fillColor: "#039BC4",
+            color: "white",
+            alignment: "center",
+          },
         ],
       ];
 
       //CodiVehiDispEven,HoraDispEven,DescRutaSali_m,NumeVuelSali_m,DescFrec,DescDispEvenList,LatiDispEven,LongDispEven
 
-      for (var i = 0; i < this.mListInsumoLotes.length; i++) {
+      for (var i = 0; i < this.mListSalidasLotes.length; i++) {
         var arrys = [
           {
-            text: this.mListInsumoLotes[i].nombre_lote,
+            text: this.mListSalidasLotes[i].nombre_lote,
             alignment: "center",
             fontSize: 8.5,
           },
           {
-            text: this.mListInsumoLotes[i].nombre_mercado,
+            text: (this.mListSalidasLotes[i].peso +" " +this.mListSalidasLotes[i].detalle_tipo_peso),
             fontSize: 8.5,
             alignment: "center",
           },
           {
-            text: this.mListInsumoLotes[i].fecha_ingresoInsumo,
+            text: this.mListSalidasLotes[i].nombre_mercado,
             fontSize: 8.5,
             alignment: "center",
           },
           {
-            text: this.mListInsumoLotes[i].nombre_insumo,
+            text: this.mListSalidasLotes[i].fechaIngreso,
             fontSize: 8.5,
             alignment: "center",
           },
           {
-            text: this.mListInsumoLotes[i].cantidad,
+            text: this.mListSalidasLotes[i].fechaDespacho,
             fontSize: 8.5,
             alignment: "center",
-          }
+          },          {
+            text: this.mListSalidasLotes[i].fechaSalida,
+            fontSize: 8.5,
+            alignment: "center",
+          },          {
+            text: this.mListSalidasLotes[i].UserSalida,
+            fontSize: 8.5,
+            alignment: "center",
+          },
         ];
         resultadoString.push(arrys);
       }
 
       /**
- * function (currentPage, pageCount, pageSize) {
-    //"REPORTE INDICADORES DE CALIDAD \n Dir : Av Chasquis y Rio Guayllabamba (Ambato) Email : vigitracklatam@gmail.com \n Tel : 0995737084 - 032421698 Sitio Web : www.vigitrackecuador.com"
-    return [
-      {
-        text: "REPORTE SALIDAS DETALLADAS",
-        alignment: "center",
-        fontSize: 16,bold:true
-      },
-      {
-        text: "Dir : Av Chasquis y Rio Guayllabamba (Ambato) Email : vigitracklatam@gmail.com",
-        alignment: "center",
-        fontSize: 8
-      },{
-        text: "Tel : 0995737084 - 032421698 Sitio Web : www.vigitrackecuador.com",
-        alignment: "center",
-        fontSize: 8
-      }
-    ];
-  }
- * ***/
+       * function (currentPage, pageCount, pageSize) {
+          //"REPORTE INDICADORES DE CALIDAD \n Dir : Av Chasquis y Rio Guayllabamba (Ambato) Email : vigitracklatam@gmail.com \n Tel : 0995737084 - 032421698 Sitio Web : www.vigitrackecuador.com"
+          return [
+            {
+              text: "REPORTE SALIDAS DETALLADAS",
+              alignment: "center",
+              fontSize: 16,bold:true
+            },
+            {
+              text: "Dir : Av Chasquis y Rio Guayllabamba (Ambato) Email : vigitracklatam@gmail.com",
+              alignment: "center",
+              fontSize: 8
+            },{
+              text: "Tel : 0995737084 - 032421698 Sitio Web : www.vigitrackecuador.com",
+              alignment: "center",
+              fontSize: 8
+            }
+          ];
+        }
+       * ***/
       var docDefinition = {
         pageSize: "A4",
+        pageOrientation: 'landscape',
         pageMargins: [40, 80, 40, 60],
         header: {
           margin: 15,
           columns: [
             {
-              image: getBase64LogoReportes(""),
+              image: getBase64LogoReportes(''),
               width: 100,
               height: 50,
               margin: [30, 0, 0, 0],
@@ -324,7 +371,7 @@ export default {
                 body: [
                   [
                     {
-                      text: "REPORTE INSUMOS POR LOTE",
+                      text: "REPORTE SALIDAS DE LOTE",
                       alignment: "center",
                       fontSize: 16,
                       bold: true,
@@ -350,25 +397,26 @@ export default {
           ],
         },
         content: [
+
           {
             table: {
               // headers are automatically repeated if the table spans over multiple pages
               // you can declare how many rows should be treated as headers
               headerRows: 0,
-              widths: [90, 90, 110, 90, 70],
+              widths: [90, 70, 110, 90, 90,90,150],
               body: resultadoString,
             },
           },
         ],
       };
       /*var win = window.open("", "_blank");
-pdfMake.createPdf(docDefinition).open({}, win);*/
-      pdfMake.createPdf(docDefinition).download("RIL_" + Date.now());
+      pdfMake.createPdf(docDefinition).open({}, win);*/
+      pdfMake.createPdf(docDefinition).download("RSL_" + Date.now());
     },
   },
   mounted() {
-    this.readLoteAll();
-    this.readInsumoLote();
+    this.readMercadoAll();
+    this.readSalidasLote();
   },
 };
 </script>

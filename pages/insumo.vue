@@ -43,6 +43,7 @@
               <base-button
                 type="default"
                 size="sm"
+                v-if="isPermisosActions"
                 @click="showAddInsumo()"
                 title="NUEVO MERCARDO"
               >
@@ -70,7 +71,7 @@
             height="calc(100vh - 8.90rem)"
             style="width: 100%"
           >
-            <el-table-column label="" width="100">
+            <el-table-column  v-if="isPermisosActions" label="" width="100">
               <template slot-scope="scope">
                 <base-button
                   size="sm"
@@ -122,7 +123,6 @@
       </div>
     </base-header>
 
-    <!--Form modal Agregar Unidad-->
     <modal :show.sync="modalAddMercado">
       <validation-observer v-slot="{ handleSubmit }" ref="formValidator">
         <form
@@ -164,6 +164,23 @@
               </base-input>
             </div>
             <div class="col-md-6">
+              <el-select
+                placeholder="Tipo Peso"
+                v-model="mSelectTipoPeso"
+                style="width: 100%"
+              >
+                <el-option
+                v-for="item in mListTipoPesos"
+                  :key="item.id_tipo_peso"
+                  :label="item.detalle_tipo_peso"
+                  :value="item.id_tipo_peso"
+                >
+                </el-option>
+              </el-select>
+            </div>
+          </div>
+          <div class="form-row" style="margin-bottom: 0.5rem">
+            <div class="col-md-12">
               <el-select
                 placeholder="Tipo Insumo"
                 v-model="mSelectInsumo"
@@ -259,6 +276,23 @@
             </div>
             <div class="col-md-6">
               <el-select
+                placeholder="Tipo Peso"
+                v-model="mSelectTipoPeso"
+                style="width: 100%"
+              >
+              <el-option
+                v-for="item in mListTipoPesos"
+                  :key="item.id_tipo_peso"
+                  :label="item.detalle_tipo_peso"
+                  :value="item.id_tipo_peso"
+                >
+                </el-option>
+              </el-select>
+            </div>
+          </div>
+          <div class="form-row" style="margin-bottom: 0.5rem">
+            <div class="col-md-12">
+              <el-select
                 placeholder="Tipo Insumo"
                 v-model="mSelectInsumo"
                 style="width: 100%"
@@ -341,7 +375,7 @@ import clientPaginationMixin from "~/components/tables/PaginatedTables/clientPag
 import swal from "sweetalert2";
 import Tabs from "@/components/argon-core/Tabs/Tabs";
 import TabPane from "@/components/argon-core/Tabs/Tab";
-
+import jwt_decode from "jwt-decode";
 export default {
   mixins: [clientPaginationMixin],
   layout: "DashboardLayout",
@@ -393,6 +427,11 @@ export default {
           minWidth: 120,
         },
         {
+          prop: "detalle_tipo_peso",
+          label: "T. PESO",
+          minWidth: 180,
+        },
+        {
           prop: "precio_insumo",
           label: "PRECIO",
           minWidth: 140,
@@ -415,6 +454,9 @@ export default {
 
       loadingInsumo: false,
       mSelectInsumoList: null,
+      mListTipoPesos:[],
+      mSelectTipoPeso:null,
+      isPermisosActions:false
     };
   },
   methods: {
@@ -427,6 +469,7 @@ export default {
       this.precio_insumo = item.precio_insumo;
       this.decrip_insumo = item.decrip_insumo;
       this.modalEditMercado = true;
+      this.mSelectTipoPeso = item.id_tipo_peso
     },
     closeEditInsumo() {
       this.modalEditMercado = false;
@@ -500,7 +543,8 @@ export default {
         this.cantidad_insumo != "" &&
         this.precio_insumo != "" &&
         this.decrip_insumo != "" &&
-        this.mSelectInsumo != null
+        this.mSelectInsumo != null &&
+        this.mSelectTipoPeso != null
       ) {
         try {
           var datos = await this.$axios.post(
@@ -512,6 +556,7 @@ export default {
               cantidad_insumo: this.cantidad_insumo,
               precio_insumo: this.precio_insumo,
               decrip_insumo: this.decrip_insumo,
+              tipo_peso: this.mSelectTipoPeso == null ? 1 : this.mSelectTipoPeso
             }
           );
           if(datos.data.status_code == 200){
@@ -531,7 +576,8 @@ export default {
         this.precio_insumo != "" &&
         this.decrip_insumo != "" &&
         this.mSelectInsumo != null &&
-        this.mSelectInsumoList != null
+        this.mSelectInsumoList != null &&
+        this.mSelectTipoPeso != null
       ) {
         try {
           var datos = await this.$axios.put(
@@ -544,6 +590,7 @@ export default {
               cantidad_insumo: this.cantidad_insumo,
               precio_insumo: this.precio_insumo,
               decrip_insumo: this.decrip_insumo,
+              tipo_peso: this.mSelectTipoPeso
             }
           );
           this.closeEditInsumo()
@@ -554,10 +601,29 @@ export default {
         }
       }
     },
+    async readTipoPesosActivo() {
+      this.mListTipoPesos = [];
+      try {
+        var datos = await this.$axios.get(
+          process.env.baseUrl + "/tipo_peso_active"
+        );
+        console.log(datos.data.datos);
+        this.mListTipoPesos.push(...datos.data.datos);
+      } catch (error) {
+        console.log(error);
+      }
+    },
   },
   mounted() {
+    this.readTipoPesosActivo()
     this.readTipoInsumoActive();
     this.readInsumoAll();
+
+    var data = jwt_decode(this.$cookies.get("token")).datosJWT;
+    if(data.active_options_insumo == 1){
+      this.isPermisosActions = true
+    }
+
   },
 };
 </script>

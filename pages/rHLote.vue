@@ -49,6 +49,18 @@
                   ><i class="el-icon-search"></i
                 ></span>
               </base-button>
+
+              <base-button
+                icon
+                type="danger"
+                size="sm"
+                v-if="mListRHLote.length > 0"
+                @click="exportPdfRSalidas()"
+              >
+                <span class="btn-inner--icon"
+                  ><i class="ni ni-single-copy-04"></i
+                ></span>
+              </base-button>
             </div>
           </div>
         </card>
@@ -90,7 +102,11 @@
             </el-table-column>
             <el-table-column prop="vOxigeno" label="OX." width="130">
             </el-table-column>
-            <el-table-column prop="detalleHistorial" label="DETALLE" width="270">
+            <el-table-column
+              prop="detalleHistorial"
+              label="DETALLE"
+              width="270"
+            >
             </el-table-column>
 
             <div slot="empty"></div>
@@ -102,6 +118,10 @@
   </div>
 </template>
 <script>
+import pdfMake from "pdfmake/build/pdfmake.js";
+import pdfFonts from "pdfmake/build/vfs_fonts.js";
+pdfMake.vfs = pdfFonts.pdfMake.vfs;
+
 import flatPicker from "vue-flatpickr-component";
 import { getBase64LogoReportes } from "../util/logoReport";
 import { convertSecondtoTimeString } from "../util/fechas";
@@ -166,8 +186,8 @@ export default {
       loadingInsumoLotes: false,
       mSelectLote: [],
       mListRHLote: [],
-      fechaInicial:null,
-      fechaFinal:null,
+      fechaInicial: null,
+      fechaFinal: null,
     };
   },
   methods: {
@@ -193,8 +213,14 @@ export default {
           {
             token: this.token,
             lotes: this.mSelectLote.length == 0 ? "*" : this.mSelectLote,
-            fechaI: this.fechaInicial != null ? getFecha_dd_mm_yyyy(this.fechaInicial) : null,
-            fechaF: this.fechaFinal != null ? getFecha_dd_mm_yyyy(this.fechaFinal) : null,
+            fechaI:
+              this.fechaInicial != null
+                ? getFecha_dd_mm_yyyy(this.fechaInicial)
+                : null,
+            fechaF:
+              this.fechaFinal != null
+                ? getFecha_dd_mm_yyyy(this.fechaFinal)
+                : null,
           }
         );
 
@@ -203,6 +229,208 @@ export default {
         console.log(error);
       }
       this.loadingInsumoLotes = false;
+    },
+    async exportPdfRSalidas() {
+      var resultadoString = [
+        [
+          // CodiVehiDispEven,HoraDispEven,DescRutaSali_m,NumeVuelSali_m,DescFrec,DescDispEvenList,LatiDispEven,LongDispEven
+
+          {
+            text: "LOTE",
+            fontSize: 8.5,
+            bold: true,
+            fillColor: "#039BC4",
+            color: "white",
+            alignment: "center",
+          },
+          {
+            text: "MERCADO",
+            fontSize: 8.5,
+            bold: true,
+            fillColor: "#039BC4",
+            color: "white",
+            alignment: "center",
+          },
+          {
+            text: "F. HISTORIAL",
+            fontSize: 8.5,
+            bold: true,
+            fillColor: "#039BC4",
+            color: "white",
+            alignment: "center",
+          },
+          {
+            text: "TEMP.",
+            fontSize: 8.5,
+            bold: true,
+            fillColor: "#039BC4",
+            color: "white",
+            alignment: "center",
+          },
+          {
+            text: "HUM.",
+            fontSize: 8.5,
+            bold: true,
+            fillColor: "#039BC4",
+            color: "white",
+            alignment: "center",
+          },
+          {
+            text: "PH.",
+            fontSize: 8.5,
+            bold: true,
+            fillColor: "#039BC4",
+            color: "white",
+            alignment: "center",
+          },
+          {
+            text: "OXI.",
+            fontSize: 8.5,
+            bold: true,
+            fillColor: "#039BC4",
+            color: "white",
+            alignment: "center",
+          },
+          {
+            text: "DETALLE",
+            fontSize: 8.5,
+            bold: true,
+            fillColor: "#039BC4",
+            color: "white",
+            alignment: "center",
+          },
+        ],
+      ];
+
+      //CodiVehiDispEven,HoraDispEven,DescRutaSali_m,NumeVuelSali_m,DescFrec,DescDispEvenList,LatiDispEven,LongDispEven
+
+      for (var i = 0; i < this.mListRHLote.length; i++) {
+        var arrys = [
+          {
+            text: this.mListRHLote[i].nombre_lote,
+            alignment: "center",
+            fontSize: 8.5,
+          },
+          {
+            text: this.mListRHLote[i].nombre_mercado,
+            fontSize: 8.5,
+            alignment: "center",
+          },
+          {
+            text: this.mListRHLote[i].fechaHistorial,
+            fontSize: 8.5,
+            alignment: "center",
+          },
+          {
+            text: this.mListRHLote[i].vTemperatura,
+            fontSize: 8.5,
+            alignment: "center",
+          },
+          {
+            text: this.mListRHLote[i].vHumedad,
+            fontSize: 8.5,
+            alignment: "center",
+          },
+          {
+            text: this.mListRHLote[i].vPh,
+            fontSize: 8.5,
+            alignment: "center",
+          },
+          {
+            text: this.mListRHLote[i].vOxigeno,
+            fontSize: 8.5,
+            alignment: "center",
+          },
+          {
+            text: this.mListRHLote[i].detalleHistorial,
+            fontSize: 8.5,
+            alignment: "center",
+          },
+        ];
+        resultadoString.push(arrys);
+      }
+
+      /**
+ * function (currentPage, pageCount, pageSize) {
+    //"REPORTE INDICADORES DE CALIDAD \n Dir : Av Chasquis y Rio Guayllabamba (Ambato) Email : vigitracklatam@gmail.com \n Tel : 0995737084 - 032421698 Sitio Web : www.vigitrackecuador.com"
+    return [
+      {
+        text: "REPORTE SALIDAS DETALLADAS",
+        alignment: "center",
+        fontSize: 16,bold:true
+      },
+      {
+        text: "Dir : Av Chasquis y Rio Guayllabamba (Ambato) Email : vigitracklatam@gmail.com",
+        alignment: "center",
+        fontSize: 8
+      },{
+        text: "Tel : 0995737084 - 032421698 Sitio Web : www.vigitrackecuador.com",
+        alignment: "center",
+        fontSize: 8
+      }
+    ];
+  }
+ * ***/
+      var docDefinition = {
+        pageSize: "A4",
+        pageOrientation: "landscape",
+        pageMargins: [40, 80, 40, 60],
+        header: {
+          margin: 15,
+          columns: [
+            {
+              image: getBase64LogoReportes(""),
+              width: 100,
+              height: 50,
+              margin: [30, 0, 0, 0],
+            },
+            {
+              layout: "noBorders",
+              table: {
+                widths: ["*"],
+                body: [
+                  [
+                    {
+                      text: "REPORTE HISTORIAL DE LOTE",
+                      alignment: "center",
+                      fontSize: 16,
+                      bold: true,
+                    },
+                  ],
+                  [
+                    {
+                      text: "Dir :  89G2+QXC, 5 de Junio, Riobamba Email : dircomunicacion@gadmriobamba.gob.ec",
+                      alignment: "center",
+                      fontSize: 8,
+                    },
+                  ],
+                  [
+                    {
+                      text: "Tel : 096 973 8255 Sitio Web : http://www.gadmriobamba.gob.ec/",
+                      alignment: "center",
+                      fontSize: 8,
+                    },
+                  ],
+                ],
+              },
+            },
+          ],
+        },
+        content: [
+          {
+            table: {
+              // headers are automatically repeated if the table spans over multiple pages
+              // you can declare how many rows should be treated as headers
+              headerRows: 0,
+              widths: [90, 130, 90, 80, 60, 50,60,130],
+              body: resultadoString,
+            },
+          },
+        ],
+      };
+      /*var win = window.open("", "_blank");
+pdfMake.createPdf(docDefinition).open({}, win);*/
+      pdfMake.createPdf(docDefinition).download("RHL_" + Date.now());
     },
   },
   mounted() {
