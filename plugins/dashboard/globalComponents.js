@@ -19,11 +19,13 @@ import { Input, Tooltip, Popover,Calendar } from 'element-ui';
 import { ValidationProvider, ValidationObserver } from 'vee-validate';
 import Vue from 'vue';
 
+
+/**
 import lang from 'element-ui/lib/locale/lang/es'
 import locale from 'element-ui/lib/locale'
 
 locale.use(lang)
-/**
+
  * You can register global components here and use them as a plugin in your main Vue instance
  */
 Vue.component(Badge.name, Badge);

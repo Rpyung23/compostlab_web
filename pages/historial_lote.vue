@@ -46,14 +46,17 @@
             height="calc(100vh - 8.90rem)"
             style="width: 100%"
           >
-            <el-table-column  v-if="isPermisosActions" width="180">
+            <el-table-column v-if="isPermisosActions" width="180">
               <template slot-scope="scope">
-                <base-button size="sm" title="DESPACHO" type="danger" @click="showNotificationDespacho(scope.row)"
+                <base-button
+                  size="sm"
+                  title="DESPACHO"
+                  type="danger"
+                  @click="showNotificationDespacho(scope.row)"
                   ><i class="ni ni-check-bold"></i
                 ></base-button>
                 <base-button
                   size="sm"
-                  v-if="scope.row != null && scope.row.FkIDFase != 5"
                   title="AGREGAR OBSERVACION"
                   type="success"
                   @click="showAddHistorial(scope.row)"
@@ -61,7 +64,6 @@
                 ></base-button>
                 <base-button
                   size="sm"
-                  v-if="scope.row != null && scope.row.FkIDFase != 5"
                   title="AGREGAR INSUMO"
                   type="default"
                   @click="showAddInsumoLote(scope.row)"
@@ -78,12 +80,22 @@
 
             <!--<el-table-column prop="idSali_m" label="Salida" width="140">
               </el-table-column>-->
-              <el-table-column prop="detalleFase" label="FASE ACT." width="190">
+            <el-table-column prop="detalleFase" label="FASE ACT." width="190">
               <template slot-scope="scope">
-                <badge v-if="scope.row.FkIDFase != 5" type="primary" class="mr-2">{{scope.row.detalleFase}}</badge>
-                <badge v-if="scope.row.FkIDFase == 5" type="danger" class="mr-2">{{scope.row.detalleFase}}</badge>
+                <badge
+                  v-if="scope.row.FkIDFase != 5"
+                  type="primary"
+                  class="mr-2"
+                  >{{ scope.row.detalleFase }}</badge
+                >
+                <badge
+                  v-if="scope.row.FkIDFase == 5"
+                  type="danger"
+                  class="mr-2"
+                  >{{ scope.row.detalleFase }}</badge
+                >
               </template>
-            </el-table-column>  
+            </el-table-column>
 
             <el-table-column
               v-for="column in tableColumnsLote"
@@ -246,6 +258,18 @@
         height="calc(100vh - 20rem)"
         style="width: 100%"
       >
+        <el-table-column v-if="isPermisosActions" width="100">
+          <template slot-scope="scope">
+            <base-button
+              size="sm"
+              @click="deleteItemHistorialLote(scope.row.id_historial_lote)"
+              title="ELIMINAR"
+              type="danger"
+              ><i class="ni ni-fat-remove"></i
+            ></base-button>
+          </template>
+        </el-table-column>
+
         <el-table-column
           v-for="column in tableHistorialDetalleLote"
           :key="column.label"
@@ -282,7 +306,7 @@ import {
   Button,
   Loading,
   Switch,
-  MessageBox
+  MessageBox,
 } from "element-ui";
 import jwt_decode from "jwt-decode";
 import RouteBreadCrumb from "@/components/argon-core/Breadcrumb/RouteBreadcrumb";
@@ -301,7 +325,7 @@ export default {
     BasePagination,
     flatPicker,
     RouteBreadCrumb,
-    [MessageBox.name]:MessageBox,
+    [MessageBox.name]: MessageBox,
     [Switch.name]: Switch,
     [DatePicker.name]: DatePicker,
     [Select.name]: Select,
@@ -415,7 +439,7 @@ export default {
       vPh: null,
       vOxigeno: null,
       detalleHistorial: "",
-      isPermisosActions:false
+      isPermisosActions: false,
     };
   },
   methods: {
@@ -569,7 +593,7 @@ export default {
           if (datos.data.status_code == 200) {
             this.clearModalDetalleHistorial();
             this.readDetalleHistorialLote();
-            this.readHistorialLoteAll()
+            this.readHistorialLoteAll();
           } else {
             this.showNotificationError("HISTORIAL LOTE", datos.data.msm);
           }
@@ -580,35 +604,63 @@ export default {
         this.showNotificationError("HISTORIAL LOTE", "DATOS VACIOS");
       }
     },
-    showNotificationDespacho(item){
-      
-      MessageBox.confirm("Desea enviar el "+item.nombre_lote+" a despacho ?", 'DESPACHO', {
-          confirmButtonText: 'DESPACHAR',
-          cancelButtonText: 'Cancel',
-          type: 'warning'
-        }).then(() => {
-          this.sendDespacho(item.id_lote)
-        }).catch((e) => {
-          this.showNotificationError(item.nombre_lote,e.toString())         
+    showNotificationDespacho(item) {
+      MessageBox.confirm(
+        "Desea enviar el " + item.nombre_lote + " a despacho ?",
+        "DESPACHO",
+        {
+          confirmButtonText: "DESPACHAR",
+          cancelButtonText: "Cancel",
+          type: "warning",
+        }
+      )
+        .then(() => {
+          this.sendDespacho(item.id_lote);
         })
+        .catch((e) => {
+          this.showNotificationError(item.nombre_lote, e.toString());
+        });
     },
     async sendDespacho(lote) {
       try {
-          var datos = await this.$axios.put(
-            process.env.baseUrl + "/sendLoteDespacho",
-            {
-              token: this.token,
-              lote: lote
-            }
-          );
-          if (datos.data.status_code == 200) {
-            this.readHistorialLoteAll();
-          } else {
-            this.showNotificationError("DESPACHO", datos.data.msm);
+        var datos = await this.$axios.put(
+          process.env.baseUrl + "/sendLoteDespacho",
+          {
+            token: this.token,
+            lote: lote,
           }
-        } catch (error) {
-          this.showNotificationError("TRY CATCH DESPACHO", error.toString());
+        );
+        if (datos.data.status_code == 200) {
+          this.readHistorialLoteAll();
+        } else {
+          this.showNotificationError("DESPACHO", datos.data.msm);
         }
+      } catch (error) {
+        this.showNotificationError("TRY CATCH DESPACHO", error.toString());
+      }
+    },
+    async deleteItemHistorialLote(id_historial_lote) {
+      console.log(id_historial_lote);
+      try {
+        var datos = await this.$axios.delete(
+          process.env.baseUrl + "/deleteItemHistorialLote",
+          {
+            data: {
+              token: this.token,
+              itemHLote: id_historial_lote,
+            },
+          }
+        );
+
+        if (datos.data.status_code == 200) {
+          this.readHistorialLoteAll()
+          this.readDetalleHistorialLote();
+        } else {
+          alert(datos.data.msm);
+        }
+      } catch (error) {
+        alert(error.toString());
+      }
     },
   },
   mounted() {
@@ -616,10 +668,9 @@ export default {
     this.readHistorialLoteAll();
 
     var data = jwt_decode(this.$cookies.get("token")).datosJWT;
-    if(data.active_options_historial_lote == 1){
-      this.isPermisosActions = true
+    if (data.active_options_historial_lote == 1) {
+      this.isPermisosActions = true;
     }
-
   },
 };
 </script>
@@ -643,8 +694,6 @@ export default {
   width: 100%;
   height: calc(80vh);
 }
-
-
 
 .form-controlPersonal {
   display: block;
