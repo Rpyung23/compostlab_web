@@ -313,8 +313,8 @@ export default {
           columns: [
             {
               image: getBase64LogoReportes(""),
-              width: 100,
-              height: 50,
+              width: 190,
+              height: 45,
               margin: [30, 0, 0, 0],
             },
             {
