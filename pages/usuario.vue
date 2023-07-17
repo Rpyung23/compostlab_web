@@ -145,7 +145,7 @@
                 <base-input
                   prepend-icon="ni ni-mobile-button"
                   name="Telefono Usuario"
-                  type="number"
+                  type="tel"
                   rules="required"
                   placeholder="Telefono Usuario"
                   v-model="telefono"
@@ -238,6 +238,7 @@
                   prepend-icon="ni ni-mobile-button"
                   name="Telefono Usuario"
                   rules="required"
+                  type="tel"
                   placeholder="Telefono Usuario"
                   v-model="telefono"
                 >
@@ -354,11 +355,11 @@
           <div class="form-row" style="margin-top: 0.5rem">
             <div class="col-md-6">
               <el-checkbox border v-model="activeMercado"
-                >OPC MERCADO</el-checkbox
+                >OPC Procedencia - Sector</el-checkbox
               >
             </div>
             <div class="col-md-6">
-              <el-checkbox border v-model="activeLote">OPC LOTE</el-checkbox>
+              <el-checkbox border v-model="activeLote">OPC PILA</el-checkbox>
             </div>
           </div>
 
@@ -405,12 +406,12 @@
           <div class="form-row" style="margin-top: 0.5rem">
             <div class="col-md-6">
               <el-checkbox border v-model="btn_tabla_mercados"
-                >BTN TABLA MERCADOS</el-checkbox
+                >BTN TABLA Procedencia - Sector</el-checkbox
               >
             </div>
             <div class="col-md-6">
               <el-checkbox border v-model="btn_tabla_lotes"
-                >BTN TABLA LOTES</el-checkbox
+                >BTN TABLA PILAS</el-checkbox
               >
             </div>
           </div>
@@ -434,7 +435,7 @@
           <div class="form-row" style="margin-top: 0.5rem">
             <div class="col-md-12">
               <el-checkbox border v-model="btn_tabla_h_lotes"
-                >BTN TABLA H - LOTES</el-checkbox
+                >BTN TABLA H - PILAS</el-checkbox
               >
             </div>
           </div>

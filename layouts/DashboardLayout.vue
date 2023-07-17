@@ -18,7 +18,7 @@
           translate="no"
           v-if="activeMercado"
           :link="{
-            name: 'Mercados',
+            name: 'Procedencia - Sector',
             icon: 'ni ni-building text-success',
             path: './mercado',
           }"
@@ -40,9 +40,9 @@
           translate="no"
           v-if="activeLote"
           :link="{
-            name: 'Lotes',
+            name: 'Pilas',
             icon: 'ni ni-ungroup text-primary',
-            path: './lote',
+            path: './pila',
           }"
         >
         </sidebar-item>
@@ -51,7 +51,7 @@
           translate="no"
           v-if="activeHistorial"
           :link="{
-            name: 'Historial - Lotes',
+            name: 'Historial - Pilas',
             icon: 'ni ni-book-bookmark text-danger',
             path: './historial_lote',
           }"
@@ -76,10 +76,10 @@
 
           <!--<sidebar-item :link="{ name: 'Cant. Composta', path: '/' }" translate="no"/>
           <sidebar-item :link="{ name: 'Composta Mercado', path: '/' }" translate="no"/>-->
-          <sidebar-item :link="{ name: 'Salidas Lote', path: '/rSalidas' }" translate="no"/>
-          <sidebar-item :link="{ name: 'Insumos Lote', path: '/rInsumoLote' }" translate="no"/>
+          <sidebar-item :link="{ name: 'Salidas Pila', path: '/rSalidas' }" translate="no"/>
+          <sidebar-item :link="{ name: 'Insumos Pila', path: '/rInsumoLote' }" translate="no"/>
           <sidebar-item :link="{ name: 'H. Volteos', path: '/rHLote' }" translate="no"/>
-          <sidebar-item :link="{ name: 'Composta Mercado', path: '/rCompostMercado' }" translate="no"/>
+          <sidebar-item :link="{ name: 'Composta Procedencia - Sector', path: '/rCompostMercado' }" translate="no"/>
           
           
         </sidebar-item>

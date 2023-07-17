@@ -110,7 +110,7 @@
       </div>
     </base-header>
 
-    <modal :show.sync="modalAddInsumo" size="lg">
+    <modal :show.sync="modalAddInsumo" size="xl">
       <h6 slot="header" class="modal-title">
         {{
           itemRowHistorialLote == null ? "" : itemRowHistorialLote.nombre_lote
@@ -118,7 +118,7 @@
       </h6>
 
       <div class="form-row" style="margin-bottom: 0.5rem">
-        <div class="col-md-6">
+        <div class="col-md-3">
           <el-select
             placeholder="Tipo Insumo"
             v-model="mSelectInsumo"
@@ -134,10 +134,26 @@
           </el-select>
         </div>
         <div class="col-md-3">
+          <el-select
+            placeholder="Tipo Peso"
+            v-model="mSelectTipoPeso"
+            style="width: 100%"
+          >
+            <el-option
+              v-for="item in mListTipoPesos"
+              :key="item.id_tipo_peso"
+              :label="item.detalle_tipo_peso"
+              :value="item.id_tipo_peso"
+            >
+            </el-option>
+          </el-select>
+        </div>
+        <div class="col-md-2">
           <base-input
             name="Cantidad"
             placeholder="Cantidad"
             v-model="cantInsumo"
+            :min=0
             type="number"
           >
           </base-input>
@@ -163,6 +179,19 @@
         height="calc(100vh - 20rem)"
         style="width: 100%"
       >
+
+      <el-table-column v-if="isPermisosActions" width="100">
+          <template slot-scope="scope">
+            <base-button
+              size="sm"
+              title="ELIMINAR"
+              type="danger"
+              @click="deleteItemInsumoLote(scope.row)"
+              ><i class="ni ni-fat-remove"></i
+            ></base-button>
+          </template>
+        </el-table-column>
+
         <el-table-column prop="fk_id_lote" label="CODIGO" width="120">
         </el-table-column>
 
@@ -179,6 +208,7 @@
 
     <modal :show.sync="modalAddHistorial" size="xl">
       <h6 slot="header" class="modal-title">
+        CUADRO DE CONDICIONES FISICO/QUIMICOS DEL PROCESO COMPOST
         {{
           itemRowHistorialLote == null ? "" : itemRowHistorialLote.nombre_lote
         }}
@@ -191,6 +221,8 @@
             placeholder="TEMPERATURA"
             type="number"
             rules="required"
+            :min="0"
+            :max="70"
             v-model="vTemperatura"
           >
           </base-input>
@@ -202,6 +234,8 @@
             rules="required"
             placeholder="HUMEDAD"
             type="number"
+            :min="0"
+            :max="100"
           >
           </base-input>
         </div>
@@ -211,11 +245,13 @@
             name="PH"
             placeholder="PH"
             rules="required"
+            :min="1"
+            :max="14"
             type="number"
           >
           </base-input>
         </div>
-        <div class="col-md-2">
+        <!--<div class="col-md-2">
           <base-input
             v-model="vOxigeno"
             name="OXIGENO"
@@ -224,7 +260,7 @@
             type="number"
           >
           </base-input>
-        </div>
+        </div>-->
         <div class="col-md-2">
           <base-input
             v-model="detalleHistorial"
@@ -344,6 +380,8 @@ export default {
   },
   data() {
     return {
+      mSelectTipoPeso: null,
+      mListTipoPesos: [],
       tableColumnsLote: [
         {
           prop: "fechaIngreso",
@@ -362,7 +400,7 @@ export default {
         },
         {
           prop: "nombre_mercado",
-          label: "MERCADO",
+          label: "Procedencia - Sector",
           minWidth: 220,
         },
       ],
@@ -377,7 +415,7 @@ export default {
       tableInsumoLotes: [
         {
           prop: "nombre_lote",
-          label: "LOTE",
+          label: "PILA",
           minWidth: 210,
         },
         {
@@ -395,6 +433,11 @@ export default {
           label: "CANT",
           minWidth: 100,
         },
+        {
+          prop: "detalle_tipo_peso",
+          label: "TIPO PESO",
+          minWidth: 100,
+        },
       ],
       tableHistorialDetalleLote: [
         {
@@ -404,22 +447,17 @@ export default {
         },
         {
           prop: "vTemperatura",
-          label: "TEMPERATURA",
+          label: "TEMPERATURA °C",
           minWidth: 180,
         },
         {
           prop: "vHumedad",
-          label: "HUMEDAD",
+          label: "HUMEDAD %",
           minWidth: 170,
         },
         {
           prop: "vPh",
           label: "PH",
-          minWidth: 100,
-        },
-        {
-          prop: "vOxigeno",
-          label: "OXIGENO",
           minWidth: 100,
         },
         {
@@ -457,7 +495,7 @@ export default {
       this.vTemperatura = null;
       this.vHumedad = null;
       this.vPh = null;
-      this.vOxigeno = null;
+      //this.vOxigeno = null;
       this.detalleHistorial = "";
     },
     async readInsumoAll() {
@@ -521,26 +559,35 @@ export default {
       this.loadingHLoteInsumo = false;
     },
     async addInsumoLote() {
-      this.mListInsumoXLote = [];
-      try {
-        var datos = await this.$axios.post(
-          process.env.baseUrl + "/add_insumo_lote",
-          {
-            id_lote: this.itemRowHistorialLote.id_lote,
-            id_insumo: this.mSelectInsumo,
-            cantidad: this.cantInsumo,
+      if (this.mSelectTipoPeso != null) {
+        if (this.mSelectInsumo != null) {
+          this.mListInsumoXLote = [];
+          try {
+            var datos = await this.$axios.post(
+              process.env.baseUrl + "/add_insumo_lote",
+              {
+                id_lote: this.itemRowHistorialLote.id_lote,
+                id_insumo: this.mSelectInsumo,
+                cantidad: this.cantInsumo,
+                fk_id_peso: this.mSelectTipoPeso,
+              }
+            );
+            if (datos.data.status_code == 200) {
+              this.readInsumoLote(this.itemRowHistorialLote.id_lote);
+            } else {
+              Notification.info({
+                title: "ADD INSUMO",
+                message: datos.data.msm,
+              });
+            }
+          } catch (error) {
+            console.log(error);
           }
-        );
-        if (datos.data.status_code == 200) {
-          this.readInsumoLote(this.itemRowHistorialLote.id_lote);
         } else {
-          Notification.info({
-            title: "ADD INSUMO",
-            message: datos.data.msm,
-          });
+          this.showNotificationError('AGREGAR INSUMO','SELECIONAR UN INSUMO')
         }
-      } catch (error) {
-        console.log(error);
+      } else {
+        this.showNotificationError('AGREGAR INSUMO','SELECIONAR UN TIPO DE PESO')
       }
     },
     showNotificationError(title, msm) {
@@ -562,7 +609,7 @@ export default {
         if (datos.data.status_code == 200 || datos.data.status_code == 300) {
           this.tableDetalleHistorialLote.push(...datos.data.datos);
         } else {
-          this.showNotificationError("HISTORIAL LOTE", datos.data.msm);
+          this.showNotificationError("HISTORIAL PILA", datos.data.msm);
         }
       } catch (error) {
         this.showNotificationError("TRY CATCH", error.toString());
@@ -574,34 +621,56 @@ export default {
       if (
         this.vTemperatura != null &&
         this.vHumedad != null &&
-        this.vPh != null &&
-        this.vOxigeno != null
+        this.vPh != null
+        //&&
+        //this.vOxigeno != null
       ) {
-        try {
-          var datos = await this.$axios.post(
-            process.env.baseUrl + "/add_historial_lote",
-            {
-              token: this.token,
-              vTemperatura: this.vTemperatura,
-              vHumedad: this.vHumedad,
-              vPh: this.vPh,
-              vOxigeno: this.vOxigeno,
-              detalleHistorial: this.detalleHistorial,
-              lote: this.itemRowHistorialLote.id_lote,
+        if (this.vTemperatura >= 0 && this.vTemperatura <= 70) {
+          if (this.vHumedad >= 0 && this.vHumedad <= 100) {
+            if (this.vPh >= 1 && this.vPh <= 14) {
+              try {
+                var datos = await this.$axios.post(
+                  process.env.baseUrl + "/add_historial_lote",
+                  {
+                    token: this.token,
+                    vTemperatura: this.vTemperatura,
+                    vHumedad: this.vHumedad,
+                    vPh: this.vPh,
+                    vOxigeno: 0,
+                    detalleHistorial: this.detalleHistorial,
+                    lote: this.itemRowHistorialLote.id_lote,
+                  }
+                );
+                if (datos.data.status_code == 200) {
+                  this.clearModalDetalleHistorial();
+                  this.readDetalleHistorialLote();
+                  this.readHistorialLoteAll();
+                } else {
+                  this.showNotificationError("HISTORIAL PILA", datos.data.msm);
+                }
+              } catch (error) {
+                this.showNotificationError("TRY CATCH", error.toString());
+              }
+            } else {
+              this.showNotificationError(
+                "HISTORIAL PILA",
+                "PH PERMITIDO ENTRE 1 a 14"
+              );
             }
-          );
-          if (datos.data.status_code == 200) {
-            this.clearModalDetalleHistorial();
-            this.readDetalleHistorialLote();
-            this.readHistorialLoteAll();
           } else {
-            this.showNotificationError("HISTORIAL LOTE", datos.data.msm);
+            this.showNotificationError(
+              "HISTORIAL PILA",
+              "HUMEDAD PERMITIDA ENTRE 0% a 100%"
+            );
           }
-        } catch (error) {
-          this.showNotificationError("TRY CATCH", error.toString());
+        } else {
+          this.showNotificationError(
+            "HISTORIAL PILA",
+            "TEMPERATURA PERMITIDA ENTRE 0 a 70 grados centígrados"
+          );
         }
       } else {
-        this.showNotificationError("HISTORIAL LOTE", "DATOS VACIOS");
+        this.showNotificationError("HISTORIAL PILA", "DATOS VACIOS");
       }
     },
     showNotificationDespacho(item) {
@@ -653,8 +722,43 @@ export default {
         );
 
         if (datos.data.status_code == 200) {
-          this.readHistorialLoteAll()
+          this.readHistorialLoteAll();
           this.readDetalleHistorialLote();
+        } else {
+          alert(datos.data.msm);
+        }
+      } catch (error) {
+        alert(error.toString());
+      }
+    },
+    async readTipoPesosActivo() {
+      this.mListTipoPesos = [];
+      try {
+        var datos = await this.$axios.get(
+          process.env.baseUrl + "/tipo_peso_active"
+        );
+        console.log(datos.data.datos);
+        this.mListTipoPesos.push(...datos.data.datos);
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    async deleteItemInsumoLote(obj) {
+      console.log(obj);
+      try {
+        var datos = await this.$axios.delete(
+          process.env.baseUrl + "/delete_insumo_lote",
+          {
+            data: {
+              token: this.token,
+              id_insumo_lote: obj.id_insumo_lote,
+            },
+          }
+        );
+
+        if (datos.data.status_code == 200) {
+          this.readHistorialLoteAll();
+          this.readInsumoLote(obj.fk_id_lote);
         } else {
           alert(datos.data.msm);
         }
@@ -664,6 +768,7 @@ export default {
     },
   },
   mounted() {
+    this.readTipoPesosActivo();
     this.readInsumoAll();
     this.readHistorialLoteAll();
 

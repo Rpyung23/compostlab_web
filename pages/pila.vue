@@ -40,7 +40,7 @@
                 size="sm"
                 v-if="isPermisosActions"
                 @click="showAddLote()"
-                title="NUEVO LOTE"
+                title="NUEVO PILA"
               >
                 <span class="btn-inner--icon"
                   ><i class="ni ni-fat-add"></i
@@ -80,6 +80,9 @@
             <el-table-column prop="nombre_lote" label="LOTE" width="190">
             </el-table-column>
 
+            <el-table-column prop="detalle_residuo" label="TIPO RESIDUO" width="270">
+            </el-table-column>
+
             <el-table-column prop="detalleFase" label="FASE ACT." width="190">
               <template slot-scope="scope">
                 <badge v-if="scope.row.FkIDFase != 5" type="primary" class="mr-2">{{scope.row.detalleFase}}</badge>
@@ -110,26 +113,31 @@
           @submit.prevent="handleSubmit(firstFormSubmit)"
         >
           <div class="form-row" style="margin-bottom: 0.5rem">
-            <div class="col-md-12">
+            <div class="col-md-6">
               <base-input
-                name="Nombre Lote"
-                placeholder="Nombre Lote"
+                name="Nombre Pila"
+                placeholder="Nombre Pila"
                 prepend-icon="ni ni-app"
                 rules="required"
                 v-model="NombreLote"
               >
               </base-input>
             </div>
-            <!--<div class="col-md-6">
-              <base-input
-                prepend-icon="ni ni-single-copy-04"
-                name="Serie"
-                placeholder="Serie"
-                rules="required"
-                v-model="serieVehiculo"
+            <div class="col-md-6">
+              <el-select
+                placeholder="Tipo Residuo"
+                v-model="mSelectResiduo"
+                style="width: 100%"
               >
-              </base-input>
-            </div>-->
+                <el-option
+                  v-for="item in mListResiduos"
+                  :key="item.id_residuo"
+                  :label="item.detalle_residuo"
+                  :value="item.id_residuo"
+                >
+                </el-option>
+              </el-select>
+            </div>
           </div>
           <div class="form-row" style="margin-bottom: 0.5rem">
             <div class="col-md-6">
@@ -161,7 +169,7 @@
           <div class="form-row" style="margin-bottom: 0.5rem">
             <div class="col-md-6">
               <el-select
-                placeholder="Mercado"
+                placeholder="Procedencia - Sector"
                 v-model="mSelectMercado"
                 style="width: 100%"
               >
@@ -188,8 +196,8 @@
           <div class="form-row" style="margin-bottom: 0.5rem">
             <div class="col-md-12">
               <base-input
-                name="Detalle Lote"
-                placeholder="Detalle Lote"
+                name="Detalle Pila"
+                placeholder="Detalle Pila"
                 prepend-icon="ni ni-paper-diploma"
                 rules="required"
                 v-model="ObsLote"
@@ -221,26 +229,31 @@
           @submit.prevent="handleSubmit(firstFormSubmit)"
         >
           <div class="form-row" style="margin-bottom: 0.5rem">
-            <div class="col-md-12">
+            <div class="col-md-6">
               <base-input
-                name="Nombre Lote"
-                placeholder="Nombre Lote"
+                name="Nombre Pila"
+                placeholder="Nombre Pila"
                 prepend-icon="ni ni-app"
                 rules="required"
                 v-model="NombreLote"
               >
               </base-input>
             </div>
-            <!--<div class="col-md-6">
-              <base-input
-                prepend-icon="ni ni-single-copy-04"
-                name="Serie"
-                placeholder="Serie"
-                rules="required"
-                v-model="serieVehiculo"
+            <div class="col-md-6">
+              <el-select
+                placeholder="Tipo Residuo"
+                v-model="mSelectResiduo"
+                style="width: 100%"
               >
-              </base-input>
-            </div>-->
+                <el-option
+                  v-for="item in mListResiduos"
+                  :key="item.id_residuo"
+                  :label="item.detalle_residuo"
+                  :value="item.id_residuo"
+                >
+                </el-option>
+              </el-select>
+            </div>
           </div>
           <div class="form-row" style="margin-bottom: 0.5rem">
             <div class="col-md-6">
@@ -272,7 +285,7 @@
           <div class="form-row" style="margin-bottom: 0.5rem">
             <div class="col-md-6">
               <el-select
-                placeholder="Mercado"
+                placeholder="Procedencia - Sector"
                 v-model="mSelectMercado"
                 style="width: 100%"
               >
@@ -299,8 +312,8 @@
           <div class="form-row" style="margin-bottom: 0.5rem">
             <div class="col-md-12">
               <base-input
-                name="Detalle Lote"
-                placeholder="Detalle Lote"
+                name="Detalle Pila"
+                placeholder="Detalle Pila"
                 prepend-icon="ni ni-paper-diploma"
                 rules="required"
                 v-model="ObsLote"
@@ -409,6 +422,8 @@ export default {
   },
   data() {
     return {
+      mListResiduos:[],
+      mSelectResiduo:null,
       modalAddLote: false,
       modalEditLote:false,
       mSelectMercado: null,
@@ -435,7 +450,7 @@ export default {
         },
         {
           prop: "nombre_mercado",
-          label: "MERCADO",
+          label: "Procedencia - Sector",
           minWidth: 250,
         },
         {
@@ -469,6 +484,7 @@ export default {
       this.NombreLote = item.nombre_lote
       this.ObsLote = item.observacion_lote
       this.PesoLote = item.peso
+      this.mSelectResiduo = item.id_residuo
       this.modalEditLote = true
     },
     closeEditLote(){
@@ -524,6 +540,18 @@ export default {
         console.log(error);
       }
     },
+    async readResiduosAll() {
+      this.mListResiduos = [];
+      try {
+        var datos = await this.$axios.get(
+          process.env.baseUrl + "/read_residuos_all"
+        );
+        console.log(datos.data.datos);
+        this.mListResiduos.push(...datos.data.datos);
+      } catch (error) {
+        console.log(error);
+      }
+    },
     async readTipoMercadoActivo() {
       this.mListTipoMercados = [];
       try {
@@ -543,7 +571,8 @@ export default {
           this.ObsLote != null &&
           this.PesoLote != null &&
           this.mSelectMercado != null &&
-          this.mSelectTipoPeso != null
+          this.mSelectTipoPeso != null &&
+          this.mSelectResiduo != null
         ) {
           var datos = await this.$axios.post(
             process.env.baseUrlPanel + "/add_lote_usuer",
@@ -554,7 +583,8 @@ export default {
               peso: this.PesoLote,
               tipo_peso: this.mSelectTipoPeso,
               id_mercado: this.mSelectMercado,
-              dia_notification: this.DiaNotificationLote == null ? 0 : this.DiaNotificationLote
+              dia_notification: this.DiaNotificationLote == null ? 0 : this.DiaNotificationLote,
+              residuo:this.mSelectResiduo
             }
           );
 
@@ -563,7 +593,7 @@ export default {
             this.readLoteAll();
           } else {
             Notification.info({
-              title: "AGREGAR LOTE",
+              title: "AGREGAR PILA",
               message: datos.data.msm,
             });
           }
@@ -573,12 +603,13 @@ export default {
       }
     },
     clearModalAddLote() {
-      this.modalAddLote = false;
-      this.NombreLote = null;
-      this.ObsLote = null;
-      this.PesoLote = null;
-      this.mSelectMercado = null;
-      this.mSelectTipoPeso = null;
+      this.modalAddLote = false
+      this.NombreLote = null
+      this.ObsLote = null
+      this.PesoLote = null
+      this.mSelectMercado = null
+      this.mSelectTipoPeso = null
+      this.mSelectResiduo = null
     },
     async updateNuevoLote() {
       try {
@@ -587,7 +618,8 @@ export default {
           this.ObsLote != null &&
           this.PesoLote != null &&
           this.mSelectMercado != null &&
-          this.mSelectTipoPeso != null
+          this.mSelectTipoPeso != null &&
+          this.mSelectResiduo != null
         ) {
           var datos = await this.$axios.put(
             process.env.baseUrlPanel + "/update_lote",
@@ -600,7 +632,8 @@ export default {
               peso: this.PesoLote,
               tipo_peso: this.mSelectTipoPeso,
               id_mercado: this.mSelectMercado,
-              dia_notification: this.DiaNotificationLote == null ? 0 : this.DiaNotificationLote
+              dia_notification: this.DiaNotificationLote == null ? 0 : this.DiaNotificationLote,
+              residuo: this.mSelectResiduo
             }
           );
 
@@ -609,7 +642,7 @@ export default {
             this.readLoteAll();
           } else {
             Notification.info({
-              title: "ACTUALIZACION LOTE",
+              title: "ACTUALIZACION PILA",
               message: datos.data.msm,
             });
           }
@@ -620,6 +653,7 @@ export default {
     },
   },
   mounted() {
+    this.readResiduosAll()
     this.readTipoMercadoActivo();
     this.readTipoPesosActivo();
     this.readLoteAll();

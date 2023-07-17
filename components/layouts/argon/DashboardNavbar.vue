@@ -109,14 +109,14 @@
             ></base-button>
           </template>
         </el-table-column>-->
-        <el-table-column label="LOTE" width="270" prop="nombre_lote">
+        <el-table-column label="PILA" width="270" prop="nombre_lote">
         </el-table-column>
         <el-table-column label="FASE" width="250" prop="detalleFase">
           <template slot-scope="scope">
                 <badge type="primary" class="mr-2">{{scope.row.detalleFase}}</badge>
               </template>
         </el-table-column>
-        <el-table-column label="MERCADO" width="230" prop="nombre_mercado">
+        <el-table-column label="Procedencia - Sector" width="230" prop="nombre_mercado">
         </el-table-column>
       </el-table>
 
@@ -243,6 +243,11 @@ export default {
           { token: this.token }
         )
         this.mListNotifications.push(...datos.data.datos)
+
+        if(this.mListNotifications.length > 0 )
+        {
+          this.ModalClasicAjustes = true
+        }
       } catch (error) {
         console.log(error);
     }}
@@ -250,6 +255,8 @@ export default {
   mounted() {
     /*this.mueveReloj();*/
     
+    this.readNotificationAll()
+
     try {
       var token = this.$cookies.get("token");
       var data = jwt_decode(token).datosJWT;

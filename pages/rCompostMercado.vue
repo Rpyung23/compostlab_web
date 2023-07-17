@@ -10,7 +10,7 @@
         >
           <div class="cardTextoRPagosVehiculoProduccionPanelDespachoBusqueda">
             <el-select
-              placeholder="Mercados"
+              placeholder="Procedencia - Sector"
               v-model="mSelectMercado"
               multiple
               collapse-tags
@@ -73,12 +73,12 @@
             height="calc(100vh - 11rem)"
             style="width: 100%"
           >
-            <el-table-column prop="nombre_mercado" label="MERCADO" width="680">
+            <el-table-column prop="nombre_mercado" label="Procedencia - Sector" width="680">
             </el-table-column>
 
             <el-table-column
               prop="totLotes"
-              label="TOTAL. LOTES"
+              label="TOTAL. PILAS"
               width="230"
             >
             </el-table-column>
@@ -203,7 +203,7 @@ export default {
         [
           // CodiVehiDispEven,HoraDispEven,DescRutaSali_m,NumeVuelSali_m,DescFrec,DescDispEvenList,LatiDispEven,LongDispEven
           {
-            text: "MERCADO",
+            text: "Procedencia - Sector",
             fontSize: 8.5,
             bold: true,
             fillColor: "#039BC4",
@@ -211,7 +211,7 @@ export default {
             alignment: "center",
           },
           {
-            text: "TOT. LOTES",
+            text: "TOT. PILAS",
             fontSize: 8.5,
             bold: true,
             fillColor: "#039BC4",
@@ -292,7 +292,7 @@ export default {
                 body: [
                   [
                     {
-                      text: "REPORTE COMPOSTA MERCADO",
+                      text: "REPORTE COMPOSTA PROCEDENCIA - SECTOR",
                       alignment: "center",
                       fontSize: 16,
                       bold: true,
@@ -300,7 +300,7 @@ export default {
                   ],
                   [
                     {
-                      text: "Dir :  89G2+QXC, 5 de Junio, Riobamba Email : dircomunicacion@gadmriobamba.gob.ec",
+                      text: "Dir :  5 de Junio y Primera Constituyente Email : dircomunicacion@gadmriobamba.gob.ec",
                       alignment: "center",
                       fontSize: 8,
                     },

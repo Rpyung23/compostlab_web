@@ -130,7 +130,7 @@
           @submit.prevent="handleSubmit(firstFormSubmit)"
         >
           <div class="form-row" style="margin-bottom: 0.5rem">
-            <div class="col-md-6">
+            <div class="col-md-12">
               <base-input
                 name="Nombre Insumo"
                 placeholder="Nombre Insumo"
@@ -140,7 +140,7 @@
               >
               </base-input>
             </div>
-            <div class="col-md-6">
+            <!--<div class="col-md-6">
               <base-input
                 prepend-icon="ni ni-tag"
                 name="Origin Insumo"
@@ -149,7 +149,7 @@
                 v-model="origin_insumo"
               >
               </base-input>
-            </div>
+            </div>-->
           </div>
           <div class="form-row" style="margin-bottom: 0.5rem">
             <div class="col-md-6">
@@ -241,7 +241,7 @@
           @submit.prevent="handleSubmit(firstFormSubmit)"
         >
           <div class="form-row" style="margin-bottom: 0.5rem">
-            <div class="col-md-6">
+            <div class="col-md-12">
               <base-input
                 name="Nombre Insumo"
                 placeholder="Nombre Insumo"
@@ -251,7 +251,7 @@
               >
               </base-input>
             </div>
-            <div class="col-md-6">
+            <!--<div class="col-md-6">
               <base-input
                 prepend-icon="ni ni-tag"
                 name="Origin Insumo"
@@ -260,7 +260,7 @@
                 v-model="origin_insumo"
               >
               </base-input>
-            </div>
+            </div>-->
           </div>
           <div class="form-row" style="margin-bottom: 0.5rem">
             <div class="col-md-6">
@@ -412,11 +412,6 @@ export default {
           minWidth: 230,
         },
         {
-          prop: "origin_insumo",
-          label: "ORIGIN",
-          minWidth: 230,
-        },
-        {
           prop: "nombreTipoInsumo",
           label: "TIPO INSUMO",
           minWidth: 250,
@@ -539,7 +534,6 @@ export default {
     async insertInsumo() {
       if (
         this.nombre_insumo != "" &&
-        this.origin_insumo != "" &&
         this.cantidad_insumo != "" &&
         this.precio_insumo != "" &&
         this.decrip_insumo != "" &&
@@ -551,7 +545,7 @@ export default {
             process.env.baseUrlPanel + "/create_insumo",
             {
               nombre_insumo: this.nombre_insumo,
-              origin_insumo: this.origin_insumo,
+              origin_insumo: "",
               id_tipo_insumo: this.mSelectInsumo,
               cantidad_insumo: this.cantidad_insumo,
               precio_insumo: this.precio_insumo,
@@ -571,7 +565,6 @@ export default {
     async updateInsumo() {
       if (
         this.nombre_insumo != "" &&
-        this.origin_insumo != "" &&
         this.cantidad_insumo != "" &&
         this.precio_insumo != "" &&
         this.decrip_insumo != "" &&
@@ -585,7 +578,7 @@ export default {
             {
               id_insumo:this.mSelectInsumoList.id_insumo,
               nombre_insumo: this.nombre_insumo,
-              origin_insumo: this.origin_insumo,
+              origin_insumo: "",
               id_tipo_insumo: this.mSelectInsumo,
               cantidad_insumo: this.cantidad_insumo,
               precio_insumo: this.precio_insumo,

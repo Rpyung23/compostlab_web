@@ -74,6 +74,84 @@
             <div slot="empty"></div>
           </el-table>
         </card>
+
+        <modal :show.sync="modalDespachoAuth" modal-classes="modal-sm">
+          <validation-observer v-slot="{ handleSubmit }" ref="formValidator">
+            <form
+              class="needs-validation"
+              @submit.prevent="handleSubmit(firstFormSubmit)"
+            >
+              <h6 slot="header" class="modal-title">
+                Desea enviar el
+                {{
+                  itemSelectDespacho == null
+                    ? ""
+                    : itemSelectDespacho.nombre_lote
+                }}
+                a salida ?
+              </h6>
+
+              <div class="form-row" style="margin-top: 1rem">
+                <div class="col-md-12">
+                  <base-input
+                    name="DESTINO"
+                    placeholder="DESTINO"
+                    prepend-icon="ni ni-single-02"
+                    rules="required"
+                    v-model="destinoSalida"
+                  >
+                  </base-input>
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="col-md-12">
+                  <base-input
+                    name="CORREO DESTINO"
+                    placeholder="CORREO"
+                    prepend-icon="ni ni-email-83"
+                    rules="required"
+                    v-model="correoSalida"
+                  >
+                  </base-input>
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="col-md-12">
+                  <base-input
+                    name="TELEFONO"
+                    placeholder="TELEFONO"
+                    type="tel"
+                    prepend-icon="ni ni-mobile-button"
+                    rules="required"
+                    v-model="telefonoSalida"
+                  >
+                  </base-input>
+                </div>
+                <!--<div class="col-md-6">
+              <base-input
+                prepend-icon="ni ni-tag"
+                name="Origin Insumo"
+                placeholder="Origin Insumo"
+                rules="required"
+                v-model="origin_insumo"
+              >
+              </base-input>
+            </div>-->
+              </div>
+              <div class="text-right">
+                <base-button type="danger" @click="closeModalDespacho()"
+                  >Cancelar</base-button
+                >
+                <base-button
+                  type="primary"
+                  @click="sendAuthLoteSalida()"
+                  native-type="submit"
+                  >Actualizar</base-button
+                >
+              </div>
+            </form>
+          </validation-observer>
+        </modal>
       </div>
     </base-header>
   </div>
@@ -143,7 +221,7 @@ export default {
       tableColumnsLote: [
         {
           prop: "nombre_lote",
-          label: "LOTE",
+          label: "PILA",
           minWidth: 190,
         },
         {
@@ -188,14 +266,20 @@ export default {
         },
         {
           prop: "nombre_mercado",
-          label: "MERCADO",
+          label: "Procedencia - Sector",
           minWidth: 220,
         },
       ],
       mListaHistorialLote: [],
       itemRowHistorialLote: null,
       token: this.$cookies.get("token"),
-      isPermisosActions:false
+      isPermisosActions: false,
+      loadingHLote: false,
+      itemSelectDespacho: null,
+      modalDespachoAuth: false,
+      destinoSalida: null,
+      correoSalida: null,
+      telefonoSalida: null,
     };
   },
   methods: {
@@ -216,14 +300,14 @@ export default {
           this.mListaHistorialLote.push(...datos.data.datos);
         } else {
           Notification.error({
-            title: "LOTES DESPACHO",
+            title: "PILAS DESPACHO",
             message: datos.data.msm,
           });
         }
       } catch (error) {
         console.log(error);
         Notification.info({
-          title: "TryCatch LOTES DESPACHO",
+          title: "TryCatch PILAS DESPACHO",
           message: error.toString(),
         });
       }
@@ -236,7 +320,10 @@ export default {
       });
     },
     showNotificationDespacho(item) {
-      MessageBox.confirm(
+      this.modalDespachoAuth = true;
+      this.itemSelectDespacho = item;
+
+      /*MessageBox.confirm(
         "Desea enviar el " + item.nombre_lote + " a salida ?",
         "SALIDA",
         {
@@ -250,43 +337,98 @@ export default {
         })
         .catch((e) => {
           this.showNotificationError(item.nombre_lote, e.toString());
-        });
+        });*/
     },
-    async sendAuthLoteSalida(item) {
+    async sendAuthLoteSalida() {
       try {
-        var datos = await this.$axios.post(
-          process.env.baseUrl + "/authLoteSalida",
-          { token: this.token, lote: item.id_lote }
-        );
+        if (
+          this.destinoSalida != null &&
+          this.correoSalida != null &&
+          this.telefonoSalida != null
+        ) {
+          if (this.destinoSalida != null) {
+            if (this.telefonoSalida != null) {
+              if (this.correoSalida != null) {
+                if (this.validarCorreoElectronico(this.correoSalida)) {
+                  var datos = await this.$axios.post(
+                    process.env.baseUrl + "/authLoteSalida",
+                    {
+                      token: this.token,
+                      lote: this.itemSelectDespacho.id_lote,
+                      destinoSalida: this.destinoSalida,
+                      correoSalida: this.correoSalida,
+                      telefonoSalida: this.telefonoSalida,
+                    }
+                  );
 
-        if (datos.data.status_code == 200) {
-          /*Notification.success({
+                  if (datos.data.status_code == 200) {
+                    /*Notification.success({
               title: "Panel Salidas",
               message: "Datos consultados con éxito",
             });*/
-          this.readHistorialLoteAll()
+                    this.closeModalDespacho();
+                    this.readHistorialLoteAll();
+                  } else {
+                    Notification.error({
+                      title: "PILAS DESPACHO",
+                      message: datos.data.msm,
+                    });
+                  }
+                } else {
+                  this.showNotificationError(
+                    "AUT. SALIDA",
+                    "CORREO ELECTRONICO NO VALIDA.!!"
+                  );
+                }
+              } else {
+                this.showNotificationError(
+                  "AUT. SALIDA",
+                  "INGRESE UN CORREO VALIDO.!"
+                );
+              }
+            } else {
+              this.showNotificationError(
+                "AUT. SALIDA",
+                "INGRESE UN TELEFONO VALIDO"
+              );
+            }
+          } else {
+            this.showNotificationError(
+              "AUT. SALIDA",
+              "INGRESE UN DESTINO VALIDO.!"
+            );
+          }
         } else {
-          Notification.error({
-            title: "LOTES DESPACHO",
-            message: datos.data.msm,
-          });
+          this.showNotificationError("AUT. SALIDA", "EXISTEN DATOS VACIOS");
         }
       } catch (error) {
         console.log(error);
         Notification.info({
-          title: "TryCatch LOTES DESPACHO",
+          title: "TryCatch PILAS DESPACHO",
           message: error.toString(),
         });
       }
-      
+    },
+    closeModalDespacho() {
+      this.itemSelectDespacho = null;
+      this.modalDespachoAuth = false;
+      this.destinoSalida = null;
+      this.correoSalida = null;
+      this.telefonoSalida = null;
+    },
+    validarCorreoElectronico(correo) {
+      // Expresión regular para validar el correo electrónico
+      var patron = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      // Verificar si el correo coincide con el patrón
+      return patron.test(correo);
     },
   },
   mounted() {
     var data = jwt_decode(this.$cookies.get("token")).datosJWT;
-    if(data.active_options_despacho == 1){
-      this.isPermisosActions = true
+    if (data.active_options_despacho == 1) {
+      this.isPermisosActions = true;
     }
-    
+
     this.readHistorialLoteAll();
   },
 };

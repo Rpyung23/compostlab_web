@@ -10,7 +10,7 @@
         >
           <div class="cardTextoRPagosVehiculoProduccionPanelDespachoBusqueda">
             <el-select
-              placeholder="Mercados"
+              placeholder="Procedencia - Sector"
               v-model="mSelectMercado"
               multiple
               collapse-tags
@@ -90,8 +90,12 @@
             <el-table-column prop="nombre_lote" label="LOTE" width="240">
             </el-table-column>
 
-            <el-table-column prop="nombre_mercado" label="MERCADO" width="190">
+            <el-table-column prop="nombre_mercado" label="PROCEDENCIA - SECTOR" width="220">
             </el-table-column>
+            
+            <el-table-column prop="detalle_residuo" label="T. RESIDUO" width="240">
+            </el-table-column>
+
             <el-table-column prop="peso" label="PESO" width="150">
             </el-table-column>
             <el-table-column prop="detalle_tipo_peso" label="" width="180">
@@ -104,7 +108,13 @@
             <el-table-column prop="fechaSalida" label="F. SALIDA" width="210">
             </el-table-column>
 
-            <el-table-column prop="UserSalida" label="U. SALIDA" width="300">
+            <!--<el-table-column prop="UserSalida" label="U. SALIDA" width="300">
+            </el-table-column>-->
+            <el-table-column prop="destino" label="DESTINO" width="170">
+            </el-table-column>
+            <el-table-column prop="correo_destino" label="EMAIL" width="220">
+            </el-table-column>
+            <el-table-column prop="telefono_destino" label="TELEFONO" width="170">
             </el-table-column>
 
 
@@ -247,7 +257,15 @@ export default {
             alignment: "center",
           },
           {
-            text: "MERCADO",
+            text: "Procedencia - Sector",
+            fontSize: 8.5,
+            bold: true,
+            fillColor: "#039BC4",
+            color: "white",
+            alignment: "center",
+          },
+          {
+            text: "T. RESIDUO",
             fontSize: 8.5,
             bold: true,
             fillColor: "#039BC4",
@@ -279,7 +297,23 @@ export default {
             alignment: "center",
           },
           {
-            text: "USUARIO SALIDA",
+            text: "DESTINO",
+            fontSize: 8.5,
+            bold: true,
+            fillColor: "#039BC4",
+            color: "white",
+            alignment: "center",
+          },
+          {
+            text: "EMAIL",
+            fontSize: 8.5,
+            bold: true,
+            fillColor: "#039BC4",
+            color: "white",
+            alignment: "center",
+          },
+          {
+            text: "TELEFONO",
             fontSize: 8.5,
             bold: true,
             fillColor: "#039BC4",
@@ -307,6 +341,10 @@ export default {
             text: this.mListSalidasLotes[i].nombre_mercado,
             fontSize: 8.5,
             alignment: "center",
+          },          {
+            text: this.mListSalidasLotes[i].detalle_residuo,
+            fontSize: 8.5,
+            alignment: "center",
           },
           {
             text: this.mListSalidasLotes[i].fechaIngreso,
@@ -321,8 +359,16 @@ export default {
             text: this.mListSalidasLotes[i].fechaSalida,
             fontSize: 8.5,
             alignment: "center",
-          },          {
-            text: this.mListSalidasLotes[i].UserSalida,
+          }, {
+            text: this.mListSalidasLotes[i].destino,
+            fontSize: 8.5,
+            alignment: "center",
+          }, {
+            text: this.mListSalidasLotes[i].correo_destino,
+            fontSize: 8.5,
+            alignment: "center",
+          }, {
+            text: this.mListSalidasLotes[i].telefono_destino,
             fontSize: 8.5,
             alignment: "center",
           },
@@ -371,7 +417,7 @@ export default {
                 body: [
                   [
                     {
-                      text: "REPORTE SALIDAS DE LOTE",
+                      text: "REPORTE SALIDAS DE PILA",
                       alignment: "center",
                       fontSize: 16,
                       bold: true,
@@ -379,7 +425,7 @@ export default {
                   ],
                   [
                     {
-                      text: "Dir :  89G2+QXC, 5 de Junio, Riobamba Email : dircomunicacion@gadmriobamba.gob.ec",
+                      text: "Dir :  5 de Junio y Primera Constituyente Email : dircomunicacion@gadmriobamba.gob.ec",
                       alignment: "center",
                       fontSize: 8,
                     },
@@ -403,7 +449,7 @@ export default {
               // headers are automatically repeated if the table spans over multiple pages
               // you can declare how many rows should be treated as headers
               headerRows: 0,
-              widths: [90, 70, 110, 90, 90,90,150],
+              widths: [80, 70, 100, 100,50, 50,50,65,55,55],
               body: resultadoString,
             },
           },

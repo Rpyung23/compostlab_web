@@ -132,8 +132,8 @@
           <div class="form-row">
             <div class="col-md-6">
               <base-input
-                name="Nombre Mercado"
-                placeholder="Nombre Mercado"
+                name="Nombre Procedencia - Sector"
+                placeholder="Nombre Procedencia - Sector"
                 prepend-icon="ni ni-shop"
                 rules="required"
                 v-model="mercadoNombre"
@@ -143,8 +143,8 @@
             <div class="col-md-6">
               <base-input
                 prepend-icon="ni ni-single-02"
-                name="Encargado Mercado"
-                placeholder="Encargado Mercado"
+                name="Encargado Procedencia - Sector"
+                placeholder="Encargado Procedencia - Sector"
                 rules="required"
                 v-model="encargadoMercado"
               >
@@ -212,8 +212,8 @@
           <div class="form-row">
             <div class="col-md-6">
               <base-input
-                name="Nombre Mercado"
-                placeholder="Nombre Mercado"
+                name="Nombre Procedencia - Sector"
+                placeholder="Nombre Procedencia - Sector"
                 prepend-icon="ni ni-shop"
                 rules="required"
                 v-model="mercadoNombre"
@@ -223,8 +223,8 @@
             <div class="col-md-6">
               <base-input
                 prepend-icon="ni ni-single-02"
-                name="Encargado Mercado"
-                placeholder="Encargado Mercado"
+                name="Encargado Procedencia - Sector"
+                placeholder="Encargado Procedencia - Sector"
                 rules="required"
                 v-model="encargadoMercado"
               >
@@ -248,6 +248,7 @@
                 prepend-icon="ni ni-mobile-button"
                 name="Telefono"
                 rules="required"
+                type="tel"
                 placeholder="Telefono"
                 v-model="telMercado"
               >
@@ -368,7 +369,7 @@ export default {
       tableColumnsUnidadesFlotaVehicular: [
         {
           prop: "nombre_mercado",
-          label: "MERCADO",
+          label: "Procedencia - Sector",
           minWidth: 250,
         },
         {
@@ -476,7 +477,8 @@ export default {
         this.dirMercado != ""
       ) {
         try {
-          var datos = await this.$axios.post(
+          if(this.validarCorreoElectronico(this.emailMercado)){
+            var datos = await this.$axios.post(
             process.env.baseUrlPanel + "/create_mercado",
             {
               nombre_mercado: this.mercadoNombre,
@@ -488,6 +490,12 @@ export default {
           );
 
           this.readMercadosAll();
+          }else{
+            Notification.error({
+              title: "PROCEDENCIA - SECTOR",
+              message: "EMAIL NO VALIDO !",
+            });
+          }
         } catch (error) {
           console.log(error);
         }
@@ -522,6 +530,13 @@ export default {
           alert(error.toString())
         }
       }
+    },
+    validarCorreoElectronico(correo) {
+      // Expresión regular para validar el correo electrónico
+      var patron = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+      // Verificar si el correo coincide con el patrón
+      return patron.test(correo);
     },
   },
   mounted() {

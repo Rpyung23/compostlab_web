@@ -244,7 +244,7 @@ export default {
             alignment: "center",
           },
           {
-            text: "MERCADO",
+            text: "Procedencia - Sector",
             fontSize: 8.5,
             bold: true,
             fillColor: "#039BC4",
@@ -391,7 +391,7 @@ export default {
                 body: [
                   [
                     {
-                      text: "REPORTE HISTORIAL DE LOTE",
+                      text: "REPORTE HISTORIAL DE PILA",
                       alignment: "center",
                       fontSize: 16,
                       bold: true,
@@ -399,7 +399,7 @@ export default {
                   ],
                   [
                     {
-                      text: "Dir :  89G2+QXC, 5 de Junio, Riobamba Email : dircomunicacion@gadmriobamba.gob.ec",
+                      text: "Dir :  5 de Junio y Primera Constituyente Email : dircomunicacion@gadmriobamba.gob.ec",
                       alignment: "center",
                       fontSize: 8,
                     },
