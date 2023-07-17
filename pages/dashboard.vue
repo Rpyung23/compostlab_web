@@ -1,6 +1,7 @@
 <template>
   <div class="escudo">
     <img class="imgEscudo" src="../static/img/riobamba.png">
+    <h1></h1>
   </div>
 </template>
 <script>
