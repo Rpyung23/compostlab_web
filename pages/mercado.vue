@@ -427,7 +427,7 @@ export default {
     },
     showAddMercado() {
       this.clearModalMercado();
-      this.modalAddMercado = true;
+      this.modalAddMercado = false;
     },
     async readMercadosAll() {
       this.loadingMercado = true;
