@@ -58,6 +58,20 @@
         >
         </sidebar-item>
 
+        
+
+        <sidebar-item
+          translate="no"
+          v-if="active_estadistico_lote"
+          :link="{
+            name: 'Estadistica Pila',
+            icon: 'ni ni-sound-wave text-primary',
+            path: './EstadisticaLote',
+          }"
+        >
+        </sidebar-item>
+        
+
         <sidebar-item
           translate="no"
           v-if="activeDespacho"
@@ -77,8 +91,9 @@
           <!--<sidebar-item :link="{ name: 'Cant. Composta', path: '/' }" translate="no"/>
           <sidebar-item :link="{ name: 'Composta Mercado', path: '/' }" translate="no"/>-->
           <sidebar-item :link="{ name: 'Salidas Pila', path: '/rSalidas' }" translate="no"/>
+          <sidebar-item :link="{ name: 'Actividad Pila', path: '/rActividadLote' }" translate="no"/>
           <sidebar-item :link="{ name: 'Insumos Pila', path: '/rInsumoLote' }" translate="no"/>
-          <sidebar-item :link="{ name: 'H. Volteos', path: '/rHLote' }" translate="no"/>
+          <sidebar-item :link="{ name: 'H. Volteos', path: '/rHLote' }" translate="no"/> 
           <sidebar-item :link="{ name: 'Composta Procedencia - Sector', path: '/rCompostMercado' }" translate="no"/>
           
           
@@ -136,7 +151,8 @@ export default {
       activeNotificacion: 0,
       activeRecordatorio: 0,
       activeUsuarios: 0,
-      activeInsumo:0
+      activeInsumo:0,
+      active_estadistico_lote:0
     };
   },
   methods: {
@@ -163,6 +179,7 @@ export default {
       this.activeRecordatorio = data.activeRecordatorio
       this.activeUsuarios = data.activeUsuarios
       this.activeInsumo = data.activeInsumo
+      this.active_estadistico_lote = data.active_estadistico_lote
     }
   },
   mounted() {

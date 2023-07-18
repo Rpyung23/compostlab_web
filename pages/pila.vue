@@ -66,9 +66,13 @@
             height="calc(100vh - 8.90rem)"
             style="width: 100%"
           >
-            <el-table-column v-if="isPermisosActions"  width="90">
+            <el-table-column v-if="isPermisosActions" width="90">
               <template slot-scope="scope">
-                <base-button size="sm" @click="showEditLote(scope.row)" title="EDITAR" type="primary"
+                <base-button
+                  size="sm"
+                  @click="showEditLote(scope.row)"
+                  title="EDITAR"
+                  type="primary"
                   ><i class="ni ni-ruler-pencil"></i
                 ></base-button>
               </template>
@@ -80,13 +84,49 @@
             <el-table-column prop="nombre_lote" label="LOTE" width="190">
             </el-table-column>
 
-            <el-table-column prop="detalle_residuo" label="TIPO RESIDUO" width="270">
+            <el-table-column
+              prop="detalle_residuo"
+              label="TIPO RESIDUO"
+              width="270"
+            >
             </el-table-column>
 
             <el-table-column prop="detalleFase" label="FASE ACT." width="190">
               <template slot-scope="scope">
-                <badge v-if="scope.row.FkIDFase != 5" type="primary" class="mr-2">{{scope.row.detalleFase}}</badge>
-                <badge v-if="scope.row.FkIDFase == 5" type="danger" class="mr-2">{{scope.row.detalleFase}}</badge>
+                <badge
+                  v-if="scope.row.FkIDFase == 4"
+                  type="warning"
+                  class="mr-2"
+                  >{{ scope.row.detalleFase }}</badge
+                >
+
+                <badge
+                  v-if="scope.row.FkIDFase == 1"
+                  type="secondary"
+                  class="mr-2"
+                  >{{ scope.row.detalleFase }}</badge
+                >
+
+                <badge
+                  v-if="scope.row.FkIDFase == 2"
+                  type="default"
+                  class="mr-2"
+                  >{{ scope.row.detalleFase }}</badge
+                >
+
+                <badge
+                  v-if="scope.row.FkIDFase == 3"
+                  type="primary"
+                  class="mr-2"
+                  >{{ scope.row.detalleFase }}</badge
+                >
+
+                <badge
+                  v-if="scope.row.FkIDFase == 5"
+                  type="danger"
+                  class="mr-2"
+                  >{{ scope.row.detalleFase }}</badge
+                >
               </template>
             </el-table-column>
 
@@ -221,7 +261,6 @@
       </validation-observer>
     </modal>
 
-
     <modal :show.sync="modalEditLote">
       <validation-observer v-slot="{ handleSubmit }" ref="formValidator">
         <form
@@ -255,6 +294,7 @@
               </el-select>
             </div>
           </div>
+
           <div class="form-row" style="margin-bottom: 0.5rem">
             <div class="col-md-6">
               <base-input
@@ -282,6 +322,7 @@
               </el-select>
             </div>
           </div>
+
           <div class="form-row" style="margin-bottom: 0.5rem">
             <div class="col-md-6">
               <el-select
@@ -298,16 +339,23 @@
                 </el-option>
               </el-select>
             </div>
+
             <div class="col-md-6">
-              <base-input
-                name="Dias Notificación"
-                placeholder="Dias Notificación"
-                prepend-icon="ni ni-notification-70"
-                type="number"
-                v-model="DiaNotificationLote"
+              <el-select
+                placeholder="Tipo Fase"
+                v-model="mSelectTipoFase"
+                style="width: 100%"
               >
-              </base-input>
+                <el-option
+                  v-for="item in mListFases"
+                  :key="item.idFase"
+                  :label="item.detalleFase"
+                  :value="item.idFase"
+                >
+                </el-option>
+              </el-select>
             </div>
+
           </div>
           <div class="form-row" style="margin-bottom: 0.5rem">
             <div class="col-md-12">
@@ -323,24 +371,30 @@
           </div>
 
           <div class="form-row" style="margin-bottom: 0.5rem">
-            <div class="col-md-12">
+            <div class="col-md-6">
               <el-select
                 placeholder="Estado"
                 v-model="mSelectEstadoLote"
                 style="width: 100%"
               >
-                <el-option
-                  label="ACTIVO"
-                  :value="1"
-                >
-                </el-option>
-                <el-option
-                  label="INACTIVO"
-                  :value="0"
-                >
-                </el-option>
+                <el-option label="ACTIVO" :value="1"> </el-option>
+                <el-option label="INACTIVO" :value="0"> </el-option>
               </el-select>
             </div>
+
+            <div class="col-md-6">
+              <base-input
+                name="Dias Notificación"
+                placeholder="Dias Notificación"
+                prepend-icon="ni ni-notification-70"
+                type="number"
+                v-model="DiaNotificationLote"
+              >
+              </base-input>
+            </div>
+
+
+
           </div>
 
           <div class="text-right">
@@ -354,11 +408,10 @@
               >Actualizar</base-button
             >
           </div>
+
         </form>
       </validation-observer>
     </modal>
-
-
   </div>
 </template>
 <script>
@@ -422,10 +475,10 @@ export default {
   },
   data() {
     return {
-      mListResiduos:[],
-      mSelectResiduo:null,
+      mListResiduos: [],
+      mSelectResiduo: null,
       modalAddLote: false,
-      modalEditLote:false,
+      modalEditLote: false,
       mSelectMercado: null,
       tableColumnsLote: [
         {
@@ -465,30 +518,34 @@ export default {
       mListTipoPesos: [],
       mListTipoMercados: [],
       loadingLote: false,
-      DiaNotificationLote:null,
+      DiaNotificationLote: null,
       NombreLote: null,
       ObsLote: null,
       PesoLote: null,
-      mSelectEstadoLote:0,
-      itemSelectLote:null,
-      isPermisosActions:false
+      mSelectEstadoLote: 0,
+      itemSelectLote: null,
+      isPermisosActions: false,
+      mListFases: [],
+      mSelectTipoFase:null
     };
   },
   methods: {
-    showEditLote(item){
-      this.itemSelectLote = item
-      this.mSelectEstadoLote = item.activo
-      this.mSelectTipoPeso = item.id_tipo_peso
-      this.mSelectMercado = item.id_mercado
-      this.DiaNotificationLote = item.dia_notificacion
-      this.NombreLote = item.nombre_lote
-      this.ObsLote = item.observacion_lote
-      this.PesoLote = item.peso
-      this.mSelectResiduo = item.id_residuo
-      this.modalEditLote = true
+    showEditLote(item) {
+      this.itemSelectLote = item;
+      this.mSelectEstadoLote = item.activo;
+      this.mSelectTipoPeso = item.id_tipo_peso;
+      this.mSelectMercado = item.id_mercado;
+      this.DiaNotificationLote = item.dia_notificacion;
+      this.NombreLote = item.nombre_lote;
+      this.ObsLote = item.observacion_lote;
+      this.PesoLote = item.peso;
+      this.mSelectResiduo = item.id_residuo;
+      this.mSelectTipoFase = item.FkIDFase
+      this.modalEditLote = true;
+      
     },
-    closeEditLote(){
-      this.modalEditLote =false
+    closeEditLote() {
+      this.modalEditLote = false;
     },
     showAddLote() {
       this.modalAddLote = true;
@@ -583,8 +640,9 @@ export default {
               peso: this.PesoLote,
               tipo_peso: this.mSelectTipoPeso,
               id_mercado: this.mSelectMercado,
-              dia_notification: this.DiaNotificationLote == null ? 0 : this.DiaNotificationLote,
-              residuo:this.mSelectResiduo
+              dia_notification:
+                this.DiaNotificationLote == null ? 0 : this.DiaNotificationLote,
+              residuo: this.mSelectResiduo,
             }
           );
 
@@ -603,13 +661,13 @@ export default {
       }
     },
     clearModalAddLote() {
-      this.modalAddLote = false
-      this.NombreLote = null
-      this.ObsLote = null
-      this.PesoLote = null
-      this.mSelectMercado = null
-      this.mSelectTipoPeso = null
-      this.mSelectResiduo = null
+      this.modalAddLote = false;
+      this.NombreLote = null;
+      this.ObsLote = null;
+      this.PesoLote = null;
+      this.mSelectMercado = null;
+      this.mSelectTipoPeso = null;
+      this.mSelectResiduo = null;
     },
     async updateNuevoLote() {
       try {
@@ -619,21 +677,24 @@ export default {
           this.PesoLote != null &&
           this.mSelectMercado != null &&
           this.mSelectTipoPeso != null &&
-          this.mSelectResiduo != null
+          this.mSelectResiduo != null &&
+          this.mSelectTipoPeso != null
         ) {
           var datos = await this.$axios.put(
             process.env.baseUrlPanel + "/update_lote",
             {
               token: this.token,
               id_lote: this.itemSelectLote.id_lote,
-              estado:this.mSelectEstadoLote,
+              estado: this.mSelectEstadoLote,
               nombre_lote: this.NombreLote,
               observacion_lote: this.ObsLote,
               peso: this.PesoLote,
               tipo_peso: this.mSelectTipoPeso,
               id_mercado: this.mSelectMercado,
-              dia_notification: this.DiaNotificationLote == null ? 0 : this.DiaNotificationLote,
-              residuo: this.mSelectResiduo
+              dia_notification:
+                this.DiaNotificationLote == null ? 0 : this.DiaNotificationLote,
+              residuo: this.mSelectResiduo,
+              fase: this.mSelectTipoFase
             }
           );
 
@@ -651,18 +712,28 @@ export default {
         console.log(error);
       }
     },
+    async readFases() {
+      this.mListFases = [];
+      try {
+        var datos = await this.$axios.get(process.env.baseUrl + "/read_fase");
+        console.log(datos.data.datos);
+        this.mListFases.push(...datos.data.datos);
+      } catch (error) {
+        console.log(error);
+      }
+    },
   },
   mounted() {
-    this.readResiduosAll()
+    this.readFases()
+    this.readResiduosAll();
     this.readTipoMercadoActivo();
     this.readTipoPesosActivo();
     this.readLoteAll();
 
     var data = jwt_decode(this.$cookies.get("token")).datosJWT;
-    if(data.active_options_lote == 1){
-      this.isPermisosActions = true
+    if (data.active_options_lote == 1) {
+      this.isPermisosActions = true;
     }
-
   },
 };
 </script>
@@ -686,8 +757,6 @@ export default {
   width: 100%;
   height: calc(80vh);
 }
-
-
 
 .form-controlPersonal {
   display: block;

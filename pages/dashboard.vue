@@ -2,7 +2,7 @@
 <div class="escudo">
   <section>
     <div class="circle"></div>
-    <div class="content">
+    <div class="contentDashboard">
       <div class="textBox">
         <h2>“Nada se pierde, todo se composta”<br><span> COMPOSTLAB WEB </span></h2>
         <p>Esta es una Aplicación Web desarrollada por estudiantes de la Escuela Superior Politécnica de Chimborazo     (ESPOCH) para el manejo de datos provenientes del proceso de compostaje en la planta Porlón del GAD Municipal del Cantón Riobamba.
@@ -42,7 +42,7 @@ section{
 
 }
 
-.content{
+.contentDashboard{
     position: relative;
     width: 100%;
     display: flex;
@@ -50,29 +50,29 @@ section{
     align-items: center;
 }
 
-.content .textBox{
+.contentDashboard .textBox{
   position: relative;
   max-width: 600px;
 }
 
-.content .textBox h2 {
+.contentDashboard .textBox h2 {
   color: #333;
   font-size: 3em;
   line-height: 1.4em;
   font-weight: 500;
 }
 
-.content .textBox h2 span{
+.contentDashboard .textBox h2 span{
   color: #017143;
   font-size: 1.2em;
   font-weight: 900;
 }
 
-.content .textBox p{
+.contentDashboard .textBox p{
   color: #333;
 }
 
-.content .textBox a{
+.contentDashboard .textBox a{
   display: inline-block;
   margin-top: 20px;
   padding: 8px 20px;
@@ -84,7 +84,7 @@ section{
   text-decoration: none;
 }
 
-.content .imgBox{
+.contentDashboard .imgBox{
   width: 600px;
   display: flex;
   justify-content: flex-end;
@@ -92,7 +92,7 @@ section{
   margin-top: 50px;
 }
 
-.content .imgBox img{
+.contentDashboard .imgBox img{
   max-width: 340px;
 }
 

@@ -46,7 +46,7 @@
             height="calc(100vh - 8.90rem)"
             style="width: 100%"
           >
-            <el-table-column v-if="isPermisosActions" width="180">
+            <el-table-column v-if="isPermisosActions" width="170">
               <template slot-scope="scope">
                 <base-button
                   size="sm"
@@ -153,7 +153,7 @@
             name="Cantidad"
             placeholder="Cantidad"
             v-model="cantInsumo"
-            :min=0
+            :min="0"
             type="number"
           >
           </base-input>
@@ -179,8 +179,7 @@
         height="calc(100vh - 20rem)"
         style="width: 100%"
       >
-
-      <el-table-column v-if="isPermisosActions" width="100">
+        <el-table-column v-if="isPermisosActions" width="100">
           <template slot-scope="scope">
             <base-button
               size="sm"
@@ -251,6 +250,23 @@
           >
           </base-input>
         </div>
+
+        <div class="col-md-2">
+          <el-select
+            placeholder="Tipo Actividad"
+            v-model="mSelectTipoActividad"
+            style="width: 100%"
+          >
+            <el-option
+              v-for="item in mListActividad"
+              :key="item.id_actividad"
+              :label="item.detalle_actividad"
+              :value="item.id_actividad"
+            >
+            </el-option>
+          </el-select>
+        </div>
+
         <!--<div class="col-md-2">
           <base-input
             v-model="vOxigeno"
@@ -270,11 +286,10 @@
           </base-input>
         </div>
 
-        <div class="col-md-2" style="margin: auto">
+        <div class="col-md-2">
           <base-button
             icon
             type="primary"
-            size="sm"
             @click="insertDetalleHsitorialLote()"
           >
             <span class="btn-inner--icon"
@@ -316,14 +331,15 @@
         <div slot="empty"></div>
       </el-table>
     </modal>
+
+
   </div>
 </template>
 <script>
+
 import flatPicker from "vue-flatpickr-component";
-import { getBase64LogoReportes } from "../util/logoReport";
-import { convertSecondtoTimeString } from "../util/fechas";
-import "flatpickr/dist/flatpickr.css";
-import { getFecha_dd_mm_yyyy, FechaStringToHour } from "../util/fechas";
+import RouteBreadCrumb from '~/components/argon-core/Breadcrumb/RouteBreadcrumb';
+  import BaseHeader from '~/components/argon-core/BaseHeader';
 
 import {
   Table,
@@ -345,22 +361,25 @@ import {
   MessageBox,
 } from "element-ui";
 import jwt_decode from "jwt-decode";
-import RouteBreadCrumb from "@/components/argon-core/Breadcrumb/RouteBreadcrumb";
+
 import { BasePagination } from "@/components/argon-core";
 import clientPaginationMixin from "~/components/tables/PaginatedTables/clientPaginationMixin";
-import swal from "sweetalert2";
+
 import Tabs from "@/components/argon-core/Tabs/Tabs";
 import TabPane from "@/components/argon-core/Tabs/Tab";
+
 
 export default {
   mixins: [clientPaginationMixin],
   layout: "DashboardLayout",
   components: {
+
+    BaseHeader,
+    RouteBreadCrumb,
     Tabs,
     TabPane,
     BasePagination,
     flatPicker,
-    RouteBreadCrumb,
     [MessageBox.name]: MessageBox,
     [Switch.name]: Switch,
     [DatePicker.name]: DatePicker,
@@ -443,22 +462,27 @@ export default {
         {
           prop: "fechaHistorial",
           label: "FECHA",
-          minWidth: 170,
+          minWidth: 150,
         },
         {
           prop: "vTemperatura",
-          label: "TEMPERATURA °C",
-          minWidth: 180,
+          label: "TEMP °C",
+          minWidth: 100,
         },
         {
           prop: "vHumedad",
           label: "HUMEDAD %",
-          minWidth: 170,
+          minWidth: 130,
         },
         {
           prop: "vPh",
           label: "PH",
           minWidth: 100,
+        },
+        {
+          prop: "detalle_actividad",
+          label: "ACT.",
+          minWidth: 170,
         },
         {
           prop: "detalleHistorial",
@@ -478,6 +502,8 @@ export default {
       vOxigeno: null,
       detalleHistorial: "",
       isPermisosActions: false,
+      mSelectTipoActividad: null,
+      mListActividad: [],
     };
   },
   methods: {
@@ -584,10 +610,13 @@ export default {
             console.log(error);
           }
         } else {
-          this.showNotificationError('AGREGAR INSUMO','SELECIONAR UN INSUMO')
+          this.showNotificationError("AGREGAR INSUMO", "SELECIONAR UN INSUMO");
         }
       } else {
-        this.showNotificationError('AGREGAR INSUMO','SELECIONAR UN TIPO DE PESO')
+        this.showNotificationError(
+          "AGREGAR INSUMO",
+          "SELECIONAR UN TIPO DE PESO"
+        );
       }
     },
     showNotificationError(title, msm) {
@@ -621,35 +650,47 @@ export default {
       if (
         this.vTemperatura != null &&
         this.vHumedad != null &&
-        this.vPh != null
+        this.vPh != null &&
+        this.mSelectTipoActividad != null
         //&&
         //this.vOxigeno != null
       ) {
         if (this.vTemperatura >= 0 && this.vTemperatura <= 70) {
           if (this.vHumedad >= 0 && this.vHumedad <= 100) {
             if (this.vPh >= 1 && this.vPh <= 14) {
-              try {
-                var datos = await this.$axios.post(
-                  process.env.baseUrl + "/add_historial_lote",
-                  {
-                    token: this.token,
-                    vTemperatura: this.vTemperatura,
-                    vHumedad: this.vHumedad,
-                    vPh: this.vPh,
-                    vOxigeno: 0,
-                    detalleHistorial: this.detalleHistorial,
-                    lote: this.itemRowHistorialLote.id_lote,
+              if (this.mSelectTipoActividad != null) {
+                try {
+                  var datos = await this.$axios.post(
+                    process.env.baseUrl + "/add_historial_lote",
+                    {
+                      token: this.token,
+                      vTemperatura: this.vTemperatura,
+                      vHumedad: this.vHumedad,
+                      vPh: this.vPh,
+                      vOxigeno: 0,
+                      detalleHistorial: this.detalleHistorial,
+                      lote: this.itemRowHistorialLote.id_lote,
+                      actividad: this.mSelectTipoActividad,
+                    }
+                  );
+                  if (datos.data.status_code == 200) {
+                    this.clearModalDetalleHistorial();
+                    this.readDetalleHistorialLote();
+                    this.readHistorialLoteAll();
+                  } else {
+                    this.showNotificationError(
+                      "HISTORIAL PILA",
+                      datos.data.msm
+                    );
                   }
-                );
-                if (datos.data.status_code == 200) {
-                  this.clearModalDetalleHistorial();
-                  this.readDetalleHistorialLote();
-                  this.readHistorialLoteAll();
-                } else {
-                  this.showNotificationError("HISTORIAL PILA", datos.data.msm);
+                } catch (error) {
+                  this.showNotificationError("TRY CATCH", error.toString());
                 }
-              } catch (error) {
-                this.showNotificationError("TRY CATCH", error.toString());
+              } else {
+                this.showNotificationError(
+                  "HISTORIAL PILA",
+                  "SELECCIONE UNA ACTIVIDAD"
+                );
               }
             } else {
               this.showNotificationError(
@@ -766,8 +807,20 @@ export default {
         alert(error.toString());
       }
     },
+    async readTipoActividad() {
+      this.mListActividad = [];
+      try {
+        var datos = await this.$axios.get(
+          process.env.baseUrl + "/read_actividad"
+        );
+        this.mListActividad.push(...datos.data.datos);
+      } catch (error) {
+        console.log(error);
+      }
+    },
   },
   mounted() {
+    this.readTipoActividad();
     this.readTipoPesosActivo();
     this.readInsumoAll();
     this.readHistorialLoteAll();

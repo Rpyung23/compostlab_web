@@ -158,6 +158,11 @@
 </template>
 <script>
 import flatPicker from "vue-flatpickr-component";
+import {
+  validarNumeroCelular,
+  validarCedula,
+  validarCorreoElectronico,
+} from "../util/validaciones";
 import { getBase64LogoReportes } from "../util/logoReport";
 import { convertSecondtoTimeString } from "../util/fechas";
 import "flatpickr/dist/flatpickr.css";
@@ -349,30 +354,37 @@ export default {
           if (this.destinoSalida != null) {
             if (this.telefonoSalida != null) {
               if (this.correoSalida != null) {
-                if (this.validarCorreoElectronico(this.correoSalida)) {
-                  var datos = await this.$axios.post(
-                    process.env.baseUrl + "/authLoteSalida",
-                    {
-                      token: this.token,
-                      lote: this.itemSelectDespacho.id_lote,
-                      destinoSalida: this.destinoSalida,
-                      correoSalida: this.correoSalida,
-                      telefonoSalida: this.telefonoSalida,
-                    }
-                  );
+                if (validarCorreoElectronico(this.correoSalida)) {
+                  if (validarNumeroCelular(this.telefonoSalida)) {
+                    var datos = await this.$axios.post(
+                      process.env.baseUrl + "/authLoteSalida",
+                      {
+                        token: this.token,
+                        lote: this.itemSelectDespacho.id_lote,
+                        destinoSalida: this.destinoSalida,
+                        correoSalida: this.correoSalida,
+                        telefonoSalida: this.telefonoSalida,
+                      }
+                    );
 
-                  if (datos.data.status_code == 200) {
-                    /*Notification.success({
+                    if (datos.data.status_code == 200) {
+                      /*Notification.success({
               title: "Panel Salidas",
               message: "Datos consultados con éxito",
             });*/
-                    this.closeModalDespacho();
-                    this.readHistorialLoteAll();
+                      this.closeModalDespacho();
+                      this.readHistorialLoteAll();
+                    } else {
+                      Notification.error({
+                        title: "PILAS DESPACHO",
+                        message: datos.data.msm,
+                      });
+                    }
                   } else {
-                    Notification.error({
-                      title: "PILAS DESPACHO",
-                      message: datos.data.msm,
-                    });
+                    this.showNotificationError(
+                      "AUT. SALIDA",
+                      "TELEFONO NO VALIDA.!!"
+                    );
                   }
                 } else {
                   this.showNotificationError(
@@ -415,12 +427,6 @@ export default {
       this.destinoSalida = null;
       this.correoSalida = null;
       this.telefonoSalida = null;
-    },
-    validarCorreoElectronico(correo) {
-      // Expresión regular para validar el correo electrónico
-      var patron = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      // Verificar si el correo coincide con el patrón
-      return patron.test(correo);
     },
   },
   mounted() {

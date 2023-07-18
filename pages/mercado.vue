@@ -71,7 +71,11 @@
             height="calc(100vh - 8.90rem)"
             style="width: 100%"
           >
-            <el-table-column v-if="isPermisosActions" label="Actions" width="140">
+            <el-table-column
+              v-if="isPermisosActions"
+              label="Actions"
+              width="140"
+            >
               <template slot-scope="scope">
                 <base-button
                   size="sm"
@@ -271,17 +275,13 @@
 
           <div class="form-row" style="margin-top: 0.5rem">
             <div class="col-md-12">
-              <el-select style="width: 100%;" v-model="mSelectEstadoMercado" placeholder="ESTADO">
-                <el-option
-                  label="INACTIVO"
-                  :value=0
-                >
-                </el-option>
-                <el-option
-                  label="ACTIVO"
-                  :value=1
-                >
-                </el-option>
+              <el-select
+                style="width: 100%"
+                v-model="mSelectEstadoMercado"
+                placeholder="ESTADO"
+              >
+                <el-option label="INACTIVO" :value="0"> </el-option>
+                <el-option label="ACTIVO" :value="1"> </el-option>
               </el-select>
             </div>
           </div>
@@ -304,7 +304,11 @@
 </template>
 <script>
 import jwt_decode from "jwt-decode";
-
+import {
+  validarNumeroCelular,
+  validarCedula,
+  validarCorreoElectronico,
+} from "../util/validaciones";
 import flatPicker from "vue-flatpickr-component";
 import { getBase64LogoReportes } from "../util/logoReport";
 import { convertSecondtoTimeString } from "../util/fechas";
@@ -401,26 +405,25 @@ export default {
       emailMercado: "",
       telMercado: "",
       dirMercado: "",
-      mSelectEstadoMercado:1,
-      itemSelectMercado:null,
-      isPermisosActions:false
+      mSelectEstadoMercado: 1,
+      itemSelectMercado: null,
+      isPermisosActions: false,
     };
   },
   methods: {
     showEditMercado(item) {
-      this.itemSelectMercado = item
+      this.itemSelectMercado = item;
       this.mercadoNombre = item.nombre_mercado;
       this.encargadoMercado = item.encargado_mercado;
       this.emailMercado = item.email_mercado;
       this.telMercado = item.telefono_mercado;
       this.dirMercado = item.dire_mercado;
-      this.mSelectEstadoMercado = item.estado
+      this.mSelectEstadoMercado = item.estado;
       this.modalEditMercado = true;
-      
     },
     closeEditMercado() {
       this.modalEditMercado = false;
-      this.itemSelectMercado = null
+      this.itemSelectMercado = null;
     },
     showAddMercado() {
       this.clearModalMercado();
@@ -477,20 +480,27 @@ export default {
         this.dirMercado != ""
       ) {
         try {
-          if(this.validarCorreoElectronico(this.emailMercado)){
-            var datos = await this.$axios.post(
-            process.env.baseUrlPanel + "/create_mercado",
-            {
-              nombre_mercado: this.mercadoNombre,
-              encargado_mercado: this.encargadoMercado,
-              email_mercado: this.emailMercado,
-              telefono_mercado: this.telMercado,
-              dire_mercado: this.dirMercado,
-            }
-          );
+          if (validarCorreoElectronico(this.emailMercado)) {
+            if (validarNumeroCelular(this.telMercado)) {
+              var datos = await this.$axios.post(
+                process.env.baseUrlPanel + "/create_mercado",
+                {
+                  nombre_mercado: this.mercadoNombre,
+                  encargado_mercado: this.encargadoMercado,
+                  email_mercado: this.emailMercado,
+                  telefono_mercado: this.telMercado,
+                  dire_mercado: this.dirMercado,
+                }
+              );
 
-          this.readMercadosAll();
-          }else{
+              this.readMercadosAll();
+            } else {
+              Notification.error({
+                title: "PROCEDENCIA - SECTOR",
+                message: "TELEFONO NO VALIDO !",
+              });
+            }
+          } else {
             Notification.error({
               title: "PROCEDENCIA - SECTOR",
               message: "EMAIL NO VALIDO !",
@@ -511,39 +521,46 @@ export default {
         this.itemSelectMercado != null
       ) {
         try {
-          var datos = await this.$axios.put(
-            process.env.baseUrlPanel + "/update_mercado",
-            {
-              id_mercado: this.itemSelectMercado.id_mercado,
-              estado:this.mSelectEstadoMercado,
-              nombre_mercado: this.mercadoNombre,
-              encargado_mercado: this.encargadoMercado,
-              email_mercado: this.emailMercado,
-              telefono_mercado: this.telMercado,
-              dire_mercado: this.dirMercado,
+          if (validarCorreoElectronico(this.emailMercado)) {
+            if (validarNumeroCelular(this.telMercado)) {
+              var datos = await this.$axios.put(
+                process.env.baseUrlPanel + "/update_mercado",
+                {
+                  id_mercado: this.itemSelectMercado.id_mercado,
+                  estado: this.mSelectEstadoMercado,
+                  nombre_mercado: this.mercadoNombre,
+                  encargado_mercado: this.encargadoMercado,
+                  email_mercado: this.emailMercado,
+                  telefono_mercado: this.telMercado,
+                  dire_mercado: this.dirMercado,
+                }
+              );
+              this.closeEditMercado();
+              this.readMercadosAll();
+            } else {
+              Notification.error({
+                title: "PROCEDENCIA - SECTOR",
+                message: "TELEFONO NO VALIDO !",
+              });
             }
-          );
-          this.closeEditMercado()
-          this.readMercadosAll();
+          } else {
+            Notification.error({
+              title: "PROCEDENCIA - SECTOR",
+              message: "EMAIL NO VALIDO !",
+            });
+          }
         } catch (error) {
           console.log(error);
-          alert(error.toString())
+          alert(error.toString());
         }
       }
-    },
-    validarCorreoElectronico(correo) {
-      // Expresión regular para validar el correo electrónico
-      var patron = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-      // Verificar si el correo coincide con el patrón
-      return patron.test(correo);
     },
   },
   mounted() {
     this.readMercadosAll();
     var data = jwt_decode(this.$cookies.get("token")).datosJWT;
-    if(data.active_options_mercado == 1){
-      this.isPermisosActions = true
+    if (data.active_options_mercado == 1) {
+      this.isPermisosActions = true;
     }
   },
 };
