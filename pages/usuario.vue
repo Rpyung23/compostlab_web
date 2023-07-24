@@ -165,16 +165,42 @@
                 >
                 </base-input>
               </div>
-              <div class="col-md-6">
+              <!--<div class="col-md-6">
                 <base-input
                   name="Password Usuario"
                   placeholder="Password Usuario"
                   prepend-icon="ni ni-key-25"
                   rules="required"
                   type="password"
+                  :min="8"
                   v-model="contrasenia"
                 >
                 </base-input>
+              </div>-->
+
+              <div class="input-group col-md-6">
+                <input
+                  class="form-control"
+                  aria-label="Example text with button addon"
+                  aria-describedby="button-addon1"
+                  name="Password Usuario"
+                  placeholder="Password Usuario"
+                  prepend-icon="ni ni-key-25"
+                  rules="required"
+                  :type="type_password"
+                  :min="8"
+                  v-model="contrasenia"
+                />
+
+                <div class="input-group-prepend">
+                  <base-button
+                    type="default"
+                    @click="mostrarContrasenia()"
+                    style="height: 3rem"
+                    size="sm"
+                    ><i class="ni ni-lock-circle-open"></i
+                  ></base-button>
+                </div>
               </div>
             </div>
 
@@ -405,8 +431,8 @@
           <div class="form-row" style="margin-top: 0.5rem">
             <div class="col-md-6">
               <el-checkbox border v-model="btn_tabla_mercados"
-                >BTN TABLA Procedencia/S </el-checkbox
-              >
+                >BTN TABLA Procedencia/S
+              </el-checkbox>
             </div>
             <div class="col-md-6">
               <el-checkbox border v-model="btn_tabla_lotes"
@@ -427,7 +453,6 @@
               >
             </div>
           </div>
-          
 
           <div class="form-row" style="margin-top: 0.5rem">
             <div class="col-md-12">
@@ -441,7 +466,6 @@
                 >OPC ESTADISTICO</el-checkbox
               >
             </div>
-
           </div>
 
           <div class="text-right" style="margin-top: 1rem">
@@ -461,7 +485,11 @@
 import flatPicker from "vue-flatpickr-component";
 import { getBase64LogoReportes } from "../util/logoReport";
 import { convertSecondtoTimeString } from "../util/fechas";
-import {validarNumeroCelular,validarCedula,validarCorreoElectronico} from "../util/validaciones"
+import {
+  validarNumeroCelular,
+  validarCedula,
+  validarCorreoElectronico,
+} from "../util/validaciones";
 import "flatpickr/dist/flatpickr.css";
 import { getFecha_dd_mm_yyyy, FechaStringToHour } from "../util/fechas";
 
@@ -577,7 +605,8 @@ export default {
       btn_tabla_insumos: false,
       btn_tabla_h_lotes: false,
       btn_tabla_despacho: false,
-      active_estadistico_lote:false
+      active_estadistico_lote: false,
+      type_password: "password",
     };
   },
   methods: {
@@ -602,7 +631,8 @@ export default {
       this.btn_tabla_despacho =
         item.active_options_despacho == 1 ? true : false;
 
-        this.active_estadistico_lote = item.active_estadistico_lote == 1 ? true : false
+      this.active_estadistico_lote =
+        item.active_estadistico_lote == 1 ? true : false;
     },
     closeModalPermisosUsuario() {
       this.objRowSelectUser = null;
@@ -718,24 +748,31 @@ export default {
           if (validarCedula(this.cedula)) {
             if (validarCorreoElectronico(this.email_usuario)) {
               if (validarNumeroCelular(this.telefono)) {
-                var datos = await this.$axios.post(
-                  process.env.baseUrl + "/create_user",
-                  {
-                    email_usuario: this.email_usuario,
-                    nombres: this.nombres,
-                    apellido: this.apellido,
-                    cedula: this.cedula,
-                    telefono: this.telefono,
-                    contrasenia: this.contrasenia,
-                  }
-                );
+                if (this.contrasenia.length >= 8) {
+                  var datos = await this.$axios.post(
+                    process.env.baseUrl + "/create_user",
+                    {
+                      email_usuario: this.email_usuario,
+                      nombres: this.nombres,
+                      apellido: this.apellido,
+                      cedula: this.cedula,
+                      telefono: this.telefono,
+                      contrasenia: this.contrasenia,
+                    }
+                  );
 
-                if (datos.data.status_code == 200) {
-                  this.closeModalAddUsuario();
-                  this.clearModalAddUsuario();
-                  this.readUsuarioALL();
+                  if (datos.data.status_code == 200) {
+                    this.closeModalAddUsuario();
+                    this.clearModalAddUsuario();
+                    this.readUsuarioALL();
+                  } else {
+                    this.showNotificationError("Nuevo Usuario", datos.data.msm);
+                  }
                 } else {
-                  this.showNotificationError("Nuevo Usuario", datos.data.msm);
+                  this.showNotificationError(
+                    "Contraseña Usuario",
+                    "Contraseña no válido (mínimo 8 caracteres)"
+                  );
                 }
               } else {
                 this.showNotificationError(
@@ -758,29 +795,36 @@ export default {
       }
     },
     async updatePasswordUsuario() {
-      if (this.email_usuario != null && this.contrasenia != null) {
-        try {
-          var datos = await this.$axios.put(
-            process.env.baseUrl + "/update_password",
-            {
-              token: this.token,
-              email: this.email_usuario,
-              pass: this.contrasenia,
+      if (this.email_usuario != null || this.contrasenia != null) {
+        if (this.contrasenia.length >= 8) {
+          try {
+            var datos = await this.$axios.put(
+              process.env.baseUrl + "/update_password",
+              {
+                token: this.token,
+                email: this.email_usuario,
+                pass: this.contrasenia,
+              }
+            );
+
+            console.log(datos.data);
+
+            if (datos.data.status_code == 200) {
+              this.closeModalUpdatePassword();
+              this.clearModalUpdatePassword();
+              this.clearModalAddUsuario();
+              this.readUsuarioALL();
+            } else {
+              this.showNotificationError("Update Password", datos.data.msm);
             }
-          );
-
-          console.log(datos.data);
-
-          if (datos.data.status_code == 200) {
-            this.closeModalUpdatePassword();
-            this.clearModalUpdatePassword();
-            this.clearModalAddUsuario();
-            this.readUsuarioALL();
-          } else {
-            this.showNotificationError("Update Password", datos.data.msm);
+          } catch (error) {
+            this.showNotificationError("Update Password", error.toString());
           }
-        } catch (error) {
-          this.showNotificationError("Update Password", error.toString());
+        } else {
+          this.showNotificationError(
+            "Contraseña Usuario",
+            "Contraseña no válido (mínimo 8 caracteres)"
+          );
         }
       }
     },
@@ -851,7 +895,8 @@ export default {
             btn_tabla_insumos: this.btn_tabla_insumos == true ? 1 : 0,
             btn_tabla_h_lotes: this.btn_tabla_h_lotes == true ? 1 : 0,
             btn_tabla_despacho: this.btn_tabla_despacho == true ? 1 : 0,
-            active_estadistico_lote:this.active_estadistico_lote == true ? 1 : 0
+            active_estadistico_lote:
+              this.active_estadistico_lote == true ? 1 : 0,
           }
         );
 
@@ -867,7 +912,13 @@ export default {
         this.showNotificationError("PERMISOS Usuario", error.toString());
       }
     },
-
+    mostrarContrasenia() {
+      if (this.type_password == "password") {
+        this.type_password = "text";
+      } else {
+        this.type_password = "password";
+      }
+    },
   },
   mounted() {
     this.readUsuarioALL();

@@ -91,7 +91,7 @@
     </ul>
 
     <!--Classic modal-->
-    <modal :show.sync="ModalClasicAjustes" size="lg">
+    <modal :show.sync="ModalClasicAjustes" size="xl">
       <h6 slot="header" class="modal-title">NOTIFICACIONES</h6>
 
       <el-table
@@ -109,14 +109,69 @@
             ></base-button>
           </template>
         </el-table-column>-->
-        <el-table-column label="PILA" width="270" prop="nombre_lote">
+        <el-table-column label="PILA" width="290" prop="nombre_lote">
         </el-table-column>
+        
+        <el-table-column prop="detalle_actividad" label="ACTIVIDAD" width="190">
+              <template slot-scope="scope">
+                <badge
+                  v-if="scope.row.id_actividad == null"
+                  type="secondary"
+                  class="mr-2"
+                  >Sin Actividad</badge
+                >
+
+                <badge
+                  v-if="scope.row.id_actividad == 1"
+                  type="warning"
+                  class="mr-2"
+                  >{{ scope.row.detalle_actividad }}</badge
+                >
+
+                <badge
+                  v-if="scope.row.id_actividad == 2"
+                  type="default"
+                  class="mr-2"
+                  >{{ scope.row.detalle_actividad }}</badge
+                >
+
+                <badge
+                  v-if="scope.row.id_actividad == 3"
+                  type="primary"
+                  class="mr-2"
+                  >{{ scope.row.detalle_actividad }}</badge
+                >
+
+                <badge
+                  v-if="scope.row.id_actividad == 4"
+                  type="info"
+                  class="mr-2"
+                  >{{ scope.row.detalle_actividad }}</badge
+                >
+
+                <badge
+                  v-if="scope.row.id_actividad == 5"
+                  type="success"
+                  class="mr-2"
+                  >{{ scope.row.detalle_actividad }}</badge
+                >
+
+                <badge
+                  v-if="scope.row.id_actividad == 6"
+                  type="danger"
+                  class="mr-2"
+                  >{{ scope.row.detalle_actividad }}</badge
+                >
+              </template>
+            </el-table-column>
+
         <el-table-column label="FASE" width="250" prop="detalleFase">
           <template slot-scope="scope">
                 <badge type="primary" class="mr-2">{{scope.row.detalleFase}}</badge>
               </template>
         </el-table-column>
-        <el-table-column label="Procedencia - Sector" width="230" prop="nombre_mercado">
+
+        <el-table-column label="Procedencia - Sector" width="350" prop="nombre_mercado">
         </el-table-column>
       </el-table>
 

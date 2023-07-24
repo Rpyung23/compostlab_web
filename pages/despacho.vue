@@ -52,9 +52,19 @@
                   size="sm"
                   title="ENVIAR A SALIDA"
                   type="danger"
+                  v-if="scope.row.fechaDespacho == null"
                   @click="showNotificationDespacho(scope.row)"
                   ><i class="ni ni-check-bold"></i>AUT. SALIDA</base-button
                 >
+                <base-button
+                  size="sm"
+                  title="ENVIAR A SALIDA"
+                  type="default"
+                  v-if="scope.row.fechaDespacho != null"
+                  @click=""
+                  >ENTREGADO</base-button
+                >
+
               </template>
             </el-table-column>
 

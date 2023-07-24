@@ -100,8 +100,60 @@
             </el-table-column>
             <el-table-column prop="vPh" label="PH." width="130">
             </el-table-column>
-            <el-table-column prop="vOxigeno" label="OX." width="130">
+
+            <el-table-column prop="detalle_actividad" label="ACTIVIDAD" width="170">
+              <template slot-scope="scope">
+                <badge
+                  v-if="scope.row.id_actividad == null"
+                  type="secondary"
+                  class="mr-2"
+                  >Sin Actividad</badge
+                >
+
+                <badge
+                  v-if="scope.row.id_actividad == 1"
+                  type="warning"
+                  class="mr-2"
+                  >{{ scope.row.detalle_actividad }}</badge
+                >
+
+                <badge
+                  v-if="scope.row.id_actividad == 2"
+                  type="default"
+                  class="mr-2"
+                  >{{ scope.row.detalle_actividad }}</badge
+                >
+
+                <badge
+                  v-if="scope.row.id_actividad == 3"
+                  type="primary"
+                  class="mr-2"
+                  >{{ scope.row.detalle_actividad }}</badge
+                >
+
+                <badge
+                  v-if="scope.row.id_actividad == 4"
+                  type="info"
+                  class="mr-2"
+                  >{{ scope.row.detalle_actividad }}</badge
+                >
+
+                <badge
+                  v-if="scope.row.id_actividad == 5"
+                  type="success"
+                  class="mr-2"
+                  >{{ scope.row.detalle_actividad }}</badge
+                >
+
+                <badge
+                  v-if="scope.row.id_actividad == 6"
+                  type="danger"
+                  class="mr-2"
+                  >{{ scope.row.detalle_actividad }}</badge
+                >
+              </template>
             </el-table-column>
+
             <el-table-column
               prop="detalleHistorial"
               label="DETALLE"
@@ -284,7 +336,7 @@ export default {
             alignment: "center",
           },
           {
-            text: "OXI.",
+            text: "ACTIV.",
             fontSize: 8.5,
             bold: true,
             fillColor: "#039BC4",
@@ -337,7 +389,7 @@ export default {
             alignment: "center",
           },
           {
-            text: this.mListRHLote[i].vOxigeno,
+            text: this.mListRHLote[i].detalle_actividad == null ? 'Sin Actividad' : this.mListRHLote[i].detalle_actividad,
             fontSize: 8.5,
             alignment: "center",
           },

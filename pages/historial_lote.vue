@@ -78,6 +78,63 @@
             <el-table-column prop="nombre_lote" label="LOTE" width="180">
             </el-table-column>
 
+            <el-table-column
+              prop="detalle_actividad"
+              label="ACTIVIDAD"
+              width="190"
+            >
+              <template slot-scope="scope">
+                <badge
+                  v-if="scope.row.id_actividad == null"
+                  type="secondary"
+                  class="mr-2"
+                  >Sin Actividad</badge
+                >
+
+                <badge
+                  v-if="scope.row.id_actividad == 1"
+                  type="warning"
+                  class="mr-2"
+                  >{{ scope.row.detalle_actividad }}</badge
+                >
+
+                <badge
+                  v-if="scope.row.id_actividad == 2"
+                  type="default"
+                  class="mr-2"
+                  >{{ scope.row.detalle_actividad }}</badge
+                >
+
+                <badge
+                  v-if="scope.row.id_actividad == 3"
+                  type="primary"
+                  class="mr-2"
+                  >{{ scope.row.detalle_actividad }}</badge
+                >
+
+                <badge
+                  v-if="scope.row.id_actividad == 4"
+                  type="info"
+                  class="mr-2"
+                  >{{ scope.row.detalle_actividad }}</badge
+                >
+
+                <badge
+                  v-if="scope.row.id_actividad == 5"
+                  type="success"
+                  class="mr-2"
+                  >{{ scope.row.detalle_actividad }}</badge
+                >
+
+                <badge
+                  v-if="scope.row.id_actividad == 6"
+                  type="danger"
+                  class="mr-2"
+                  >{{ scope.row.detalle_actividad }}</badge
+                >
+              </template>
+            </el-table-column>
+
             <!--<el-table-column prop="idSali_m" label="Salida" width="140">
               </el-table-column>-->
             <el-table-column prop="detalleFase" label="FASE ACT." width="190">
@@ -328,18 +385,75 @@
         >
         </el-table-column>
 
+        <el-table-column prop="detalle_actividad" label="ACTIVIDAD" width="170">
+          <template slot-scope="scope">
+            <badge
+              v-if="scope.row.id_actividad == null"
+              type="secondary"
+              class="mr-2"
+              >Sin Actividad</badge
+            >
+
+            <badge
+              v-if="scope.row.id_actividad == 1"
+              type="warning"
+              class="mr-2"
+              >{{ scope.row.detalle_actividad }}</badge
+            >
+
+            <badge
+              v-if="scope.row.id_actividad == 2"
+              type="default"
+              class="mr-2"
+              >{{ scope.row.detalle_actividad }}</badge
+            >
+
+            <badge
+              v-if="scope.row.id_actividad == 3"
+              type="primary"
+              class="mr-2"
+              >{{ scope.row.detalle_actividad }}</badge
+            >
+
+            <badge
+              v-if="scope.row.id_actividad == 4"
+              type="info"
+              class="mr-2"
+              >{{ scope.row.detalle_actividad }}</badge
+            >
+
+            <badge
+              v-if="scope.row.id_actividad == 5"
+              type="success"
+              class="mr-2"
+              >{{ scope.row.detalle_actividad }}</badge
+            >
+
+            <badge
+              v-if="scope.row.id_actividad == 6"
+              type="danger"
+              class="mr-2"
+              >{{ scope.row.detalle_actividad }}</badge
+            >
+          </template>
+        </el-table-column>
+
+        <el-table-column
+          prop="detalleHistorial"
+          label="DETALLE RESIDUO"
+          width="180"
+        >
+        </el-table-column>
+
         <div slot="empty"></div>
       </el-table>
     </modal>
-
-
   </div>
 </template>
 <script>
-
 import flatPicker from "vue-flatpickr-component";
-import RouteBreadCrumb from '~/components/argon-core/Breadcrumb/RouteBreadcrumb';
-  import BaseHeader from '~/components/argon-core/BaseHeader';
+import RouteBreadCrumb from "~/components/argon-core/Breadcrumb/RouteBreadcrumb";
+import BaseHeader from "~/components/argon-core/BaseHeader";
 
 import {
   Table,
@@ -368,12 +482,10 @@ import clientPaginationMixin from "~/components/tables/PaginatedTables/clientPag
 import Tabs from "@/components/argon-core/Tabs/Tabs";
 import TabPane from "@/components/argon-core/Tabs/Tab";
 
-
 export default {
   mixins: [clientPaginationMixin],
   layout: "DashboardLayout",
   components: {
-
     BaseHeader,
     RouteBreadCrumb,
     Tabs,
@@ -478,17 +590,7 @@ export default {
           prop: "vPh",
           label: "PH",
           minWidth: 100,
-        },
-        {
-          prop: "detalle_actividad",
-          label: "ACT.",
-          minWidth: 170,
-        },
-        {
-          prop: "detalleHistorial",
-          label: "DETALLE",
-          minWidth: 180,
-        },
+        }
       ],
       mListInsumoXLote: [],
       loadingHLote: false,

@@ -47,6 +47,17 @@
         >
         </sidebar-item>
 
+        
+        <sidebar-item
+          translate="no"
+          :link="{
+            name: 'Entrada',
+            icon: 'ni ni-delivery-fast',
+            path: './entrada',
+          }"
+        >
+        </sidebar-item>
+
         <sidebar-item
           translate="no"
           v-if="activeHistorial"

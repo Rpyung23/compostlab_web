@@ -376,6 +376,12 @@ export default {
           label: "Procedencia - Sector",
           minWidth: 250,
         },
+        
+        {
+          prop: "cant_organica_mercado",
+          label: "C. Organica (KG)",
+          minWidth: 230,
+        },
         {
           prop: "encargado_mercado",
           label: "ENCARGADO",

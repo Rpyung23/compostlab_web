@@ -10,7 +10,7 @@
         >
           <div class="cardTextoRPagosVehiculoProduccionPanelDespachoBusqueda">
             <el-select
-              placeholder="LOTE"
+              placeholder="PILA"
               v-model="mSelectLote"
               collapse-tags
               style="width: 100%"
