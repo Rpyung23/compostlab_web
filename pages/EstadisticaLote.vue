@@ -234,6 +234,26 @@ export default {
       }
     },
     async readEstadsitico() {
+
+
+      this.EstaTemperatura.chartData.labels = []
+      this.EstaHumedad.chartData.labels = []
+      this.EstaPh.chartData.labels = []
+
+      this.$refs.GraficaEstadisticaTemperatura.renderChart(
+            [],
+            []
+          );
+
+          this.$refs.GraficaEstadisticaHumedad.renderChart(
+            [],
+            []
+          );
+
+          this.$refs.GraficaEstadisticaPh.renderChart(
+            [],
+            []
+          );
       var listaEstadistico = [];
       try {
         var datos = await this.$axios.get(

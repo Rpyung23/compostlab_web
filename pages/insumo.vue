@@ -83,10 +83,10 @@
               </template>
             </el-table-column>
 
-            <el-table-column prop="id_insumo" label="CODIGO" width="130">
+            <!--<el-table-column prop="id_insumo" label="CODIGO" width="130">
             </el-table-column>
 
-            <!--<el-table-column prop="idSali_m" label="Salida" width="140">
+            <el-table-column prop="idSali_m" label="Salida" width="140">
               </el-table-column>-->
 
             <el-table-column

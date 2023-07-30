@@ -58,20 +58,20 @@
                 >
                 <base-button
                   size="sm"
-                  title="ENVIAR A SALIDA"
+                  title="ENTREGADO"
                   type="default"
                   v-if="scope.row.fechaDespacho != null"
-                  @click=""
+                  @click="showEditEntregado(scope.row)"
                   >ENTREGADO</base-button
                 >
 
               </template>
             </el-table-column>
 
-            <el-table-column prop="id_lote" label="CODIGO" width="130">
+            <!--<el-table-column prop="id_lote" label="CODIGO" width="130">
             </el-table-column>
 
-            <!--<el-table-column prop="idSali_m" label="Salida" width="140">
+            <el-table-column prop="idSali_m" label="Salida" width="140">
               </el-table-column>-->
 
             <el-table-column
@@ -156,12 +156,85 @@
                   type="primary"
                   @click="sendAuthLoteSalida()"
                   native-type="submit"
+                  >Autorizar</base-button
+                >
+              </div>
+            </form>
+          </validation-observer>
+        </modal>
+
+        <modal :show.sync="modalDespachoEdit" modal-classes="modal-sm">
+          <validation-observer v-slot="{ handleSubmit }" ref="formValidator">
+            <form
+              class="needs-validation"
+              @submit.prevent="handleSubmit(firstFormSubmit)"
+            >
+              <h6 slot="header" class="modal-title">
+                {{nameLote}}
+              </h6>
+
+              <div class="form-row" style="margin-top: 1rem">
+                <div class="col-md-12">
+                  <base-input
+                    name="DESTINO"
+                    placeholder="DESTINO"
+                    prepend-icon="ni ni-single-02"
+                    rules="required"
+                    v-model="destinoSalida"
+                  >
+                  </base-input>
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="col-md-12">
+                  <base-input
+                    name="CORREO DESTINO"
+                    placeholder="CORREO"
+                    prepend-icon="ni ni-email-83"
+                    rules="required"
+                    v-model="correoSalida"
+                  >
+                  </base-input>
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="col-md-12">
+                  <base-input
+                    name="TELEFONO"
+                    placeholder="TELEFONO"
+                    type="tel"
+                    prepend-icon="ni ni-mobile-button"
+                    rules="required"
+                    v-model="telefonoSalida"
+                  >
+                  </base-input>
+                </div>
+                <!--<div class="col-md-6">
+              <base-input
+                prepend-icon="ni ni-tag"
+                name="Origin Insumo"
+                placeholder="Origin Insumo"
+                rules="required"
+                v-model="origin_insumo"
+              >
+              </base-input>
+            </div>-->
+              </div>
+              <div class="text-right">
+                <base-button type="danger" @click="closeModalLoteSalida()"
+                  >Cancelar</base-button
+                >
+                <base-button
+                  type="primary"
+                  @click="updateDatoSalida()"
+                  native-type="submit"
                   >Actualizar</base-button
                 >
               </div>
             </form>
           </validation-observer>
         </modal>
+
       </div>
     </base-header>
   </div>
@@ -295,6 +368,8 @@ export default {
       destinoSalida: null,
       correoSalida: null,
       telefonoSalida: null,
+      nameLote:"",
+      modalDespachoEdit:false
     };
   },
   methods: {
@@ -437,6 +512,101 @@ export default {
       this.destinoSalida = null;
       this.correoSalida = null;
       this.telefonoSalida = null;
+    },
+    closeModalLoteSalida() {
+      this.itemSelectDespacho = null;
+      this.modalDespachoEdit = false;
+      this.destinoSalida = null;
+      this.correoSalida = null;
+      this.telefonoSalida = null;
+    },
+    showEditEntregado(item)
+    {
+      console.log(item)
+      this.itemSelectDespacho = item
+      this.modalDespachoEdit = true
+      this.nameLote = item.nombre_lote
+      this.destinoSalida = item.destino
+      this.correoSalida = item.correo_destino
+      this.telefonoSalida = item.telefono_destino
+    },
+
+    async updateDatoSalida() {
+      try {
+        if (
+          this.destinoSalida != null &&
+          this.correoSalida != null &&
+          this.telefonoSalida != null
+        ) {
+          if (this.destinoSalida != null) {
+            if (this.telefonoSalida != null) {
+              if (this.correoSalida != null) {
+                if (validarCorreoElectronico(this.correoSalida)) {
+                  if (validarNumeroCelular(this.telefonoSalida)) {
+                    var datos = await this.$axios.put(
+                      process.env.baseUrl + "/update_lote_salida",
+                      {
+                        token: this.token,
+                        id_lote: this.itemSelectDespacho.id_lote,
+                        destino: this.destinoSalida,
+                        email: this.correoSalida,
+                        telefono: this.telefonoSalida,
+                      }
+                    );
+
+                    if (datos.data.status_code == 200) {
+                      /*Notification.success({
+              title: "Panel Salidas",
+              message: "Datos consultados con éxito",
+            });*/
+                      this.closeModalLoteSalida();
+                      this.readHistorialLoteAll();
+                    } else {
+                      Notification.error({
+                        title: "DATOS SALIDA",
+                        message: datos.data.msm,
+                      });
+                    }
+                  } else {
+                    this.showNotificationError(
+                      "DATOS. SALIDA",
+                      "TELEFONO NO VALIDA.!!"
+                    );
+                  }
+                } else {
+                  this.showNotificationError(
+                    "DATOS. SALIDA",
+                    "CORREO ELECTRONICO NO VALIDA.!!"
+                  );
+                }
+              } else {
+                this.showNotificationError(
+                  "DATOS. SALIDA",
+                  "INGRESE UN CORREO VALIDO.!"
+                );
+              }
+            } else {
+              this.showNotificationError(
+                "DATOS. SALIDA",
+                "INGRESE UN TELEFONO VALIDO"
+              );
+            }
+          } else {
+            this.showNotificationError(
+              "DATOS. SALIDA",
+              "INGRESE UN DESTINO VALIDO.!"
+            );
+          }
+        } else {
+          this.showNotificationError("DATOS. SALIDA", "EXISTEN DATOS VACIOS");
+        }
+      } catch (error) {
+        console.log(error);
+        Notification.info({
+          title: "TryCatch PILAS DESPACHO",
+          message: error.toString(),
+        });
+      }
     },
   },
   mounted() {

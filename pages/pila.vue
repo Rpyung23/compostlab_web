@@ -66,7 +66,7 @@
             height="calc(100vh - 8.90rem)"
             style="width: 100%"
           >
-            <el-table-column v-if="isPermisosActions" width="90">
+            <el-table-column v-if="isPermisosActions" width="120">
               <template slot-scope="scope">
                 <base-button
                   size="sm"
@@ -75,11 +75,18 @@
                   type="primary"
                   ><i class="ni ni-ruler-pencil"></i
                 ></base-button>
+                <base-button
+                  size="sm"
+                  @click="deleteNuevoLote(scope.row.id_lote)"
+                  title="ELIMINAR"
+                  type="danger"
+                  ><i class="ni ni-fat-remove"></i
+                ></base-button>
               </template>
             </el-table-column>
 
-            <el-table-column prop="id_lote" label="CODIGO" width="130">
-            </el-table-column>
+            <!--<el-table-column prop="id_lote" label="CODIGO" width="130">
+            </el-table-column>-->
 
             <el-table-column prop="nombre_lote" label="LOTE" width="190">
             </el-table-column>
@@ -95,35 +102,35 @@
               <template slot-scope="scope">
                 <badge
                   v-if="scope.row.id_actividad == null"
-                  type="secondary"
+                  type="primary"
                   class="mr-2"
                   >Sin Actividad</badge
                 >
 
                 <badge
                   v-if="scope.row.id_actividad == 1"
-                  type="warning"
+                  type="success"
                   class="mr-2"
                   >{{ scope.row.detalle_actividad }}</badge
                 >
 
                 <badge
                   v-if="scope.row.id_actividad == 2"
-                  type="default"
+                  type="success"
                   class="mr-2"
                   >{{ scope.row.detalle_actividad }}</badge
                 >
 
                 <badge
                   v-if="scope.row.id_actividad == 3"
-                  type="primary"
+                  type="success"
                   class="mr-2"
                   >{{ scope.row.detalle_actividad }}</badge
                 >
 
                 <badge
                   v-if="scope.row.id_actividad == 4"
-                  type="info"
+                  type="success"
                   class="mr-2"
                   >{{ scope.row.detalle_actividad }}</badge
                 >
@@ -761,6 +768,30 @@ export default {
             });
           }
         }
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    async deleteNuevoLote(id_lote) {
+      try {
+        var datos = await this.$axios.delete(
+            process.env.baseUrlPanel + "/eliminar_lote",
+            {
+            data: {
+              token: this.token,
+              id_lote: id_lote,
+            },
+          }
+          );
+
+          if (datos.data.status_code == 200) {
+            this.readLoteAll();
+          } else {
+            Notification.info({
+              title: "ELIMINACION DE PILA",
+              message: datos.data.msm,
+            });
+          }
       } catch (error) {
         console.log(error);
       }

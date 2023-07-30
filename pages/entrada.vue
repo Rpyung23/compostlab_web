@@ -97,8 +97,8 @@
               </template>
             </el-table-column>
 
-            <el-table-column prop="id_entrada" label="CODIGO" width="130">
-            </el-table-column>
+            <!--<el-table-column prop="id_entrada" label="CODIGO" width="130">
+            </el-table-column>-->
 
             <el-table-column
               prop="fecha_hora_entrada_"

@@ -85,11 +85,57 @@
             <el-table-column prop="contador" label="TOT. ACTIVIDAD" width="180">
             </el-table-column>
 
-            <el-table-column
-              prop="detalle_actividad"
-              label="ACTIVIDAD"
-              width="380"
-            >
+            <el-table-column prop="detalle_actividad" label="ACTIVIDAD" width="190">
+              <template slot-scope="scope">
+                <badge
+                  v-if="scope.row.fk_id_actividad == null"
+                  type="primary"
+                  class="mr-2"
+                  >Sin Actividad</badge
+                >
+
+                <badge
+                  v-if="scope.row.fk_id_actividad == 1"
+                  type="success"
+                  class="mr-2"
+                  >{{ scope.row.detalle_actividad }}</badge
+                >
+
+                <badge
+                  v-if="scope.row.fk_id_actividad == 2"
+                  type="success"
+                  class="mr-2"
+                  >{{ scope.row.detalle_actividad }}</badge
+                >
+
+                <badge
+                  v-if="scope.row.fk_id_actividad == 3"
+                  type="success"
+                  class="mr-2"
+                  >{{ scope.row.detalle_actividad }}</badge
+                >
+
+                <badge
+                  v-if="scope.row.fk_id_actividad == 4"
+                  type="success"
+                  class="mr-2"
+                  >{{ scope.row.detalle_actividad }}</badge
+                >
+
+                <badge
+                  v-if="scope.row.fk_id_actividad == 5"
+                  type="success"
+                  class="mr-2"
+                  >{{ scope.row.detalle_actividad }}</badge
+                >
+
+                <badge
+                  v-if="scope.row.fk_id_actividad == 6"
+                  type="danger"
+                  class="mr-2"
+                  >{{ scope.row.detalle_actividad }}</badge
+                >
+              </template>
             </el-table-column>
 
             <div slot="empty"></div>
@@ -198,6 +244,7 @@ export default {
         );
 
         this.mListInsumoLotes.push(...datos.data.datos);
+        console.log(datos.data.datos)
       } catch (error) {
         console.log(error);
       }

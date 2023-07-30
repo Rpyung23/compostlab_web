@@ -72,49 +72,45 @@
               </template>
             </el-table-column>
 
-            <el-table-column prop="id_lote" label="CODIGO" width="130">
-            </el-table-column>
+            <!--<el-table-column prop="id_lote" label="CODIGO" width="130">
+            </el-table-column>-->
 
             <el-table-column prop="nombre_lote" label="LOTE" width="180">
             </el-table-column>
 
-            <el-table-column
-              prop="detalle_actividad"
-              label="ACTIVIDAD"
-              width="190"
-            >
+            <el-table-column prop="detalle_actividad" label="ACTIVIDAD" width="190">
               <template slot-scope="scope">
                 <badge
                   v-if="scope.row.id_actividad == null"
-                  type="secondary"
+                  type="primary"
                   class="mr-2"
                   >Sin Actividad</badge
                 >
 
                 <badge
                   v-if="scope.row.id_actividad == 1"
-                  type="warning"
+                  type="success"
                   class="mr-2"
                   >{{ scope.row.detalle_actividad }}</badge
                 >
 
                 <badge
                   v-if="scope.row.id_actividad == 2"
-                  type="default"
+                  type="success"
                   class="mr-2"
                   >{{ scope.row.detalle_actividad }}</badge
                 >
 
                 <badge
                   v-if="scope.row.id_actividad == 3"
-                  type="primary"
+                  type="success"
                   class="mr-2"
                   >{{ scope.row.detalle_actividad }}</badge
                 >
 
                 <badge
                   v-if="scope.row.id_actividad == 4"
-                  type="info"
+                  type="success"
                   class="mr-2"
                   >{{ scope.row.detalle_actividad }}</badge
                 >
@@ -190,6 +186,17 @@
             </el-option>
           </el-select>
         </div>
+
+        <div class="col-md-2">
+          <base-input
+            name="Cantidad"
+            placeholder="Cantidad"
+            v-model="cantInsumo"
+            :min="0"
+            type="number"
+          >
+          </base-input>
+        </div>
         <div class="col-md-3">
           <el-select
             placeholder="Tipo Peso"
@@ -204,16 +211,6 @@
             >
             </el-option>
           </el-select>
-        </div>
-        <div class="col-md-2">
-          <base-input
-            name="Cantidad"
-            placeholder="Cantidad"
-            v-model="cantInsumo"
-            :min="0"
-            type="number"
-          >
-          </base-input>
         </div>
         <div class="col-md-3">
           <base-button

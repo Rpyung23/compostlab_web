@@ -101,39 +101,39 @@
             <el-table-column prop="vPh" label="PH." width="130">
             </el-table-column>
 
-            <el-table-column prop="detalle_actividad" label="ACTIVIDAD" width="170">
+            <el-table-column prop="detalle_actividad" label="ACTIVIDAD" width="190">
               <template slot-scope="scope">
                 <badge
                   v-if="scope.row.id_actividad == null"
-                  type="secondary"
+                  type="primary"
                   class="mr-2"
                   >Sin Actividad</badge
                 >
 
                 <badge
                   v-if="scope.row.id_actividad == 1"
-                  type="warning"
+                  type="success"
                   class="mr-2"
                   >{{ scope.row.detalle_actividad }}</badge
                 >
 
                 <badge
                   v-if="scope.row.id_actividad == 2"
-                  type="default"
+                  type="success"
                   class="mr-2"
                   >{{ scope.row.detalle_actividad }}</badge
                 >
 
                 <badge
                   v-if="scope.row.id_actividad == 3"
-                  type="primary"
+                  type="success"
                   class="mr-2"
                   >{{ scope.row.detalle_actividad }}</badge
                 >
 
                 <badge
                   v-if="scope.row.id_actividad == 4"
-                  type="info"
+                  type="success"
                   class="mr-2"
                   >{{ scope.row.detalle_actividad }}</badge
                 >

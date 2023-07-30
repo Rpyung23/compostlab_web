@@ -87,10 +87,10 @@
               </template>
             </el-table-column>
 
-            <el-table-column prop="id_mercado" label="CODIGO" width="130">
+            <!--<el-table-column prop="id_mercado" label="CODIGO" width="130">
             </el-table-column>
 
-            <!--<el-table-column prop="idSali_m" label="Salida" width="140">
+            <el-table-column prop="idSali_m" label="Salida" width="140">
               </el-table-column>-->
 
             <el-table-column
@@ -193,7 +193,7 @@
           </div>
 
           <div class="text-right" style="margin-top: 1rem">
-            <base-button type="danger" @click="clearModalMercado()"
+            <base-button type="danger" @click="closeAddMercado()"
               >Cancelar</base-button
             >
             <base-button
@@ -432,6 +432,10 @@ export default {
       this.itemSelectMercado = null;
     },
     showAddMercado() {
+      this.clearModalMercado();
+      this.modalAddMercado = true;
+    },
+    closeAddMercado() {
       this.clearModalMercado();
       this.modalAddMercado = false;
     },

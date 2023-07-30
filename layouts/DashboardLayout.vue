@@ -38,6 +38,18 @@
 
         <sidebar-item
           translate="no"
+          :link="{
+            name: 'Entrada-Lote',
+            icon: 'ni ni-delivery-fast',
+            path: './entrada',
+          }"
+        >
+        </sidebar-item>
+
+        
+
+        <sidebar-item
+          translate="no"
           v-if="activeLote"
           :link="{
             name: 'Pilas',
@@ -48,15 +60,7 @@
         </sidebar-item>
 
         
-        <sidebar-item
-          translate="no"
-          :link="{
-            name: 'Entrada',
-            icon: 'ni ni-delivery-fast',
-            path: './entrada',
-          }"
-        >
-        </sidebar-item>
+
 
         <sidebar-item
           translate="no"
@@ -104,7 +108,7 @@
           <sidebar-item :link="{ name: 'Salidas Pila', path: '/rSalidas' }" translate="no"/>
           <sidebar-item :link="{ name: 'Actividad Pila', path: '/rActividadLote' }" translate="no"/>
           <sidebar-item :link="{ name: 'Insumos Pila', path: '/rInsumoLote' }" translate="no"/>
-          <sidebar-item :link="{ name: 'H. Volteos', path: '/rHLote' }" translate="no"/> 
+          <sidebar-item :link="{ name: 'Historial-Pila', path: '/rHLote' }" translate="no"/> 
           <sidebar-item :link="{ name: 'Composta Procedencia - Sector', path: '/rCompostMercado' }" translate="no"/>
           
           
