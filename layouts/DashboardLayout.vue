@@ -38,6 +38,7 @@
 
         <sidebar-item
           translate="no"
+          v-if="activeEntrada"
           :link="{
             name: 'Entrada-Lote',
             icon: 'ni ni-delivery-fast',
@@ -109,8 +110,9 @@
           <sidebar-item :link="{ name: 'Actividad Pila', path: '/rActividadLote' }" translate="no"/>
           <sidebar-item :link="{ name: 'Insumos Pila', path: '/rInsumoLote' }" translate="no"/>
           <sidebar-item :link="{ name: 'Historial-Pila', path: '/rHLote' }" translate="no"/> 
-          <sidebar-item :link="{ name: 'Composta Procedencia - Sector', path: '/rCompostMercado' }" translate="no"/>
-          
+          <sidebar-item :link="{ name: 'Entrada-Lote', path: '/rEntrada' }" translate="no"/> 
+          <sidebar-item :link="{ name: 'Composta Procedencia - Sector', path: '/rCompostMercado' }" translate="no"/> 
+          <sidebar-item :link="{ name: 'Material Orgánico y Impropio ', path: '/rImpropioOrganico' }" translate="no"/>
           
         </sidebar-item>
 
@@ -167,7 +169,8 @@ export default {
       activeRecordatorio: 0,
       activeUsuarios: 0,
       activeInsumo:0,
-      active_estadistico_lote:0
+      active_estadistico_lote:0,
+      activeEntrada:0
     };
   },
   methods: {
@@ -195,6 +198,7 @@ export default {
       this.activeUsuarios = data.activeUsuarios
       this.activeInsumo = data.activeInsumo
       this.active_estadistico_lote = data.active_estadistico_lote
+      this.activeEntrada = data.activeEntrada
     }
   },
   mounted() {

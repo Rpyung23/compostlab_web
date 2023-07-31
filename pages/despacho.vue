@@ -10,7 +10,9 @@
         >
           <div
             class="cardTextoRPagosVehiculoProduccionPanelDespachoBusqueda"
-          ></div>
+          >
+          MODULO SALIDAS
+        </div>
 
           <div
             class="cardSelectRubrosEstadosPagosVehiculoProduccionContainerPanelDespachoBusqueda"

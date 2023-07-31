@@ -10,7 +10,7 @@
         >
           <div
             class="cardTextoRPagosVehiculoProduccionPanelDespachoBusqueda"
-          ></div>
+          >MODULO PILA</div>
 
           <div
             class="cardSelectRubrosEstadosPagosVehiculoProduccionContainerPanelDespachoBusqueda"
@@ -91,12 +91,12 @@
             <el-table-column prop="nombre_lote" label="LOTE" width="190">
             </el-table-column>
 
-            <el-table-column
+            <!--<el-table-column
               prop="detalle_residuo"
               label="TIPO RESIDUO"
               width="270"
             >
-            </el-table-column>
+            </el-table-column>-->
 
             <el-table-column prop="detalle_actividad" label="ACTIVIDAD" width="190">
               <template slot-scope="scope">
@@ -213,7 +213,7 @@
           @submit.prevent="handleSubmit(firstFormSubmit)"
         >
           <div class="form-row" style="margin-bottom: 0.5rem">
-            <div class="col-md-6">
+            <div class="col-md-12">
               <base-input
                 name="Nombre Pila"
                 placeholder="Nombre Pila"
@@ -223,7 +223,8 @@
               >
               </base-input>
             </div>
-            <div class="col-md-6">
+
+            <!--<div class="col-md-6">
               <el-select
                 placeholder="Tipo Residuo"
                 v-model="mSelectResiduo"
@@ -237,8 +238,41 @@
                 >
                 </el-option>
               </el-select>
+            </div>-->
+          </div>
+
+          <div class="form-row" style="margin-bottom: 0.5rem">
+            <div class="col-md-6">
+              <el-select
+                placeholder="Procedencia - Sector"
+                v-model="mSelectMercado"
+                @change="cambioSelectProdencia()"
+                style="width: 100%"
+              >
+                <el-option
+                  v-for="item in mListTipoMercados"
+                  :key="item.id_mercado"
+                  :label="item.nombre_mercado"
+                  :value="item.id_mercado"
+                >
+                </el-option>
+              </el-select>
+            </div>
+            <div class="col-md-6">
+
+              <base-input
+                name="Peso Orgánico"
+                placeholder="Peso Orgánico"
+                prepend-icon="ni ni-box-2"
+                type="number"
+                disabled
+                v-model="PesoActualMercado"
+              >
+              
+              </base-input>
             </div>
           </div>
+
           <div class="form-row" style="margin-bottom: 0.5rem">
             <div class="col-md-6">
               <base-input
@@ -266,23 +300,9 @@
               </el-select>
             </div>
           </div>
+
           <div class="form-row" style="margin-bottom: 0.5rem">
-            <div class="col-md-6">
-              <el-select
-                placeholder="Procedencia - Sector"
-                v-model="mSelectMercado"
-                style="width: 100%"
-              >
-                <el-option
-                  v-for="item in mListTipoMercados"
-                  :key="item.id_mercado"
-                  :label="item.nombre_mercado"
-                  :value="item.id_mercado"
-                >
-                </el-option>
-              </el-select>
-            </div>
-            <div class="col-md-6">
+            <div class="col-md-12">
               <base-input
                 name="Dias Notificación"
                 placeholder="Dias Notificación"
@@ -293,6 +313,7 @@
               </base-input>
             </div>
           </div>
+
           <div class="form-row" style="margin-bottom: 0.5rem">
             <div class="col-md-12">
               <base-input
@@ -328,7 +349,7 @@
           @submit.prevent="handleSubmit(firstFormSubmit)"
         >
           <div class="form-row" style="margin-bottom: 0.5rem">
-            <div class="col-md-6">
+            <div class="col-md-12">
               <base-input
                 name="Nombre Pila"
                 placeholder="Nombre Pila"
@@ -338,7 +359,7 @@
               >
               </base-input>
             </div>
-            <div class="col-md-6">
+            <!--<div class="col-md-6">
               <el-select
                 placeholder="Tipo Residuo"
                 v-model="mSelectResiduo"
@@ -352,7 +373,7 @@
                 >
                 </el-option>
               </el-select>
-            </div>
+            </div>-->
           </div>
 
           <div class="form-row" style="margin-bottom: 0.5rem">
@@ -417,6 +438,7 @@
             </div>
 
           </div>
+
           <div class="form-row" style="margin-bottom: 0.5rem">
             <div class="col-md-12">
               <base-input
@@ -431,7 +453,7 @@
           </div>
 
           <div class="form-row" style="margin-bottom: 0.5rem">
-            <div class="col-md-6">
+            <!--<div class="col-md-6">
               <el-select
                 placeholder="Estado"
                 v-model="mSelectEstadoLote"
@@ -440,9 +462,9 @@
                 <el-option label="ACTIVO" :value="1"> </el-option>
                 <el-option label="INACTIVO" :value="0"> </el-option>
               </el-select>
-            </div>
+            </div>-->
 
-            <div class="col-md-6">
+            <div class="col-md-12">
               <base-input
                 name="Dias Notificación"
                 placeholder="Dias Notificación"
@@ -477,9 +499,9 @@
 <script>
 import flatPicker from "vue-flatpickr-component";
 import { getBase64LogoReportes } from "../util/logoReport";
-import { convertSecondtoTimeString } from "../util/fechas";
 import "flatpickr/dist/flatpickr.css";
-import { getFecha_dd_mm_yyyy, FechaStringToHour } from "../util/fechas";
+import { getFecha_dd_mm_yyyy, FechaStringToHour,convertSecondtoTimeString } from "../util/fechas";
+import { librasAKilogramos, toneladasAKilogramos } from "../util/convert";
 
 import {
   Table,
@@ -547,11 +569,6 @@ export default {
           minWidth: 230,
         },
         {
-          prop: "observacion_lote",
-          label: "DETALLE",
-          minWidth: 250,
-        },
-        {
           prop: "peso",
           label: "PESO",
           minWidth: 120,
@@ -560,6 +577,11 @@ export default {
           prop: "detalle_tipo_peso",
           label: "TIPO PESO",
           minWidth: 140,
+        },
+        {
+          prop: "observacion_lote",
+          label: "DETALLE",
+          minWidth: 250,
         },
         {
           prop: "nombre_mercado",
@@ -586,7 +608,8 @@ export default {
       itemSelectLote: null,
       isPermisosActions: false,
       mListFases: [],
-      mSelectTipoFase:null
+      mSelectTipoFase:null,
+      PesoActualMercado:0.00
     };
   },
   methods: {
@@ -608,6 +631,7 @@ export default {
       this.modalEditLote = false;
     },
     showAddLote() {
+      this.clearModalAddLote()
       this.modalAddLote = true;
     },
     async readLoteAll() {
@@ -688,10 +712,12 @@ export default {
           this.ObsLote != null &&
           this.PesoLote != null &&
           this.mSelectMercado != null &&
-          this.mSelectTipoPeso != null &&
-          this.mSelectResiduo != null
+          this.mSelectTipoPeso != null
         ) {
-          var datos = await this.$axios.post(
+
+          if(this.checkPeso())
+          {
+            var datos = await this.$axios.post(
             process.env.baseUrlPanel + "/add_lote_usuer",
             {
               token: this.token,
@@ -702,11 +728,13 @@ export default {
               id_mercado: this.mSelectMercado,
               dia_notification:
                 this.DiaNotificationLote == null ? 0 : this.DiaNotificationLote,
-              residuo: this.mSelectResiduo,
+              residuo: 1/*this.mSelectResiduo,*/
             }
           );
 
-          if (datos.data.status_code == 200) {
+          if (datos.data.status_code == 200) 
+          {
+            this.readTipoMercadoActivo();
             this.clearModalAddLote();
             this.readLoteAll();
           } else {
@@ -715,6 +743,20 @@ export default {
               message: datos.data.msm,
             });
           }
+          }else{
+            Notification.info({
+              title: "AGREGAR PILA",
+              message: "EL PESO NO DEBE SER MAYO AL PERMITIDO",
+            });
+          }
+
+          
+
+        }else{
+          Notification.info({
+              title: "AGREGAR PILA",
+              message: "EXISTEN DATOS VACIOS",
+            });
         }
       } catch (error) {
         console.log(error);
@@ -737,7 +779,6 @@ export default {
           this.PesoLote != null &&
           this.mSelectMercado != null &&
           this.mSelectTipoPeso != null &&
-          this.mSelectResiduo != null &&
           this.mSelectTipoPeso != null
         ) {
           var datos = await this.$axios.put(
@@ -753,7 +794,7 @@ export default {
               id_mercado: this.mSelectMercado,
               dia_notification:
                 this.DiaNotificationLote == null ? 0 : this.DiaNotificationLote,
-              residuo: this.mSelectResiduo,
+              residuo: 1,
               fase: this.mSelectTipoFase
             }
           );
@@ -806,6 +847,39 @@ export default {
         console.log(error);
       }
     },
+    cambioSelectProdencia()
+    {
+      if(this.mSelectMercado != null)
+      {
+        for(var i = 0;i<this.mListTipoMercados.length > 0;i++)
+          {
+            if(this.mListTipoMercados[i].id_mercado == this.mSelectMercado)
+            {
+              this.PesoActualMercado = this.mListTipoMercados[i].cant_organica_mercado
+            }
+          }
+      }
+    },
+    checkPeso()
+    {
+      if(this.mSelectTipoPeso != null)
+      {
+        if(this.mSelectTipoPeso == 1)
+        {
+          if(this.PesoActualMercado >= toneladasAKilogramos(this.PesoLote))
+          {
+            return true
+          }
+        }else if(this.mSelectTipoPeso == 2)
+        {
+          if(this.PesoActualMercado >= librasAKilogramos(this.PesoLote))
+          {
+            return true
+          }
+        }
+      }
+      return false
+    }
   },
   mounted() {
     this.readFases()

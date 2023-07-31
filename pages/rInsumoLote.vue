@@ -9,12 +9,13 @@
           footer-classes="pb-2"
         >
           <div class="cardTextoRPagosVehiculoProduccionPanelDespachoBusqueda">
+            REPORTE INSUMOS PILA
             <el-select
-              placeholder="LOTE"
+              placeholder="PILA"
               v-model="mSelectLote"
               multiple
               collapse-tags
-              style="width: 100%"
+              style="margin-left: 1rem;"
             >
               <el-option
                 v-for="item in mListLotes"

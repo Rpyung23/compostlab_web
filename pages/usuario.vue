@@ -10,7 +10,9 @@
         >
           <div
             class="cardTextoRPagosVehiculoProduccionPanelDespachoBusqueda"
-          ></div>
+          >
+          MODULO USUARIOS
+        </div>
 
           <div
             class="cardSelectRubrosEstadosPagosVehiculoProduccionContainerPanelDespachoBusqueda"
@@ -455,17 +457,30 @@
           </div>
 
           <div class="form-row" style="margin-top: 0.5rem">
-            <div class="col-md-12">
+            <div class="col-md-6">
               <el-checkbox border v-model="btn_tabla_h_lotes"
                 >BTN TABLA H - PILAS</el-checkbox
               >
             </div>
 
-            <div class="col-md-12">
+            <div class="col-md-6">
+              <el-checkbox border v-model="active_entrada"
+                >OPC ENTRADA</el-checkbox
+              >
+            </div>
+
+            <div class="col-md-6">
               <el-checkbox border v-model="active_estadistico_lote"
                 >OPC ESTADISTICO</el-checkbox
               >
             </div>
+
+            <div class="col-md-6">
+              <el-checkbox border v-model="active_tabla_entrada"
+                >OPC TABLA ENTRADA</el-checkbox
+              >
+            </div>
+
           </div>
 
           <div class="text-right" style="margin-top: 1rem">
@@ -606,6 +621,8 @@ export default {
       btn_tabla_h_lotes: false,
       btn_tabla_despacho: false,
       active_estadistico_lote: false,
+      active_entrada:false,
+      active_tabla_entrada:false,
       type_password: "password",
     };
   },
@@ -633,6 +650,9 @@ export default {
 
       this.active_estadistico_lote =
         item.active_estadistico_lote == 1 ? true : false;
+
+      this.active_entrada = item.activeEntrada == 1 ? true :  false
+      this.active_tabla_entrada = item.active_options_Entrada == 1 ? true :  false
     },
     closeModalPermisosUsuario() {
       this.objRowSelectUser = null;
@@ -897,6 +917,8 @@ export default {
             btn_tabla_despacho: this.btn_tabla_despacho == true ? 1 : 0,
             active_estadistico_lote:
               this.active_estadistico_lote == true ? 1 : 0,
+            active_entrada:this.active_entrada == true ? 1 : 0,
+            active_tabla_entrada: this.active_tabla_entrada == true ? 1 : 0,  
           }
         );
 

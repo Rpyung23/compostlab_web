@@ -10,7 +10,9 @@
         >
           <div
             class="cardTextoRPagosVehiculoProduccionPanelDespachoBusqueda"
-          ></div>
+          >
+          MODULO HISTORIAL PILA
+        </div>
 
           <div
             class="cardSelectRubrosEstadosPagosVehiculoProduccionContainerPanelDespachoBusqueda"

@@ -9,12 +9,13 @@
           footer-classes="pb-2"
         >
           <div class="cardTextoRPagosVehiculoProduccionPanelDespachoBusqueda">
+            MODULO ENTRADA LOTE
             <el-select
               placeholder="Procedencia - Sector"
               v-model="mSelectMercado"
               multiple
               collapse-tags
-              style="margin-right: 0.5rem"
+              style="margin-right: 0.5rem;margin-left: 1rem;"
             >
               <el-option
                 v-for="item in mListMercados"
@@ -57,7 +58,7 @@
               <base-button
                 type="default"
                 size="sm"
-                v-if="isPermisosActions"
+                v-if="banderaActiveTable"
                 @click="showAddEntrada()"
                 title="NUEVO PILA"
               >
@@ -85,7 +86,7 @@
             height="calc(100vh - 10rem)"
             style="width: 100%"
           >
-            <el-table-column v-if="isPermisosActions" width="90">
+            <el-table-column v-if="banderaActiveTable" width="90">
               <template slot-scope="scope">
                 <base-button
                   size="sm"
@@ -204,6 +205,24 @@
               </base-input>
             </div>
             <div class="col-md-6">
+              <el-select
+                placeholder="Tipo Peso"
+                v-model="mSelectTipoPesoOrganico"
+                style="width: 100%"
+              >
+                <el-option
+                  v-for="item in mListTipoPesos"
+                  :key="item.id_tipo_peso"
+                  :label="item.detalle_tipo_peso"
+                  :value="item.id_tipo_peso"
+                >
+                </el-option>
+              </el-select>
+            </div>
+          </div>
+
+          <div class="form-row" style="margin-bottom: 0.5rem">
+            <div class="col-md-6">
               <base-input
                 name="Cant Impropios"
                 placeholder="Cant Impropios"
@@ -213,6 +232,21 @@
                 v-model="cant_impropio_entrada"
               >
               </base-input>
+            </div>
+            <div class="col-md-6">
+              <el-select
+                placeholder="Tipo Peso"
+                v-model="mSelectTipoPesoImpropio"
+                style="width: 100%"
+              >
+                <el-option
+                  v-for="item in mListTipoPesos"
+                  :key="item.id_tipo_peso"
+                  :label="item.detalle_tipo_peso"
+                  :value="item.id_tipo_peso"
+                >
+                </el-option>
+              </el-select>
             </div>
           </div>
 
@@ -250,6 +284,7 @@ import { getBase64LogoReportes } from "../util/logoReport";
 import { convertSecondtoTimeString } from "../util/fechas";
 import "flatpickr/dist/flatpickr.css";
 import { getFecha_dd_mm_yyyy, FechaStringToHour } from "../util/fechas";
+import { librasAKilogramos, toneladasAKilogramos } from "../util/convert";
 
 import {
   Table,
@@ -314,13 +349,13 @@ export default {
         },
         {
           prop: "cant_organica",
-          label: "CANT ORGANICO",
-          minWidth: 170,
+          label: "CANT ORGANICO (KG)",
+          minWidth: 185,
         },
         {
           prop: "cant_impropia",
-          label: "CANT IMPROPIOS",
-          minWidth: 170,
+          label: "CANT IMPROPIOS (KG)",
+          minWidth: 195,
         },
         {
           prop: "detalle_entrada",
@@ -340,6 +375,10 @@ export default {
       observacion_entrada: "",
       cant_organica_entrada: null,
       cant_impropio_entrada: null,
+      mListTipoPesos: [],
+      mSelectTipoPesoImpropio: null,
+      mSelectTipoPesoOrganico: null,
+      banderaActiveTable:false
     };
   },
   methods: {
@@ -413,49 +452,59 @@ export default {
     },
     async insertNuevaLoteEntrada() {
       try {
-        if (this.nombre_encargado_entrada != "") 
-        {
+        if (this.nombre_encargado_entrada != "") {
           if (this.mSelectAddMercado != null) {
-            if (this.mSelectResiduo != null) 
-            {
-              if(this.cant_organica_entrada != null)
-              {
-                if(this.cant_impropio_entrada != null)
-                {
-                  var datos = await this.$axios.post(
-                process.env.baseUrlPanel + "/create_entrada",
-                {
-                  token: this.token,
-                  fk_id_mercado: this.mSelectAddMercado,
-                  cant_organica:
-                    this.cant_organica_entrada == null
-                      ? 0
-                      : this.cant_organica_entrada,
-                  cant_impropia:
-                    this.cant_impropio_entrada == null
-                      ? 0
-                      : this.cant_impropio_entrada,
-                  name_encargado: this.nombre_encargado_entrada,
-                  fk_tipo_residuo: this.mSelectResiduo,
-                  detalle_entrada: this.observacion_entrada,
-                }
-              );
-              if (datos.data.status_code == 200) {
-                this.clearModalEntrada();
-                this.readEntradaAll();
-              } else {
-                Notification.info({
-                  title: "ENTRADA",
-                  message: datos.data.msm,
-                });
-              }
-                }else{
+            if (this.mSelectResiduo != null) {
+              if (this.cant_organica_entrada != null) {
+                if (this.cant_impropio_entrada != null) {
+                  if (
+                    this.mSelectTipoPesoImpropio != null &&
+                    this.mSelectTipoPesoOrganico != null
+                  ) {
+                    var datos = await this.$axios.post(
+                      process.env.baseUrlPanel + "/create_entrada",
+                      {
+                        token: this.token,
+                        fk_id_mercado: this.mSelectAddMercado,
+                        cant_organica:
+                          this.cant_organica_entrada == null
+                            ? 0
+                            : this.convertPesoOrganico(
+                                this.cant_organica_entrada
+                              ),
+                        cant_impropia:
+                          this.cant_impropio_entrada == null
+                            ? 0
+                            : this.convertPesoImpropio(
+                                this.cant_impropio_entrada
+                              ),
+                        name_encargado: this.nombre_encargado_entrada,
+                        fk_tipo_residuo: this.mSelectResiduo,
+                        detalle_entrada: this.observacion_entrada,
+                      }
+                    );
+                    if (datos.data.status_code == 200) {
+                      this.clearModalEntrada();
+                      this.readEntradaAll();
+                    } else {
+                      Notification.info({
+                        title: "ENTRADA",
+                        message: datos.data.msm,
+                      });
+                    }
+                  } else {
+                    Notification.info({
+                        title: "ENTRADA",
+                        message: "SELECCIONE UN TIPO DE PESO",
+                      });
+                  }
+                } else {
                   Notification.info({
-                  title: "ENTRADA",
-                  message: "CANTIDAD IMPROPIOS NO VALIDO",
-                });
+                    title: "ENTRADA",
+                    message: "CANTIDAD IMPROPIOS NO VALIDO",
+                  });
                 }
-              }else{
+              } else {
                 Notification.info({
                   title: "ENTRADA",
                   message: "CANTIDAD ORGANICO NO VALIDO",
@@ -506,7 +555,7 @@ export default {
         );
 
         if (datos.data.status_code == 200) {
-          this.readEntradaAll()
+          this.readEntradaAll();
         } else {
           alert(datos.data.msm);
         }
@@ -514,16 +563,52 @@ export default {
         alert(error.toString());
       }
     },
+    async readTipoPesosActivo() {
+      this.mListTipoPesos = [];
+      try {
+        var datos = await this.$axios.get(
+          process.env.baseUrl + "/tipo_peso_active"
+        );
+        console.log(datos.data.datos);
+        this.mListTipoPesos.push(...datos.data.datos);
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    convertPesoOrganico(peso) {
+      if (this.mSelectTipoPesoOrganico != null) {
+        if (this.mSelectTipoPesoOrganico == 1) {
+          peso = toneladasAKilogramos(peso);
+        } else if (this.mSelectTipoPesoOrganico == 2) {
+          peso = librasAKilogramos(peso);
+        }
+      }
+
+      return peso;
+    },
+    convertPesoImpropio(peso) {
+      if (this.mSelectTipoPesoImpropio != null) {
+        if (this.mSelectTipoPesoImpropio == 1) {
+          peso = toneladasAKilogramos(peso);
+        } else if (this.mSelectTipoPesoImpropio == 2) {
+          peso = librasAKilogramos(peso);
+        }
+      }
+
+      return peso;
+    },
   },
   mounted() {
+    this.readTipoPesosActivo();
     this.readResiduosAll();
     this.readTipoMercadoActivo();
     this.readEntradaAll();
 
     var data = jwt_decode(this.$cookies.get("token")).datosJWT;
-    if (data.active_options_lote == 1) {
-      this.isPermisosActions = true;
+    if (data.active_options_Entrada == 1) {
+      this.banderaActiveTable = true;
     }
+
   },
 };
 </script>

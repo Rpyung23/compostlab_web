@@ -10,7 +10,7 @@
         >
           <div
             class="cardTextoRPagosVehiculoProduccionPanelDespachoBusqueda"
-          ></div>
+          >MODULO PROCEDENCIA - SECTOR</div>
 
           <div
             class="cardSelectRubrosEstadosPagosVehiculoProduccionContainerPanelDespachoBusqueda"
@@ -380,7 +380,12 @@ export default {
         {
           prop: "cant_organica_mercado",
           label: "C. Organica (KG)",
-          minWidth: 230,
+          minWidth: 170,
+        },
+        {
+          prop: "cant_impropio_mercado",
+          label: "C. Impropios (KG)",
+          minWidth: 170,
         },
         {
           prop: "encargado_mercado",
@@ -502,7 +507,7 @@ export default {
                   dire_mercado: this.dirMercado,
                 }
               );
-
+              this.modalAddMercado = false
               this.readMercadosAll();
             } else {
               Notification.error({

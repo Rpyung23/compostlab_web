@@ -9,13 +9,13 @@
           footer-classes="pb-2"
         >
           <div class="cardTextoRPagosVehiculoProduccionPanelDespachoBusqueda">
-            REPORTE COMPOSTA PROCEDENCIA
+            REPORTE MATERIAL ORGANICO E IMPROPIO
             <el-select
               placeholder="Procedencia - Sector"
               v-model="mSelectMercado"
               multiple
               collapse-tags
-              style="margin-left: 1rem;"
+              style="margin-right: 0.5rem;margin-left: 1rem;"
             >
               <el-option
                 v-for="item in mListMercados"
@@ -35,7 +35,7 @@
                 icon
                 type="primary"
                 size="sm"
-                @click="readCompostMercados()"
+                @click="readROrganicoImpropio()"
               >
                 <span class="btn-inner--icon"
                   ><i class="el-icon-search"></i
@@ -46,14 +46,13 @@
                 icon
                 type="danger"
                 size="sm"
-                v-if="mListInsumoLotes.length > 0"
+                v-if="mListaImpropioOrganico.length > 0"
                 @click="exportPdfRSalidas()"
               >
                 <span class="btn-inner--icon"
                   ><i class="ni ni-single-copy-04"></i
                 ></span>
               </base-button>
-
             </div>
           </div>
         </card>
@@ -61,52 +60,50 @@
         <card
           class="no-border-card"
           style="margin-bottom: 0rem"
-          body-classes="card-bodyRPagosVehiculoProduccion px-0 pb-1"
+          body-classes="card-bodyEntrada px-0 pb-1"
           footer-classes="pb-2"
         >
           <el-table
             element-loading-text="Cargando Datos..."
-            :data="mListInsumoLotes"
+            :data="mListaImpropioOrganico"
             row-key="id"
-            v-loading="loadingInsumoLotes"
+            v-loading="loadingLote"
             class="tablePanelControlProduccion"
             header-row-class-name="thead-dark"
-            height="calc(100vh - 11rem)"
+            height="calc(100vh - 10rem)"
             style="width: 100%"
           >
-            <el-table-column prop="nombre_mercado" label="Procedencia - Sector" width="680">
-            </el-table-column>
-
             <el-table-column
-              prop="totLotes"
-              label="TOTAL. PILAS"
-              width="230"
+              prop="nombre_mercado"
+              label="PROCEDENCIA"
+              width="550"
             >
             </el-table-column>
 
-            <el-table-column prop="totalPeso" label="TOTAL PESO KG" width="330">
+            <el-table-column
+              v-for="column in tableColumnsLote"
+              :key="column.label"
+              v-bind="column"
+            >
             </el-table-column>
-
 
             <div slot="empty"></div>
           </el-table>
         </card>
-        .
       </div>
     </base-header>
   </div>
 </template>
 <script>
-
 import pdfMake from "pdfmake/build/pdfmake.js";
 import pdfFonts from "pdfmake/build/vfs_fonts.js";
 import { getBase64LogoReportes } from "../util/logoReport";
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
-
 import flatPicker from "vue-flatpickr-component";
 import { convertSecondtoTimeString } from "../util/fechas";
 import "flatpickr/dist/flatpickr.css";
 import { getFecha_dd_mm_yyyy, FechaStringToHour } from "../util/fechas";
+import { librasAKilogramos, toneladasAKilogramos } from "../util/convert";
 
 import {
   Table,
@@ -133,6 +130,7 @@ import clientPaginationMixin from "~/components/tables/PaginatedTables/clientPag
 import swal from "sweetalert2";
 import Tabs from "@/components/argon-core/Tabs/Tabs";
 import TabPane from "@/components/argon-core/Tabs/Tab";
+import jwt_decode from "jwt-decode";
 
 export default {
   mixins: [clientPaginationMixin],
@@ -161,43 +159,79 @@ export default {
   },
   data() {
     return {
+      mSelectMercado: null,
+      tableColumnsLote: [
+        {
+          prop: "cant_organica_mercado",
+          label: "CANT ORGANICO (KG)",
+          minWidth: 185,
+        },
+        {
+          prop: "cant_impropio_mercado",
+          label: "CANT IMPROPIOS (KG)",
+          minWidth: 195,
+        },
+      ],
       token: this.$cookies.get("token"),
       mListMercados: [],
-      loadingInsumoLotes: false,
-      mSelectMercado: [],
-      mListInsumoLotes: [],
+      loadingLote: false,
+      mSelectAddMercado: null,
+      mListaImpropioOrganico: [],
     };
   },
   methods: {
-    async readMercadoAll() {
+    async readROrganicoImpropio() {
+      this.loadingLote = true;
+      this.mListaImpropioOrganico = [];
+      try {
+        var datos = await this.$axios.post(
+          process.env.baseUrl + "/r_organico_impropio_mercados",
+          {
+            token: this.token,
+            mercado:
+              this.mSelectMercado != null && this.mSelectMercado.length > 0
+                ? this.mSelectMercado
+                : "*",
+          }
+        );
+
+        if (datos.data.status_code == 200) {
+          /*Notification.success({
+              title: "Panel Salidas",
+              message: "Datos consultados con éxito",
+            });*/
+          this.mListaImpropioOrganico.push(...datos.data.datos);
+        } else if (datos.data.status_code == 300) {
+          Notification.info({
+            title: "Entradas",
+            message: "No existen datos disponibles.",
+          });
+        } else {
+          Notification.error({
+            title: "Entradas",
+            message: datos.data.msm,
+          });
+        }
+      } catch (error) {
+        console.log(error);
+        Notification.info({
+          title: "TryCatch Entradas",
+          message: error.toString(),
+        });
+      }
+      this.loadingLote = false;
+    },
+    async readTipoMercadoActivo() {
       this.mListMercados = [];
       try {
         var datos = await this.$axios.get(
-          process.env.baseUrl + "/all_mercados_active",
+          process.env.baseUrl + "/all_mercados_active"
         );
-
+        console.log(datos.data.datos);
         this.mListMercados.push(...datos.data.datos);
       } catch (error) {
         console.log(error);
       }
-    },
-    async readCompostMercados() {
-      this.mListInsumoLotes = [];
-      this.loadingInsumoLotes = true;
-      try {
-        var datos = await this.$axios.post(
-          process.env.baseUrl + "/compost_mercados",
-          {
-            token: this.token,
-            mercados: this.mSelectMercado.length == 0 ? "*" : this.mSelectMercado,
-          }
-        );
-
-        this.mListInsumoLotes.push(...datos.data.datos);
-      } catch (error) {
-        console.log(error);
-      }
-      this.loadingInsumoLotes = false;
     },
     async exportPdfRSalidas() {
       var resultadoString = [
@@ -212,7 +246,7 @@ export default {
             alignment: "center",
           },
           {
-            text: "TOT. PILAS",
+            text: "CANT. ORGANICO (KG)",
             fontSize: 8.5,
             bold: true,
             fillColor: "#039BC4",
@@ -220,35 +254,35 @@ export default {
             alignment: "center",
           },
           {
-            text: "TOTAL PESO KG",
+            text: "CANT. IMPROPIO (KG",
             fontSize: 8.5,
             bold: true,
             fillColor: "#039BC4",
             color: "white",
             alignment: "center",
-          }
+          },
         ],
       ];
 
       //CodiVehiDispEven,HoraDispEven,DescRutaSali_m,NumeVuelSali_m,DescFrec,DescDispEvenList,LatiDispEven,LongDispEven
 
-      for (var i = 0; i < this.mListInsumoLotes.length; i++) {
+      for (var i = 0; i < this.mListaImpropioOrganico.length; i++) {
         var arrys = [
           {
-            text: this.mListInsumoLotes[i].nombre_mercado,
+            text: this.mListaImpropioOrganico[i].nombre_mercado,
             fontSize: 8.5,
             alignment: "center",
           },
           {
-            text: this.mListInsumoLotes[i].totLotes,
+            text: this.mListaImpropioOrganico[i].cant_organica_mercado,
             fontSize: 8.5,
             alignment: "center",
           },
           {
-            text: this.mListInsumoLotes[i].totalPeso,
+            text: this.mListaImpropioOrganico[i].cant_impropio_mercado,
             fontSize: 8.5,
             alignment: "center",
-          }
+          },
         ];
         resultadoString.push(arrys);
       }
@@ -293,7 +327,7 @@ export default {
                 body: [
                   [
                     {
-                      text: "REPORTE COMPOSTA PROCEDENCIA - SECTOR",
+                      text: "MATERIAL ORGANICO E IMPROPIO",
                       alignment: "center",
                       fontSize: 16,
                       bold: true,
@@ -321,10 +355,8 @@ export default {
         content: [
           {
             table: {
-              // headers are automatically repeated if the table spans over multiple pages
-              // you can declare how many rows should be treated as headers
               headerRows: 0,
-              widths: [280, 90, 90],
+              widths: [280, 105, 105],
               body: resultadoString,
             },
           },
@@ -332,12 +364,12 @@ export default {
       };
       /*var win = window.open("", "_blank");
 pdfMake.createPdf(docDefinition).open({}, win);*/
-      pdfMake.createPdf(docDefinition).download("RCM_" + Date.now());
+      pdfMake.createPdf(docDefinition).download("RMOI_" + Date.now());
     },
   },
   mounted() {
-    this.readMercadoAll();
-    this.readCompostMercados();
+    this.readROrganicoImpropio();
+    this.readTipoMercadoActivo();
   },
 };
 </script>
@@ -425,9 +457,9 @@ pdfMake.createPdf(docDefinition).open({}, win);*/
   border-top: 0;
 }
 
-.card-bodyRPagosVehiculoProduccion {
+.card-bodyEntrada {
   padding: 0rem !important;
-  height: calc(100vh - 10.5rem);
+  height: calc(100vh - 9.5rem);
   overflow: none;
 }
 

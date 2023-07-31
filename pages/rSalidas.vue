@@ -9,12 +9,13 @@
           footer-classes="pb-2"
         >
           <div class="cardTextoRPagosVehiculoProduccionPanelDespachoBusqueda">
+            MODULO REPORTE SALIDAS
             <el-select
               placeholder="Procedencia - Sector"
               v-model="mSelectMercado"
               multiple
               collapse-tags
-              style="margin-right: 0.5rem"
+              style="margin-right: 0.5rem;margin-left: 1rem;"
             >
               <el-option
                 v-for="item in mListMercados"

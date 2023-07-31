@@ -8,12 +8,13 @@
           body-classes="px-0 pb-1 card-bodyTopOpcionesRPagosVehiculoPRoduccionPanelDespachoBusqueda cardSelectRubrosEstadosPagosVehiculoProduccionContainerPanelDespachoBusqueda"
           footer-classes="pb-2"
         >
-          <div class="cardTextoRPagosVehiculoProduccionPanelDespachoBusqueda">
+          <div class="cardTextoREstadistico">
+            MODULO ESTADISTICO PILA
             <el-select
               placeholder="PILA"
               v-model="mSelectLote"
               collapse-tags
-              style="width: 100%"
+              style="margin-left: 1rem;"
             >
               <el-option
                 v-for="item in mListLotes"
@@ -359,10 +360,9 @@ export default {
   color: black !important;
 }
 
-.cardTextoRPagosVehiculoProduccionPanelDespachoBusqueda {
+.cardTextoREstadistico {
   display: flex;
   align-items: center;
-  flex-wrap: wrap;
 }
 
 .cardopcinesRPagosVehiculoProduccionPanelDespachoBusqueda {

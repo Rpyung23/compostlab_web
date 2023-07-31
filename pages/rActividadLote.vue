@@ -9,12 +9,13 @@
           footer-classes="pb-2"
         >
           <div class="cardTextoRPagosVehiculoProduccionPanelDespachoBusqueda">
+            REPORTE ACTIVIDAD PILA
             <el-select
-              placeholder="LOTE"
+              placeholder="PILA"
               v-model="mSelectLote"
               multiple
               collapse-tags
-              style="width: 100%"
+              style="margin-left: 1rem;"
             >
               <el-option
                 v-for="item in mListLotes"
@@ -72,13 +73,13 @@
             height="calc(100vh - 11rem)"
             style="width: 100%"
           >
-            <el-table-column prop="nombre_lote" label="LOTE" width="280">
+            <el-table-column prop="nombre_lote" label="LOTE" width="450">
             </el-table-column>
 
             <el-table-column
               prop="nombre_mercado"
               label="PROCEDENCIA - SECTOR"
-              width="380"
+              width="400"
             >
             </el-table-column>
 
@@ -410,8 +411,11 @@ pdfMake.createPdf(docDefinition).open({}, win);*/
     },
   },
   mounted() {
-    this.readLoteAll();
-    this.readActivdadLote();
+    this.readLoteAll()
+    this.readActivdadLote()
+
+
+
   },
 };
 </script>

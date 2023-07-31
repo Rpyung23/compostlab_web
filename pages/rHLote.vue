@@ -9,12 +9,13 @@
           footer-classes="pb-2"
         >
           <div class="cardTextoRPagosVehiculoProduccionPanelDespachoBusqueda">
+            REPORTE HISTORIAL PILA
             <el-select
               placeholder="LOTE"
               v-model="mSelectLote"
               multiple
               collapse-tags
-              style="margin-right: 0.5rem"
+              style="margin-right: 0.5rem;margin-left: 1rem;"
             >
               <el-option
                 v-for="item in mListLotes"
