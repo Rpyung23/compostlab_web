@@ -138,11 +138,33 @@
             <el-table-column prop="detalleFase" label="FASE ACT." width="190">
               <template slot-scope="scope">
                 <badge
-                  v-if="scope.row.FkIDFase != 5"
+                  v-if="scope.row.FkIDFase == 4"
+                  type="success"
+                  class="mr-2"
+                  >{{ scope.row.detalleFase }}</badge
+                >
+
+                <badge
+                  v-if="scope.row.FkIDFase == 1"
                   type="primary"
                   class="mr-2"
                   >{{ scope.row.detalleFase }}</badge
                 >
+
+                <badge
+                  v-if="scope.row.FkIDFase == 2"
+                  type="info"
+                  class="mr-2"
+                  >{{ scope.row.detalleFase }}</badge
+                >
+
+                <badge
+                  v-if="scope.row.FkIDFase == 3"
+                  type="default"
+                  class="mr-2"
+                  >{{ scope.row.detalleFase }}</badge
+                >
+
                 <badge
                   v-if="scope.row.FkIDFase == 5"
                   type="danger"

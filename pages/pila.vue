@@ -155,28 +155,28 @@
               <template slot-scope="scope">
                 <badge
                   v-if="scope.row.FkIDFase == 4"
-                  type="warning"
+                  type="success"
                   class="mr-2"
                   >{{ scope.row.detalleFase }}</badge
                 >
 
                 <badge
                   v-if="scope.row.FkIDFase == 1"
-                  type="secondary"
+                  type="primary"
                   class="mr-2"
                   >{{ scope.row.detalleFase }}</badge
                 >
 
                 <badge
                   v-if="scope.row.FkIDFase == 2"
-                  type="default"
+                  type="info"
                   class="mr-2"
                   >{{ scope.row.detalleFase }}</badge
                 >
 
                 <badge
                   v-if="scope.row.FkIDFase == 3"
-                  type="primary"
+                  type="default"
                   class="mr-2"
                   >{{ scope.row.detalleFase }}</badge
                 >
