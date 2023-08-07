@@ -11,7 +11,7 @@
           <div class="cardTextoRPagosVehiculoProduccionPanelDespachoBusqueda">
             REPORTE HISTORIAL PILA
             <el-select
-              placeholder="LOTE"
+              placeholder="PILA"
               v-model="mSelectLote"
               multiple
               collapse-tags
@@ -289,7 +289,7 @@ export default {
           // CodiVehiDispEven,HoraDispEven,DescRutaSali_m,NumeVuelSali_m,DescFrec,DescDispEvenList,LatiDispEven,LongDispEven
 
           {
-            text: "LOTE",
+            text: "PILA",
             fontSize: 8.5,
             bold: true,
             fillColor: "#039BC4",

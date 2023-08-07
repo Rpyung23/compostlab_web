@@ -9,7 +9,7 @@
           footer-classes="pb-2"
         >
           <div class="cardTextoRPagosVehiculoProduccionPanelDespachoBusqueda">
-            REPORTE INSUMOS PILA
+            REPORTE INSUMOS-PILA
             <el-select
               placeholder="PILA"
               v-model="mSelectLote"
@@ -210,7 +210,7 @@ export default {
           // CodiVehiDispEven,HoraDispEven,DescRutaSali_m,NumeVuelSali_m,DescFrec,DescDispEvenList,LatiDispEven,LongDispEven
 
           {
-            text: "LOTE",
+            text: "PILA",
             fontSize: 8.5,
             bold: true,
             fillColor: "#039BC4",

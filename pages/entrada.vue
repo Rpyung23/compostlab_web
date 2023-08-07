@@ -116,6 +116,15 @@
             </el-table-column>
 
             <el-table-column
+              prop="name_encargado"
+              label="ENCARGADO"
+              width="200"
+            >
+            </el-table-column>
+
+            
+
+            <el-table-column
               v-for="column in tableColumnsLote"
               :key="column.label"
               v-bind="column"

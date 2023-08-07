@@ -9,7 +9,7 @@
           footer-classes="pb-2"
         >
           <div class="cardTextoRPagosVehiculoProduccionPanelDespachoBusqueda">
-            REPORTE ACTIVIDAD PILA
+            REPORTE ACTIVIDAD-PILA
             <el-select
               placeholder="PILA"
               v-model="mSelectLote"

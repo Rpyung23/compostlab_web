@@ -107,12 +107,12 @@
           <!--<sidebar-item :link="{ name: 'Cant. Composta', path: '/' }" translate="no"/>
           <sidebar-item :link="{ name: 'Composta Mercado', path: '/' }" translate="no"/>-->
           <sidebar-item :link="{ name: 'Salidas Pila', path: '/rSalidas' }" translate="no"/>
-          <sidebar-item :link="{ name: 'Actividad Pila', path: '/rActividadLote' }" translate="no"/>
+          <sidebar-item :link="{ name: 'Actividad-Pila', path: '/rActividadLote' }" translate="no"/>
           <sidebar-item :link="{ name: 'Insumos Pila', path: '/rInsumoLote' }" translate="no"/>
           <sidebar-item :link="{ name: 'Historial-Pila', path: '/rHLote' }" translate="no"/> 
           <sidebar-item :link="{ name: 'Entrada-Lote', path: '/rEntrada' }" translate="no"/> 
           <sidebar-item :link="{ name: 'Composta Procedencia - Sector', path: '/rCompostMercado' }" translate="no"/> 
-          <sidebar-item :link="{ name: 'Material Orgánico y Impropio ', path: '/rImpropioOrganico' }" translate="no"/>
+          <sidebar-item :link="{ name: 'Material Orgánico-Impropio ', path: '/rImpropioOrganico' }" translate="no"/>
           
         </sidebar-item>
 

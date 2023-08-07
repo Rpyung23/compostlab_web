@@ -9,7 +9,7 @@
           footer-classes="pb-2"
         >
           <div class="cardTextoRPagosVehiculoProduccionPanelDespachoBusqueda">
-            MODULO REPORTE SALIDAS
+            MODULO REPORTE DESPACHO-PILAS
             <el-select
               placeholder="Procedencia - Sector"
               v-model="mSelectMercado"
@@ -88,7 +88,7 @@
             height="calc(100vh - 11rem)"
             style="width: 100%"
           >
-            <el-table-column prop="nombre_lote" label="LOTE" width="240">
+            <el-table-column prop="nombre_lote" label="PILAS" width="240">
             </el-table-column>
 
             <el-table-column prop="nombre_mercado" label="PROCEDENCIA - SECTOR" width="220">
@@ -99,7 +99,7 @@
 
             <el-table-column prop="peso" label="PESO" width="150">
             </el-table-column>
-            <el-table-column prop="detalle_tipo_peso" label="" width="180">
+            <el-table-column prop="detalle_tipo_peso" label="TIPO PESO" width="180">
             </el-table-column>
             <el-table-column prop="fechaIngreso" label="F. INGRESO" width="210">
             </el-table-column>
@@ -242,7 +242,7 @@ export default {
           // CodiVehiDispEven,HoraDispEven,DescRutaSali_m,NumeVuelSali_m,DescFrec,DescDispEvenList,LatiDispEven,LongDispEven
 
           {
-            text: "LOTE",
+            text: "PILA",
             fontSize: 8.5,
             bold: true,
             fillColor: "#039BC4",

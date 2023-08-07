@@ -77,7 +77,7 @@
             <!--<el-table-column prop="id_lote" label="CODIGO" width="130">
             </el-table-column>-->
 
-            <el-table-column prop="nombre_lote" label="LOTE" width="180">
+            <el-table-column prop="nombre_lote" label="PILA" width="180">
             </el-table-column>
 
             <el-table-column prop="detalle_actividad" label="ACTIVIDAD" width="190">

@@ -33,7 +33,7 @@
         <div v-if="appendIcon || $slots.append" class="input-group-append">
           <span class="input-group-text">
               <slot name="append">
-                  <i :class="appendIcon"></i>
+                  <i :class="appendIcon">KG</i>
               </slot>
           </span>
         </div>

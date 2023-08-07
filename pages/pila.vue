@@ -88,7 +88,7 @@
             <!--<el-table-column prop="id_lote" label="CODIGO" width="130">
             </el-table-column>-->
 
-            <el-table-column prop="nombre_lote" label="LOTE" width="190">
+            <el-table-column prop="nombre_lote" label="PILA" width="190">
             </el-table-column>
 
             <!--<el-table-column
@@ -264,12 +264,15 @@
                 name="Peso Orgánico"
                 placeholder="Peso Orgánico"
                 prepend-icon="ni ni-box-2"
+                append-icon="KG"
                 type="number"
                 disabled
                 v-model="PesoActualMercado"
               >
               
               </base-input>
+
+              
             </div>
           </div>
 
@@ -876,6 +879,11 @@ export default {
           {
             return true
           }
+        }else{
+          if(this.PesoActualMercado >= this.PesoLote)
+          {
+            return true
+          }
         }
       }
       return false
@@ -892,10 +900,15 @@ export default {
     if (data.active_options_lote == 1) {
       this.isPermisosActions = true;
     }
+
+
+
+
   },
 };
 </script>
 <style>
+
 .containerModalRecorridoPanelDespacho {
   display: flex;
 }

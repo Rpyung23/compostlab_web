@@ -9,7 +9,7 @@
           footer-classes="pb-2"
         >
           <div class="cardTextoRPagosVehiculoProduccionPanelDespachoBusqueda">
-            REPORTE MATERIAL ORGANICO E IMPROPIO
+            REPORTE MATERIAL ORGANICO-IMPROPIO
             <el-select
               placeholder="Procedencia - Sector"
               v-model="mSelectMercado"
@@ -327,7 +327,7 @@ export default {
                 body: [
                   [
                     {
-                      text: "MATERIAL ORGANICO E IMPROPIO",
+                      text: "MATERIAL ORGANICO-IMPROPIO",
                       alignment: "center",
                       fontSize: 16,
                       bold: true,
