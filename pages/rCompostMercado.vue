@@ -74,17 +74,20 @@
             height="calc(100vh - 11rem)"
             style="width: 100%"
           >
-            <el-table-column prop="nombre_mercado" label="Procedencia - Sector" width="680">
+            <el-table-column prop="nombre_mercado" label="Procedencia - Sector" width="480">
             </el-table-column>
 
             <el-table-column
               prop="totLotes"
               label="TOTAL. PILAS"
-              width="230"
+              width="200"
             >
             </el-table-column>
 
-            <el-table-column prop="totalPeso" label="TOTAL PESO KG" width="330">
+            <el-table-column prop="totalPeso" label="TOTAL PESO KG" width="300">
+            </el-table-column>
+
+            <el-table-column prop="cant_organica_mercado" label="TOTAL PESO SOBRANTE KG" width="300">
             </el-table-column>
 
 
@@ -226,6 +229,14 @@ export default {
             fillColor: "#039BC4",
             color: "white",
             alignment: "center",
+          },
+          {
+            text: "TOTAL PESO SOBRANTE KG",
+            fontSize: 8.5,
+            bold: true,
+            fillColor: "#039BC4",
+            color: "white",
+            alignment: "center",
           }
         ],
       ];
@@ -246,6 +257,11 @@ export default {
           },
           {
             text: this.mListInsumoLotes[i].totalPeso,
+            fontSize: 8.5,
+            alignment: "center",
+          },
+          {
+            text: this.mListInsumoLotes[i].cant_organica_mercado,
             fontSize: 8.5,
             alignment: "center",
           }
@@ -324,7 +340,7 @@ export default {
               // headers are automatically repeated if the table spans over multiple pages
               // you can declare how many rows should be treated as headers
               headerRows: 0,
-              widths: [280, 90, 90],
+              widths: [220, 90, 90,90],
               body: resultadoString,
             },
           },

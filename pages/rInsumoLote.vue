@@ -83,14 +83,16 @@
             <el-table-column
               prop="fecha_ingresoInsumo"
               label="F. INGRESO"
-              width="230"
+              width="175"
             >
             </el-table-column>
 
             <el-table-column prop="nombre_insumo" label="INSUMO" width="270">
             </el-table-column>
 
-            <el-table-column prop="cantidad" label="CANTIDAD" width="190">
+            <el-table-column prop="cantidad" label="CANTIDAD" width="160">
+            </el-table-column>
+            <el-table-column prop="detalle_tipo_peso" label="TIPO PESO" width="170">
             </el-table-column>
 
             <div slot="empty"></div>
@@ -248,6 +250,14 @@ export default {
             fillColor: "#039BC4",
             color: "white",
             alignment: "center",
+          },
+          {
+            text: "TIPO PESO",
+            fontSize: 8.5,
+            bold: true,
+            fillColor: "#039BC4",
+            color: "white",
+            alignment: "center",
           }
         ],
       ];
@@ -278,6 +288,11 @@ export default {
           },
           {
             text: this.mListInsumoLotes[i].cantidad,
+            fontSize: 8.5,
+            alignment: "center",
+          },
+          {
+            text: this.mListInsumoLotes[i].detalle_tipo_peso,
             fontSize: 8.5,
             alignment: "center",
           }
@@ -356,7 +371,7 @@ export default {
               // headers are automatically repeated if the table spans over multiple pages
               // you can declare how many rows should be treated as headers
               headerRows: 0,
-              widths: [90, 90, 110, 90, 70],
+              widths: [90, 90, 80, 70, 70,60],
               body: resultadoString,
             },
           },
