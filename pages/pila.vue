@@ -8,9 +8,9 @@
           body-classes="px-0 pb-1 card-bodyTopOpcionesRPagosVehiculoPRoduccionPanelDespachoBusqueda cardSelectRubrosEstadosPagosVehiculoProduccionContainerPanelDespachoBusqueda"
           footer-classes="pb-2"
         >
-          <div
-            class="cardTextoRPagosVehiculoProduccionPanelDespachoBusqueda"
-          >MODULO PILA</div>
+          <div class="cardTextoRPagosVehiculoProduccionPanelDespachoBusqueda">
+            MODULO PILA
+          </div>
 
           <div
             class="cardSelectRubrosEstadosPagosVehiculoProduccionContainerPanelDespachoBusqueda"
@@ -98,7 +98,11 @@
             >
             </el-table-column>-->
 
-            <el-table-column prop="detalle_actividad" label="ACTIVIDAD" width="190">
+            <el-table-column
+              prop="detalle_actividad"
+              label="ACTIVIDAD"
+              width="190"
+            >
               <template slot-scope="scope">
                 <badge
                   v-if="scope.row.id_actividad == null"
@@ -259,7 +263,6 @@
               </el-select>
             </div>
             <div class="col-md-6">
-
               <base-input
                 name="Peso Orgánico"
                 placeholder="Peso Orgánico"
@@ -269,10 +272,7 @@
                 disabled
                 v-model="PesoActualMercado"
               >
-              
               </base-input>
-
-              
             </div>
           </div>
 
@@ -381,6 +381,38 @@
 
           <div class="form-row" style="margin-bottom: 0.5rem">
             <div class="col-md-6">
+              <el-select
+                placeholder="Procedencia - Sector"
+                v-model="mSelectMercado"
+                disabled
+                style="width: 100%"
+              >
+                <el-option
+                  v-for="item in mListTipoMercados"
+                  :key="item.id_mercado"
+                  :label="item.nombre_mercado"
+                  :value="item.id_mercado"
+                >
+                </el-option>
+              </el-select>
+            </div>
+
+            <div class="col-md-6">
+              <base-input
+                name="Peso Orgánico"
+                placeholder="Peso Orgánico"
+                prepend-icon="ni ni-box-2"
+                append-icon="KG"
+                type="number"
+                disabled
+                v-model="PesoActualMercado"
+              >
+              </base-input>
+            </div>
+          </div>
+
+          <div class="form-row" style="margin-bottom: 0.5rem">
+            <div class="col-md-6">
               <base-input
                 prepend-icon="ni ni-single-copy-04"
                 name="Ingrese Peso"
@@ -408,23 +440,7 @@
           </div>
 
           <div class="form-row" style="margin-bottom: 0.5rem">
-            <div class="col-md-6">
-              <el-select
-                placeholder="Procedencia - Sector"
-                v-model="mSelectMercado"
-                style="width: 100%"
-              >
-                <el-option
-                  v-for="item in mListTipoMercados"
-                  :key="item.id_mercado"
-                  :label="item.nombre_mercado"
-                  :value="item.id_mercado"
-                >
-                </el-option>
-              </el-select>
-            </div>
-
-            <div class="col-md-6">
+            <div class="col-md-12">
               <el-select
                 placeholder="Tipo Fase"
                 v-model="mSelectTipoFase"
@@ -439,7 +455,6 @@
                 </el-option>
               </el-select>
             </div>
-
           </div>
 
           <div class="form-row" style="margin-bottom: 0.5rem">
@@ -477,9 +492,6 @@
               >
               </base-input>
             </div>
-
-
-
           </div>
 
           <div class="text-right">
@@ -493,7 +505,6 @@
               >Actualizar</base-button
             >
           </div>
-
         </form>
       </validation-observer>
     </modal>
@@ -503,7 +514,11 @@
 import flatPicker from "vue-flatpickr-component";
 import { getBase64LogoReportes } from "../util/logoReport";
 import "flatpickr/dist/flatpickr.css";
-import { getFecha_dd_mm_yyyy, FechaStringToHour,convertSecondtoTimeString } from "../util/fechas";
+import {
+  getFecha_dd_mm_yyyy,
+  FechaStringToHour,
+  convertSecondtoTimeString,
+} from "../util/fechas";
 import { librasAKilogramos, toneladasAKilogramos } from "../util/convert";
 
 import {
@@ -611,12 +626,13 @@ export default {
       itemSelectLote: null,
       isPermisosActions: false,
       mListFases: [],
-      mSelectTipoFase:null,
-      PesoActualMercado:0.00
+      mSelectTipoFase: null,
+      PesoActualMercado: 0.0,
     };
   },
   methods: {
     showEditLote(item) {
+      this.readTipoMercadoActivo()
       this.itemSelectLote = item;
       this.mSelectEstadoLote = item.activo;
       this.mSelectTipoPeso = item.id_tipo_peso;
@@ -626,15 +642,15 @@ export default {
       this.ObsLote = item.observacion_lote;
       this.PesoLote = item.peso;
       this.mSelectResiduo = item.id_residuo;
-      this.mSelectTipoFase = item.FkIDFase
+      this.mSelectTipoFase = item.FkIDFase;
       this.modalEditLote = true;
-      
+      this.cambioSelectProdencia()
     },
     closeEditLote() {
       this.modalEditLote = false;
     },
     showAddLote() {
-      this.clearModalAddLote()
+      this.clearModalAddLote();
       this.modalAddLote = true;
     },
     async readLoteAll() {
@@ -717,49 +733,45 @@ export default {
           this.mSelectMercado != null &&
           this.mSelectTipoPeso != null
         ) {
-
-          if(this.checkPeso())
-          {
+          if (this.checkPeso()) {
             var datos = await this.$axios.post(
-            process.env.baseUrlPanel + "/add_lote_usuer",
-            {
-              token: this.token,
-              nombre_lote: this.NombreLote,
-              observacion_lote: this.ObsLote,
-              peso: this.PesoLote,
-              tipo_peso: this.mSelectTipoPeso,
-              id_mercado: this.mSelectMercado,
-              dia_notification:
-                this.DiaNotificationLote == null ? 0 : this.DiaNotificationLote,
-              residuo: 1/*this.mSelectResiduo,*/
-            }
-          );
+              process.env.baseUrlPanel + "/add_lote_usuer",
+              {
+                token: this.token,
+                nombre_lote: this.NombreLote,
+                observacion_lote: this.ObsLote,
+                peso: this.PesoLote,
+                tipo_peso: this.mSelectTipoPeso,
+                id_mercado: this.mSelectMercado,
+                dia_notification:
+                  this.DiaNotificationLote == null
+                    ? 0
+                    : this.DiaNotificationLote,
+                residuo: 1 /*this.mSelectResiduo,*/,
+              }
+            );
 
-          if (datos.data.status_code == 200) 
-          {
-            this.readTipoMercadoActivo();
-            this.clearModalAddLote();
-            this.readLoteAll();
+            if (datos.data.status_code == 200) {
+              this.readTipoMercadoActivo();
+              this.clearModalAddLote();
+              this.readLoteAll();
+            } else {
+              Notification.info({
+                title: "AGREGAR PILA",
+                message: datos.data.msm,
+              });
+            }
           } else {
-            Notification.info({
-              title: "AGREGAR PILA",
-              message: datos.data.msm,
-            });
-          }
-          }else{
             Notification.info({
               title: "AGREGAR PILA",
               message: "EL PESO NO DEBE SER MAYO AL PERMITIDO",
             });
           }
-
-          
-
-        }else{
+        } else {
           Notification.info({
-              title: "AGREGAR PILA",
-              message: "EXISTEN DATOS VACIOS",
-            });
+            title: "AGREGAR PILA",
+            message: "EXISTEN DATOS VACIOS",
+          });
         }
       } catch (error) {
         console.log(error);
@@ -784,31 +796,40 @@ export default {
           this.mSelectTipoPeso != null &&
           this.mSelectTipoPeso != null
         ) {
-          var datos = await this.$axios.put(
-            process.env.baseUrlPanel + "/update_lote",
-            {
-              token: this.token,
-              id_lote: this.itemSelectLote.id_lote,
-              estado: this.mSelectEstadoLote,
-              nombre_lote: this.NombreLote,
-              observacion_lote: this.ObsLote,
-              peso: this.PesoLote,
-              tipo_peso: this.mSelectTipoPeso,
-              id_mercado: this.mSelectMercado,
-              dia_notification:
-                this.DiaNotificationLote == null ? 0 : this.DiaNotificationLote,
-              residuo: 1,
-              fase: this.mSelectTipoFase
-            }
-          );
+          if (this.checkPeso()) {
+            var datos = await this.$axios.put(
+              process.env.baseUrlPanel + "/update_lote",
+              {
+                token: this.token,
+                id_lote: this.itemSelectLote.id_lote,
+                estado: this.mSelectEstadoLote,
+                nombre_lote: this.NombreLote,
+                observacion_lote: this.ObsLote,
+                peso: this.PesoLote,
+                tipo_peso: this.mSelectTipoPeso,
+                id_mercado: this.mSelectMercado,
+                dia_notification:
+                  this.DiaNotificationLote == null
+                    ? 0
+                    : this.DiaNotificationLote,
+                residuo: 1,
+                fase: this.mSelectTipoFase,
+              }
+            );
 
-          if (datos.data.status_code == 200) {
-            this.closeEditLote();
-            this.readLoteAll();
+            if (datos.data.status_code == 200) {
+              this.closeEditLote();
+              this.readLoteAll();
+            } else {
+              Notification.info({
+                title: "ACTUALIZACION PILA",
+                message: datos.data.msm,
+              });
+            }
           } else {
             Notification.info({
-              title: "ACTUALIZACION PILA",
-              message: datos.data.msm,
+              title: "AGREGAR PILA",
+              message: "EL PESO NO DEBE SER MAYO AL PERMITIDO",
             });
           }
         }
@@ -819,23 +840,23 @@ export default {
     async deleteNuevoLote(id_lote) {
       try {
         var datos = await this.$axios.delete(
-            process.env.baseUrlPanel + "/eliminar_lote",
-            {
+          process.env.baseUrlPanel + "/eliminar_lote",
+          {
             data: {
               token: this.token,
               id_lote: id_lote,
             },
           }
-          );
+        );
 
-          if (datos.data.status_code == 200) {
-            this.readLoteAll();
-          } else {
-            Notification.info({
-              title: "ELIMINACION DE PILA",
-              message: datos.data.msm,
-            });
-          }
+        if (datos.data.status_code == 200) {
+          this.readLoteAll();
+        } else {
+          Notification.info({
+            title: "ELIMINACION DE PILA",
+            message: datos.data.msm,
+          });
+        }
       } catch (error) {
         console.log(error);
       }
@@ -850,47 +871,41 @@ export default {
         console.log(error);
       }
     },
-    cambioSelectProdencia()
-    {
-      if(this.mSelectMercado != null)
-      {
-        for(var i = 0;i<this.mListTipoMercados.length > 0;i++)
-          {
-            if(this.mListTipoMercados[i].id_mercado == this.mSelectMercado)
-            {
-              this.PesoActualMercado = this.mListTipoMercados[i].cant_organica_mercado
-            }
-          }
-      }
-    },
-    checkPeso()
-    {
-      if(this.mSelectTipoPeso != null)
-      {
-        if(this.mSelectTipoPeso == 1)
-        {
-          if(this.PesoActualMercado >= toneladasAKilogramos(this.PesoLote))
-          {
-            return true
-          }
-        }else if(this.mSelectTipoPeso == 2)
-        {
-          if(this.PesoActualMercado >= librasAKilogramos(this.PesoLote))
-          {
-            return true
-          }
-        }else{
-          if(this.PesoActualMercado >= this.PesoLote)
-          {
-            return true
+    cambioSelectProdencia() {
+      if (this.mSelectMercado != null) {
+        for (var i = 0; i < this.mListTipoMercados.length > 0; i++) {
+          if (this.mListTipoMercados[i].id_mercado == this.mSelectMercado) {
+            this.PesoActualMercado =
+              this.mListTipoMercados[i].cant_organica_mercado;
           }
         }
       }
-      return false
-    }
+    },
+    checkPeso() {
+      console.log("mSelectTipoPeso : "+this.mSelectTipoPeso)
+      console.log("PesoLote : "+this.PesoLote)
+      if (this.mSelectTipoPeso != null) {
+        if (this.mSelectTipoPeso == 1) {
+          console.log(toneladasAKilogramos(this.PesoLote))
+          if (this.PesoActualMercado >= toneladasAKilogramos(this.PesoLote)) 
+          {
+            return true;
+          }
+        } else if (this.mSelectTipoPeso == 2) {
+          if (this.PesoActualMercado >= librasAKilogramos(this.PesoLote)) {
+            return true;
+          }
+        } else {
+          if (this.PesoActualMercado >= this.PesoLote) {
+            return true;
+          }
+        }
+      }
+      return false;
+    },
   },
   mounted() {
-    this.readFases()
+    this.readFases();
     this.readResiduosAll();
     this.readTipoMercadoActivo();
     this.readTipoPesosActivo();
@@ -900,15 +915,10 @@ export default {
     if (data.active_options_lote == 1) {
       this.isPermisosActions = true;
     }
-
-
-
-
   },
 };
 </script>
 <style>
-
 .containerModalRecorridoPanelDespacho {
   display: flex;
 }

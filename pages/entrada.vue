@@ -15,7 +15,7 @@
               v-model="mSelectMercado"
               multiple
               collapse-tags
-              style="margin-right: 0.5rem;margin-left: 1rem;"
+              style="margin-right: 0.5rem; margin-left: 1rem"
             >
               <el-option
                 v-for="item in mListMercados"
@@ -122,8 +122,6 @@
             >
             </el-table-column>
 
-            
-
             <el-table-column
               v-for="column in tableColumnsLote"
               :key="column.label"
@@ -188,6 +186,7 @@
               <el-select
                 placeholder="Tipo Residuo"
                 v-model="mSelectResiduo"
+                @change="changeResiduo()"
                 style="width: 100%"
               >
                 <el-option
@@ -206,6 +205,7 @@
               <base-input
                 name="Cant Organico"
                 placeholder="Cant Organico"
+                v-if="visibleCantOrganico"
                 prepend-icon="ni ni-notification-70"
                 type="number"
                 :min="0"
@@ -216,6 +216,7 @@
             <div class="col-md-6">
               <el-select
                 placeholder="Tipo Peso"
+                v-if="visibleCantOrganico"
                 v-model="mSelectTipoPesoOrganico"
                 style="width: 100%"
               >
@@ -235,6 +236,7 @@
               <base-input
                 name="Cant Impropios"
                 placeholder="Cant Impropios"
+                v-if="visibleCantInorganico"
                 prepend-icon="ni ni-notification-70"
                 type="number"
                 :min="0"
@@ -245,6 +247,7 @@
             <div class="col-md-6">
               <el-select
                 placeholder="Tipo Peso"
+                v-if="visibleCantInorganico"
                 v-model="mSelectTipoPesoImpropio"
                 style="width: 100%"
               >
@@ -387,7 +390,9 @@ export default {
       mListTipoPesos: [],
       mSelectTipoPesoImpropio: null,
       mSelectTipoPesoOrganico: null,
-      banderaActiveTable:false
+      banderaActiveTable: false,
+      visibleCantOrganico: false,
+      visibleCantInorganico: false,
     };
   },
   methods: {
@@ -464,33 +469,88 @@ export default {
         if (this.nombre_encargado_entrada != "") {
           if (this.mSelectAddMercado != null) {
             if (this.mSelectResiduo != null) {
-              if (this.cant_organica_entrada != null) {
-                if (this.cant_impropio_entrada != null) {
+              if (
+                this.mSelectResiduo == 1 &&
+                (this.cant_organica_entrada == null ||
+                  this.mSelectTipoPesoOrganico == null)
+              ) {
+                Notification.info({
+                  title: "ENTRADA",
+                  message: "SELECCIONE UN TIPO DE PESO / INGRESE UNA CANTIDAD",
+                });
+
+                return;
+              } else if (
+                this.mSelectResiduo == 2 &&
+                (this.cant_impropio_entrada == null ||
+                  this.mSelectTipoPesoImpropio == null)
+              ) {
+                Notification.info({
+                  title: "ENTRADA",
+                  message: "SELECCIONE UN TIPO DE PESO / INGRESE UNA CANTIDAD",
+                });
+
+                return;
+              } else if (
+                this.mSelectResiduo == 3 &&
+                this.cant_impropio_entrada == null &&
+                this.cant_organica_entrada == null &&
+                (this.mSelectTipoPesoImpropio == null ||
+                  this.mSelectTipoPesoOrganico == null)
+              ) {
+                Notification.info({
+                  title: "ENTRADA",
+                  message: "SELECCIONE UN TIPO DE PESO / INGRESE UNA CANTIDAD",
+                });
+
+                return;
+              } else {
+                var data = {
+                  token: this.token,
+                  fk_id_mercado: this.mSelectAddMercado,
+                  cant_organica:
+                    this.cant_organica_entrada == null
+                      ? 0
+                      : this.convertPesoOrganico(this.cant_organica_entrada),
+                  cant_impropia:
+                    this.cant_impropio_entrada == null
+                      ? 0
+                      : this.convertPesoImpropio(this.cant_impropio_entrada),
+                  name_encargado: this.nombre_encargado_entrada,
+                  fk_tipo_residuo: this.mSelectResiduo,
+                  detalle_entrada: this.observacion_entrada,
+                };
+
+                if ((data.cant_impropia == 0 && data.fk_tipo_residuo == 2)) {
+                  Notification.info({
+                    title: "ENTRADA",
+                    message: "INGRESE UNA CANTIDAD DE IMPROPIO VALIDA",
+                  });
+                } else if (
+                  (data.cant_organica == 0 && data.fk_tipo_residuo == 1)
+                ) {
+                  Notification.info({
+                    title: "ENTRADA",
+                    message: "INGRESE UNA CANTIDAD ORGANICA VALIDA",
+                  });
+                } else {
                   if (
-                    this.mSelectTipoPesoImpropio != null &&
-                    this.mSelectTipoPesoOrganico != null
+                    data.cant_organica == 0 &&
+                    data.cant_impropia == 0 &&
+                    data.fk_tipo_residuo == 3
                   ) {
+                    Notification.info({
+                      title: "ENTRADA",
+                      message: "INGRESE CANTIDADES ORGANICAS E IMPROPIAS VALIDAS",
+                    });
+                  } else {
+
+                    /**ULTIMAS VALIDAcIONES**/
+                    console.log(data);
+
                     var datos = await this.$axios.post(
                       process.env.baseUrlPanel + "/create_entrada",
-                      {
-                        token: this.token,
-                        fk_id_mercado: this.mSelectAddMercado,
-                        cant_organica:
-                          this.cant_organica_entrada == null
-                            ? 0
-                            : this.convertPesoOrganico(
-                                this.cant_organica_entrada
-                              ),
-                        cant_impropia:
-                          this.cant_impropio_entrada == null
-                            ? 0
-                            : this.convertPesoImpropio(
-                                this.cant_impropio_entrada
-                              ),
-                        name_encargado: this.nombre_encargado_entrada,
-                        fk_tipo_residuo: this.mSelectResiduo,
-                        detalle_entrada: this.observacion_entrada,
-                      }
+                      data
                     );
                     if (datos.data.status_code == 200) {
                       this.clearModalEntrada();
@@ -501,23 +561,8 @@ export default {
                         message: datos.data.msm,
                       });
                     }
-                  } else {
-                    Notification.info({
-                        title: "ENTRADA",
-                        message: "SELECCIONE UN TIPO DE PESO",
-                      });
                   }
-                } else {
-                  Notification.info({
-                    title: "ENTRADA",
-                    message: "CANTIDAD IMPROPIOS NO VALIDO",
-                  });
                 }
-              } else {
-                Notification.info({
-                  title: "ENTRADA",
-                  message: "CANTIDAD ORGANICO NO VALIDO",
-                });
               }
             } else {
               Notification.info({
@@ -606,6 +651,20 @@ export default {
 
       return peso;
     },
+    changeResiduo() {
+      this.visibleCantOrganico = false;
+      this.visibleCantInorganico = false;
+      if (this.mSelectResiduo != null) {
+        if (this.mSelectResiduo == 1) {
+          this.visibleCantOrganico = true;
+        } else if (this.mSelectResiduo == 2) {
+          this.visibleCantInorganico = true;
+        } else {
+          this.visibleCantInorganico = true;
+          this.visibleCantOrganico = true;
+        }
+      }
+    },
   },
   mounted() {
     this.readTipoPesosActivo();
@@ -617,7 +676,6 @@ export default {
     if (data.active_options_Entrada == 1) {
       this.banderaActiveTable = true;
     }
-
   },
 };
 </script>
